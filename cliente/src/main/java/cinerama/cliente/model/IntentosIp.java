@@ -11,7 +11,7 @@ import java.time.OffsetDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class intentos_ip {
+public class IntentosIp {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
