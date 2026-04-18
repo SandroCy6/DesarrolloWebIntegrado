@@ -66,4 +66,11 @@ public class ClienteService {
                 .fechaActualizacion(c.getFechaActualizacion())
                 .build();
     }
+
+    @Transactional(readOnly = true)
+    public boolean estadoActivo(String dni){
+        return clienteRepository.findByDni(dni)
+        .map(Cliente::getActivo)
+        .orElse(true);
+    }
 }
