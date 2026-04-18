@@ -23,4 +23,6 @@ public class ClienteRequest {
     @NotBlank(message = "El telefono es obligatorio")
     @Pattern(regexp = "^\\d{9}$", message = "El teléfono debe tener 9 digitos")
     private String telefono;
+    // IP extraida desde el controller via HttpsServletRequest, no la envia el cliente
+    private String ip;
 }
