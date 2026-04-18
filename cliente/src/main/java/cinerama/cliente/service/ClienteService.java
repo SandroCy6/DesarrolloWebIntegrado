@@ -20,6 +20,11 @@ public class ClienteService {
     // TODO: integrar validacion RENIEC
     @Transactional
     public ClienteResponse verificarORegistrar(ClienteRequest request) {
+        clienteRepository.findByDni(request.getDni()).ifPresent(c -> {
+            if (!c.getActivo()) {
+                throw new RuntimeException("Cliente desactivado. Contacte al administrador. ");
+            }
+        });
         Cliente cliente = clienteRepository.findByDni(request.getDni())
                 .orElse(Cliente.builder()
                         .dni(request.getDni())
@@ -68,9 +73,9 @@ public class ClienteService {
     }
 
     @Transactional(readOnly = true)
-    public boolean estadoActivo(String dni){
+    public boolean estadoActivo(String dni) {
         return clienteRepository.findByDni(dni)
-        .map(Cliente::getActivo)
-        .orElse(true);
+                .map(Cliente::getActivo)
+                .orElse(true);
     }
 }
