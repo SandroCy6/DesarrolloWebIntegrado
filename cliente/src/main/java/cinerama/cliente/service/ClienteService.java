@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 
 @Service
@@ -78,4 +79,29 @@ public class ClienteService {
                 .map(Cliente::getActivo)
                 .orElse(true);
     }
+
+    private static final int MAX_INTENTOS_CLIENTE = 3;
+    private static final int MINUTOS_BLOQUEO_CLIENTE = 15;
+
+    public void registrarFalloDni(String dni) {
+        clienteRepository.findByDni(dni).ifPresent(cliente -> {
+            int nuevos = cliente.getIntentosFallidos() + 1;
+            cliente.setIntentosFallidos(nuevos);
+
+            if (nuevos >= MAX_INTENTOS_CLIENTE) {
+                cliente.setBloqueadoHasta(
+                        OffsetDateTime.now().plusMinutes(MINUTOS_BLOQUEO_CLIENTE));
+            }
+            clienteRepository.save(cliente);
+        });
+    }
+
+    @Transactional(readOnly = true)
+    public boolean estaBloqueadoPorDni(String dni) {
+        return clienteRepository.findByDni(dni)
+                .map(c -> c.getBloqueadoHasta() != null
+                        && c.getBloqueadoHasta().isAfter(OffsetDateTime.now()))
+                .orElse(false);
+    }
+
 }
