@@ -26,10 +26,15 @@ public class ClienteService {
     @Transactional
     public ClienteResponse verificarORegistrar(ClienteRequest request) {
         clienteRepository.findByDni(request.getDni()).ifPresent(c -> {
-            if (!c.getActivo()) {
+            if (Boolean.FALSE.equals(c.getActivo())) {
                 throw new RuntimeException("Cliente desactivado. Contacte al administrador. ");
             }
         });
+
+        if(estaBloqueadoPorDni(request.getDni())){
+            throw new RuntimeException("Cliente bloqueado temporalmente. Intente mas tarde.");
+        }
+
         Cliente cliente = clienteRepository.findByDni(request.getDni())
                 .orElse(Cliente.builder()
                         .dni(request.getDni())
@@ -42,6 +47,7 @@ public class ClienteService {
         cliente.setNombre(request.getNombre());
         cliente.setCorreo(request.getCorreo());
         cliente.setTelefono(request.getTelefono());
+
         log.info("[CLIENTE] DNI={} actualizando correo={} telefono={} desde IP={}",
                 request.getDni(),
                 request.getCorreo(),
@@ -82,12 +88,6 @@ public class ClienteService {
                 .build();
     }
 
-    @Transactional(readOnly = true)
-    public boolean estadoActivo(String dni) {
-        return clienteRepository.findByDni(dni)
-                .map(Cliente::getActivo)
-                .orElse(true);
-    }
 
     private static final int MAX_INTENTOS_CLIENTE = 3;
     private static final int MINUTOS_BLOQUEO_CLIENTE = 15;
