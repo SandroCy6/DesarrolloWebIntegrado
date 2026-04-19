@@ -11,9 +11,13 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.OffsetDateTime;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 @Service
 @RequiredArgsConstructor
 public class ClienteService {
+    private static final Logger log = LoggerFactory.getLogger(ClienteService.class);
     private final ClienteRepository clienteRepository;
 
     // TODO: verificar bloqueo por DNI
@@ -38,6 +42,11 @@ public class ClienteService {
         cliente.setNombre(request.getNombre());
         cliente.setCorreo(request.getCorreo());
         cliente.setTelefono(request.getTelefono());
+        log.info("[CLIENTE] DNI={} actualizando correo={} telefono={} desde IP={}",
+                request.getDni(),
+                request.getCorreo(),
+                request.getTelefono(),
+                request.getIp());
 
         return toResponse(clienteRepository.save(cliente));
     }
@@ -87,11 +96,15 @@ public class ClienteService {
         clienteRepository.findByDni(dni).ifPresent(cliente -> {
             int nuevos = cliente.getIntentosFallidos() + 1;
             cliente.setIntentosFallidos(nuevos);
-
+            log.warn("[SEGURIDAD] Fallo de verificacion DNI={} intentos={}",
+                    dni, cliente.getIntentosFallidos());
             if (nuevos >= MAX_INTENTOS_CLIENTE) {
                 cliente.setIntentosFallidos(0);
                 cliente.setBloqueadoHasta(
                         OffsetDateTime.now().plusMinutes(MINUTOS_BLOQUEO_CLIENTE));
+
+                log.warn("[SEGURIDAD] Cliente bloqueado DNI={} hasta={}",
+                        dni, cliente.getBloqueadoHasta());
             }
             clienteRepository.save(cliente);
         });
@@ -106,12 +119,13 @@ public class ClienteService {
     }
 
     @Transactional
-    public void reiniciarBloqueoDni(String dni){
+    public void reiniciarBloqueoDni(String dni) {
         clienteRepository.findByDni(dni).ifPresent(cliente -> {
             cliente.setIntentosFallidos(0);
             cliente.setBloqueadoHasta(null);
             cliente.setDniVerificado(true);
             clienteRepository.save(cliente);
+            log.info("[CLIENTE] verificacion exitosa DNI={} dniVerificado=true", dni);
         });
     }
 
