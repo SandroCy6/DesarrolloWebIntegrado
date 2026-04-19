@@ -27,5 +27,8 @@ public class IntentosIp {
     private OffsetDateTime bloqueadoHasta;
 
     @Column(name = "fecha_primer_intento", nullable = false)
+    private OffsetDateTime fechaPrimerIntento;
+
+    @Column(name = "fecha_ultimo_intento", nullable = false)
     private OffsetDateTime fechaUltimoIntento;
 }
