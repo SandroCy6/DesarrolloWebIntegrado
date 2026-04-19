@@ -9,8 +9,8 @@ import lombok.Data;
 @Data
 public class Pelicula {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    //@GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @Column(name = "titulo", nullable = false)
     private String titulo;
@@ -26,6 +26,4 @@ public class Pelicula {
 
     @Column(name = "imagen_url")
     private String imagenUrl; // URL de la imagen de la película
-    
-    
 }
