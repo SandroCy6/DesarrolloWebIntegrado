@@ -89,6 +89,7 @@ public class ClienteService {
             cliente.setIntentosFallidos(nuevos);
 
             if (nuevos >= MAX_INTENTOS_CLIENTE) {
+                cliente.setIntentosFallidos(0);
                 cliente.setBloqueadoHasta(
                         OffsetDateTime.now().plusMinutes(MINUTOS_BLOQUEO_CLIENTE));
             }
@@ -102,6 +103,16 @@ public class ClienteService {
                 .map(c -> c.getBloqueadoHasta() != null
                         && c.getBloqueadoHasta().isAfter(OffsetDateTime.now()))
                 .orElse(false);
+    }
+
+    @Transactional
+    public void reiniciarBloqueoDni(String dni){
+        clienteRepository.findByDni(dni).ifPresent(cliente -> {
+            cliente.setIntentosFallidos(0);
+            cliente.setBloqueadoHasta(null);
+            cliente.setDniVerificado(true);
+            clienteRepository.save(cliente);
+        });
     }
 
 }
