@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import cinerama.catalogo.repositories.CineRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +17,8 @@ public class SalaService {
 
     @Autowired
     private SalaRepository salaRepository;
+    @Autowired
+    private CineRepository cineRepository;
 
     private SalaDTO convertirADTO(Sala sala) {
         SalaDTO dto = new SalaDTO();
@@ -43,6 +46,11 @@ public class SalaService {
     }
 
     public SalaDTO guardar(Sala sala){
+        cinerama.catalogo.models.Cine cineCompleto = cineRepository.findById(sala.getCine().getId())
+                .orElseThrow(() -> new RuntimeException("Error: El cine especificado no existe"));
+
+        sala.setCine(cineCompleto);
+
         return convertirADTO(salaRepository.save(sala));
     }
 
