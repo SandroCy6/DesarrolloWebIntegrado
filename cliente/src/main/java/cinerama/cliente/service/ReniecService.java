@@ -7,33 +7,33 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.client.RestClient;
 
 import java.util.Map;
 
 @Service
-@RequiredArgsConstructor
 public class ReniecService {
     private static final Logger log = LoggerFactory.getLogger(ReniecService.class);
-    private final WebClient.Builder webClientBuilder;
+    private final RestClient restClient;
 
     @Value("${reniec.api.url}")
     private String reniecUrl;
 
     @Value("${reniec.api.token}")
     private String reniecToken;
-
+    public ReniecService(){
+        this.restClient = RestClient.create();
+    }
     public boolean verificarNombre(String dni, String nombreIngresado) {
         try {
-            ReniecResponse respuesta = webClientBuilder.build()
+            ReniecResponse respuesta = restClient
                     .post()
                     .uri(reniecUrl)
                     .header("Authorization", "Bearer " + reniecToken)
                     .header("Content-Type", "application/json")
-                    .bodyValue(Map.of("dni", dni))
+                    .body(Map.of("dni", dni))
                     .retrieve()
-                    .bodyToMono(ReniecResponse.class)
-                    .block();
+                    .body(ReniecResponse.class);
 
             if (respuesta == null || !Boolean.TRUE.equals(respuesta.getSuccess())) {
                 log.warn("[RENIEC] Sin respuesta valida para DNI={}", dni);
@@ -56,15 +56,14 @@ public class ReniecService {
 
     public String obtenerNombreCompleto(String dni) {
         try {
-            ReniecResponse respuesta = webClientBuilder.build()
+            ReniecResponse respuesta = restClient
                     .post()
                     .uri(reniecUrl)
                     .header("Authorization", "Bearer " + reniecToken)
                     .header("Content-Type", "application/json")
-                    .bodyValue(Map.of("dni", dni))
+                    .body(Map.of("dni", dni))
                     .retrieve()
-                    .bodyToMono(ReniecResponse.class)
-                    .block();
+                    .body(ReniecResponse.class);
 
             if (respuesta == null || !Boolean.TRUE.equals(respuesta.getSuccess())) {
                 return null;
