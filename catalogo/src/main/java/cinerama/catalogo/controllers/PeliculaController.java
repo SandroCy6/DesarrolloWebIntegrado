@@ -53,4 +53,26 @@ public class PeliculaController {
         return ResponseEntity.noContent().build();
     }
 
+    @GetMapping("/tmdb/buscar")
+    public ResponseEntity<String> buscarPeliculasTMDB(@RequestParam String query){
+        try{
+            String jsonRespuesta = peliculaService.buscarEnTMDB(query);
+            return ResponseEntity.ok(jsonRespuesta);
+        }catch(Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error al buscar en TMDB "+e.getMessage());
+        }
+    }
+
+    @PostMapping("tmdb/importar/{tmdbId}")
+    public ResponseEntity<?> importarPeliculasTMDB(@PathVariable Long tmdbId){
+        try{
+            PeliculaDTO peliculaImportada = peliculaService.importarDesdeTMDB(tmdbId);
+            return new  ResponseEntity<>(peliculaImportada, HttpStatus.CREATED);
+        }catch(Exception e){
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al buscar en TMDB "+e.getMessage());
+        }
+    }
+
 }
