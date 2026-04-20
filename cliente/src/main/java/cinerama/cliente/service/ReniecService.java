@@ -2,7 +2,6 @@ package cinerama.cliente.service;
 
 import cinerama.cliente.dto.reniec.ReniecData;
 import cinerama.cliente.dto.reniec.ReniecResponse;
-import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
