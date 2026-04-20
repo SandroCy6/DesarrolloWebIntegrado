@@ -12,7 +12,6 @@ import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
 
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,10 +20,12 @@ import org.slf4j.LoggerFactory;
 public class ClienteService {
     private static final Logger log = LoggerFactory.getLogger(ClienteService.class);
     private final ClienteRepository clienteRepository;
+    private final IntentosIpService intentosIpService;
+    private final ReniecService reniecService;
 
-    // TODO: verificar bloqueo por IP
-    // TODO: integrar validacion RENIEC
-    // TODO: llamar reiniciarBloqueoDni() cuando RENIEC confirme exitosamente
+    private static final int MAX_INTENTOS_CLIENTE = 3;
+    private static final int MINUTOS_BLOQUEO_CLIENTE = 15;
+
     @Transactional
     public ClienteResponse verificarORegistrar(ClienteRequest request) {
         // Una sola consulta, reutilizada en todas las validaciones
@@ -35,15 +36,29 @@ public class ClienteService {
                 throw new RuntimeException("Cliente desactivado. Contacte al administrador.");
             }
         });
-        // Validacion 2: bloqueo temporal por intentos fallidos
+        // Validacion 2: bloqueo temporal por intentos fallidos de DNI
         existente.ifPresent(c -> {
             if (c.getBloqueadoHasta() != null &&
                     c.getBloqueadoHasta().isAfter(OffsetDateTime.now())) {
                 throw new RuntimeException("Cliente bloqueado temporalmente. Intente mas tarde.");
             }
         });
+        // Validacion 3: verificar con RENIEC
+        String nombreReniec = reniecService.obtenerNombreCompleto(request.getDni());
 
-        // Obtener o crear cliente
+        if (nombreReniec == null) {
+            intentosIpService.registrarFalloIp(request.getIp());
+            existente.ifPresent(c -> registrarFalloDni(request.getDni()));
+            throw new RuntimeException("DNI no encontrado en RENIEC. Verifique el numero ingresado.");
+        }
+
+        boolean nombreCoincide = reniecService.verificarNombre(request.getDni(), request.getNombre());
+        if(!nombreCoincide){
+            intentosIpService.registrarFalloIp(request.getIp());
+            registrarFalloDni(request.getDni());
+            throw new RuntimeException("El nombre no coincide con el registrado en RENIEc para ese DNI.");
+        }
+        //Todo OK:  Obtener o crear cliente
         Cliente cliente = existente.orElse(Cliente.builder()
                 .dni(request.getDni())
                 .activo(true)
@@ -52,10 +67,14 @@ public class ClienteService {
                 .build());
 
         // Siempre actualiza correo y telefono con lo que llega ahora
-        cliente.setNombre(request.getNombre());
+        cliente.setNombre(nombreReniec); // Guarda el nombre oficial de RENIEC, no el que escribio el usuario
         cliente.setCorreo(request.getCorreo());
         cliente.setTelefono(request.getTelefono());
-
+        // Reinicia bloqueos y intentos tras verificacion exitosa
+        cliente.setIntentosFallidos(0);
+        cliente.setBloqueadoHasta(null);
+        cliente.setDniVerificado(true);
+        intentosIpService.reiniciarIp(request.getIp());
         // Log sin exponer correo/telefono completos
         log.info("[CLIENTE] DNI={} contacto actualizado ip={}",
                 request.getDni(),
@@ -78,9 +97,6 @@ public class ClienteService {
                 .map(this::toResponse)
                 .toList();
     }
-
-    private static final int MAX_INTENTOS_CLIENTE = 3;
-    private static final int MINUTOS_BLOQUEO_CLIENTE = 15;
 
     @Transactional
     public void registrarFalloDni(String dni) {
@@ -109,6 +125,7 @@ public class ClienteService {
                         && c.getBloqueadoHasta().isAfter(OffsetDateTime.now()))
                 .orElse(false);
     }
+
     // Se llamara desde ReniecService cuando la verificacion sea exitosa
     @Transactional
     public void reiniciarBloqueoDni(String dni) {
