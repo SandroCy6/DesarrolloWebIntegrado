@@ -16,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.transaction.annotation.Propagation;
+
 @Service
 @RequiredArgsConstructor
 public class ClienteService {
@@ -23,6 +24,7 @@ public class ClienteService {
     private final ClienteRepository clienteRepository;
     private final IntentosIpService intentosIpService;
     private final ReniecService reniecService;
+    private final ClienteFalloService clienteFalloService;
 
     private static final int MAX_INTENTOS_CLIENTE = 3;
     private static final int MINUTOS_BLOQUEO_CLIENTE = 15;
@@ -49,14 +51,14 @@ public class ClienteService {
 
         if (nombreReniec == null) {
             intentosIpService.registrarFalloIp(request.getIp());
-            existente.ifPresent(c -> registrarFalloDni(request.getDni()));
+            existente.ifPresent(c -> clienteFalloService.registrarFalloDni(request.getDni()));
             throw new RuntimeException("DNI no encontrado en RENIEC. Verifique el numero ingresado.");
         }
 
         boolean nombreCoincide = reniecService.verificarNombre(nombreReniec, request.getNombre());
         if (!nombreCoincide) {
             intentosIpService.registrarFalloIp(request.getIp());
-            registrarFalloDni(request.getDni());
+            clienteFalloService.registrarFalloDni(request.getDni());
             throw new RuntimeException("El nombre no coincide con el registrado en RENIEc para ese DNI.");
         }
         // Todo OK: Obtener o crear cliente
@@ -99,25 +101,7 @@ public class ClienteService {
                 .toList();
     }
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void registrarFalloDni(String dni) {
-        clienteRepository.findByDni(dni).ifPresent(cliente -> {
-            int nuevos = cliente.getIntentosFallidos() + 1;
-            cliente.setIntentosFallidos(nuevos);
-
-            log.warn("[SEGURIDAD] Fallo de verificacion DNI={} intentos={}",
-                    dni, nuevos);
-            if (nuevos >= MAX_INTENTOS_CLIENTE) {
-                cliente.setIntentosFallidos(0);
-                cliente.setBloqueadoHasta(
-                        OffsetDateTime.now().plusMinutes(MINUTOS_BLOQUEO_CLIENTE));
-
-                log.warn("[SEGURIDAD] Cliente bloqueado DNI={} hasta={}",
-                        dni, cliente.getBloqueadoHasta());
-            }
-            clienteRepository.save(cliente);
-        });
-    }
+  
 
     @Transactional(readOnly = true)
     public boolean estaBloqueadoPorDni(String dni) {
