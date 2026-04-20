@@ -3,6 +3,7 @@ package cinerama.cliente.controller;
 import cinerama.cliente.dto.ClienteRequest;
 import cinerama.cliente.dto.ClienteResponse;
 import cinerama.cliente.service.ClienteService;
+import cinerama.cliente.service.IntentosIpService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -10,23 +11,25 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
 @RequestMapping("/api/clientes")
 @RequiredArgsConstructor
 public class ClienteController {
     private final ClienteService clienteService;
+    private final IntentosIpService intentosIpService;
 
-    // TODO: agregar verificacion IP bloqueada antes de procesar
     // TODO: integrar ReniecService
     @PostMapping("/verificar")
     @ResponseStatus(HttpStatus.OK)
     public ClienteResponse verificar(
             @Valid @RequestBody ClienteRequest request,
             HttpServletRequest httpRequest) {
-        request.setIp(obtenerIp(httpRequest));
+                String ip = obtenerIp(httpRequest);
+                request.setIp(ip);
+                if(intentosIpService.estaIpBloqueada(ip)){
+                    throw new RuntimeException("IP bloqueada temporalmente. Intente mas tarde.");
+                }
         return clienteService.verificarORegistrar(request);
     }
 
