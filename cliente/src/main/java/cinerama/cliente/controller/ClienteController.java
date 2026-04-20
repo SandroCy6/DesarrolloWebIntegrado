@@ -43,11 +43,18 @@ public class ClienteController {
     }
 
     private String obtenerIp(HttpServletRequest request) {
-        String ip = request.getHeader("X-Forwarded-For");
-        if (ip == null || ip.isBlank()) {
-            ip = request.getRemoteAddr();
-        }
-        return ip;
+      String ip = request.getHeader("X-Forwarder-For");
+      if (ip != null && !ip.isBlank() && !"unknown".equalsIgnoreCase(ip)){
+        ip = ip.split(",")[0].trim(); // tomar solo la primera IP si hay varias
+
+      }else{
+        ip = request.getRemoteAddr();
+      }
+
+      if("0:0:0:0:0:0:0:1".equals(ip) || "::1".equals(ip)){
+        ip= "127.0.0.1";
+      }
+      return ip;
     }
 
 
