@@ -20,10 +20,13 @@ public class ReniecService {
 
     @Value("${reniec.api.token}")
     private String reniecToken;
-    public ReniecService(){
+
+    public ReniecService() {
         this.restClient = RestClient.create();
     }
+
     public boolean verificarNombre(String dni, String nombreIngresado) {
+
         try {
             ReniecResponse respuesta = restClient
                     .post()
@@ -40,10 +43,18 @@ public class ReniecService {
             }
 
             ReniecData data = respuesta.getData();
-            String nombreReniec = data.getNombreCompleto().trim().toUpperCase();
-            String nombreUsuario = nombreIngresado.trim().toUpperCase();
+            // Normalizar ambos: sin comas, sin tildes, minusculas, esapcios limpios
+            String nombreReniec = normalizar(data.getNombreCompleto());
+            String nombreUsuario = normalizar(nombreIngresado);
 
-            boolean coincide = nombreReniec.contains(nombreUsuario) || nombreUsuario.contains(nombreReniec);
+            String[] palabras = nombreUsuario.split("\\s+");
+            boolean coincide = true;
+            for (String palabra : palabras) {
+                if (palabra.length() > 1 && !nombreReniec.contains(palabra)) {
+                    coincide = false;
+                    break;
+                }
+            }
 
             log.info("[RENIEC] DNI={} coincide={}", dni, coincide);
             return coincide;
@@ -51,6 +62,16 @@ public class ReniecService {
             log.error("[RENIEC] Error al consultar DNI={} error={}", dni, e.getMessage());
             return false;
         }
+    }
+
+    private String normalizar(String texto) {
+        if (texto == null)
+            return "";
+        String result = java.text.Normalizer
+                .normalize(texto.toLowerCase().replaceAll("[,.]", ""),
+                        java.text.Normalizer.Form.NFD)
+                .replaceAll("\\p{InCombiningDiacriticalMarks}+", "");
+        return result.trim().replaceAll("\\s+", " ");
     }
 
     public String obtenerNombreCompleto(String dni) {

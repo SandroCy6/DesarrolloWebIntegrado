@@ -19,17 +19,16 @@ public class ClienteController {
     private final ClienteService clienteService;
     private final IntentosIpService intentosIpService;
 
-    // TODO: integrar ReniecService
     @PostMapping("/verificar")
     @ResponseStatus(HttpStatus.OK)
     public ClienteResponse verificar(
             @Valid @RequestBody ClienteRequest request,
             HttpServletRequest httpRequest) {
-                String ip = obtenerIp(httpRequest);
-                request.setIp(ip);
-                if(intentosIpService.estaIpBloqueada(ip)){
-                    throw new RuntimeException("IP bloqueada temporalmente. Intente mas tarde.");
-                }
+        String ip = obtenerIp(httpRequest);
+        request.setIp(ip);
+        if (intentosIpService.estaIpBloqueada(ip)) {
+            throw new RuntimeException("IP bloqueada temporalmente. Intente mas tarde.");
+        }
         return clienteService.verificarORegistrar(request);
     }
 
@@ -50,5 +49,6 @@ public class ClienteController {
         }
         return ip;
     }
+
 
 }

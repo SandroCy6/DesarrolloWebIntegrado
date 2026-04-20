@@ -52,13 +52,13 @@ public class ClienteService {
             throw new RuntimeException("DNI no encontrado en RENIEC. Verifique el numero ingresado.");
         }
 
-        boolean nombreCoincide = reniecService.verificarNombre(request.getDni(), request.getNombre());
-        if(!nombreCoincide){
+        boolean nombreCoincide = reniecService.verificarNombre(nombreReniec, request.getNombre());
+        if (!nombreCoincide) {
             intentosIpService.registrarFalloIp(request.getIp());
             registrarFalloDni(request.getDni());
             throw new RuntimeException("El nombre no coincide con el registrado en RENIEc para ese DNI.");
         }
-        //Todo OK:  Obtener o crear cliente
+        // Todo OK: Obtener o crear cliente
         Cliente cliente = existente.orElse(Cliente.builder()
                 .dni(request.getDni())
                 .activo(true)
