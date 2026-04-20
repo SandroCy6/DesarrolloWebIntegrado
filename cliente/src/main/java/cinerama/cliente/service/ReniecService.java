@@ -1,6 +1,5 @@
 package cinerama.cliente.service;
 
-import cinerama.cliente.dto.reniec.ReniecData;
 import cinerama.cliente.dto.reniec.ReniecResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
 import java.util.Map;
+import java.text.Normalizer;
 
 @Service
 public class ReniecService {
@@ -23,55 +23,6 @@ public class ReniecService {
 
     public ReniecService() {
         this.restClient = RestClient.create();
-    }
-
-    public boolean verificarNombre(String dni, String nombreIngresado) {
-
-        try {
-            ReniecResponse respuesta = restClient
-                    .post()
-                    .uri(reniecUrl)
-                    .header("Authorization", "Bearer " + reniecToken)
-                    .header("Content-Type", "application/json")
-                    .body(Map.of("dni", dni))
-                    .retrieve()
-                    .body(ReniecResponse.class);
-
-            if (respuesta == null || !Boolean.TRUE.equals(respuesta.getSuccess())) {
-                log.warn("[RENIEC] Sin respuesta valida para DNI={}", dni);
-                return false;
-            }
-
-            ReniecData data = respuesta.getData();
-            // Normalizar ambos: sin comas, sin tildes, minusculas, esapcios limpios
-            String nombreReniec = normalizar(data.getNombreCompleto());
-            String nombreUsuario = normalizar(nombreIngresado);
-
-            String[] palabras = nombreUsuario.split("\\s+");
-            boolean coincide = true;
-            for (String palabra : palabras) {
-                if (palabra.length() > 1 && !nombreReniec.contains(palabra)) {
-                    coincide = false;
-                    break;
-                }
-            }
-
-            log.info("[RENIEC] DNI={} coincide={}", dni, coincide);
-            return coincide;
-        } catch (Exception e) {
-            log.error("[RENIEC] Error al consultar DNI={} error={}", dni, e.getMessage());
-            return false;
-        }
-    }
-
-    private String normalizar(String texto) {
-        if (texto == null)
-            return "";
-        String result = java.text.Normalizer
-                .normalize(texto.toLowerCase().replaceAll("[,.]", ""),
-                        java.text.Normalizer.Form.NFD)
-                .replaceAll("\\p{InCombiningDiacriticalMarks}+", "");
-        return result.trim().replaceAll("\\s+", " ");
     }
 
     public String obtenerNombreCompleto(String dni) {
@@ -94,6 +45,35 @@ public class ReniecService {
             log.error("[RENIEC] Error obtenido nombre DNI={} error={}", dni, e.getMessage());
             return null;
         }
+    }
+
+    public boolean verificarNombre(String nombreReniec, String nombreIngresado) {
+
+        if (nombreReniec == null || nombreIngresado == null)
+            return false;
+
+        String r = normalizar(nombreReniec);
+        String u = normalizar(nombreIngresado);
+
+        String[] palabras = u.split("\\s+");
+        for (String palabra : palabras) {
+            if (palabra.length() > 1 && !r.contains(palabra)) {
+                log.info("[RENIEC] Palabra '{}' no encontrada en '{}'", palabra, r);
+                return false;
+            }
+        }
+        log.info("[RENIEC] Nombre coincide=true");
+        return true;
+    }
+
+    private String normalizar(String texto) {
+        if (texto == null)
+            return "";
+        return Normalizer
+                .normalize(texto.toLowerCase().replaceAll("[,.]", ""), Normalizer.Form.NFD)
+                .replaceAll("\\p{InCombiningDiacriticalMarks}+", "")
+                .trim()
+                .replaceAll("\\s+", " ");
     }
 
 }
