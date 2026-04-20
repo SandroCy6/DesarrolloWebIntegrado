@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 @Data
 public class DetalleRequestDTO {
     @NotBlank(message = "El tipo de ítem es obligatorio")
-    @Pattern(regexp = "^(ENTRADA|SNACK)$", message = "El tipoItem SOLO puede ser 'ENTRADA' o 'SNACK'")
+    @Pattern(regexp = "^(?i)(ENTRADA|SNACK)$", message = "El tipoItem SOLO puede ser 'ENTRADA' o 'SNACK'")
     private String tipoItem;
 
     @NotNull

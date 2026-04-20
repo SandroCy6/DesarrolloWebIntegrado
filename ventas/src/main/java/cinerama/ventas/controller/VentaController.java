@@ -43,4 +43,13 @@ public class VentaController {
 
         return ResponseEntity.badRequest().body(errores);
     }
+
+    @ExceptionHandler(org.springframework.http.converter.HttpMessageNotReadableException.class)
+    public ResponseEntity<Map<String, String>> manejarErrorDeFormatoJSON(org.springframework.http.converter.HttpMessageNotReadableException ex) {
+        Map<String, String> error = new HashMap<>();
+
+        error.put("error", "Formato de dato incorrecto. Verifica que las cantidades sean números enteros (sin decimales) y que los tipos de datos sean correctos.");
+
+        return ResponseEntity.badRequest().body(error);
+    }
 }
