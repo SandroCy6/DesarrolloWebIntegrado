@@ -15,6 +15,7 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.springframework.transaction.annotation.Propagation;
 @Service
 @RequiredArgsConstructor
 public class ClienteService {
@@ -98,7 +99,7 @@ public class ClienteService {
                 .toList();
     }
 
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void registrarFalloDni(String dni) {
         clienteRepository.findByDni(dni).ifPresent(cliente -> {
             int nuevos = cliente.getIntentosFallidos() + 1;

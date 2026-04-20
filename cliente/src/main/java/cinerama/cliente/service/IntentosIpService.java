@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.util.Optional;
 
+import org.springframework.transaction.annotation.Propagation;
 @Service
 @RequiredArgsConstructor
 public class IntentosIpService {
@@ -30,7 +31,7 @@ public class IntentosIpService {
                 .orElse(false);
     }
 
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void registrarFalloIp(String ip) {
         Optional<IntentosIp> existente = intentosIpRepository.findByIp(ip);
 
