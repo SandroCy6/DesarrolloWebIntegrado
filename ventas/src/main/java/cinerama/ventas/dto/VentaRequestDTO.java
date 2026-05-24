@@ -8,6 +8,7 @@ import java.util.List;
 @Data
 public class VentaRequestDTO {
     @NotBlank(message = "El DNI es obligatorio")
+    @Pattern(regexp = "^\\d{8}$", message = "El DNI debe tener exactamente 8 dígitos numéricos")
     private String clienteDni;
 
     @Email(message = "Formato de correo inválido")
