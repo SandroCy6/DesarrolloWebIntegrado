@@ -1,14 +1,12 @@
 package cinerama.api_gateway.filter;
 
 import cinerama.api_gateway.util.JwtUtil;
-import lombok.RequiredArgsConstructor;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
-import java.util.Arrays;
 import java.util.List;
 
 @Component
@@ -61,6 +59,12 @@ public class JwtAuthFilter extends AbstractGatewayFilterFactory<JwtAuthFilter.Co
         };
     }
 
+    // DESPUÉS — usar ShortcutType.GATHER_LIST
+    @Override
+    public ShortcutType shortcutType() {
+        return ShortcutType.GATHER_LIST;
+    }
+
     @Override
     public List<String> shortcutFieldOrder() {
         return List.of("roles");
@@ -73,9 +77,8 @@ public class JwtAuthFilter extends AbstractGatewayFilterFactory<JwtAuthFilter.Co
             return roles;
         }
 
-        // Llamado desde properties: JwtAuthFilter=ROLE_VERIFICADOR,ROLE_ADMIN
-        public void setRoles(String rolesStr) {
-            this.roles = Arrays.asList(rolesStr.split(","));
+        public void setRoles(List<String> roles) { // ← List, no String
+            this.roles = roles;
         }
     }
 }
