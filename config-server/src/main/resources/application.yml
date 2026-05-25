@@ -1,0 +1,9 @@
+# SERVER
+server.port: 8888
+
+# SPRING
+spring.application.name: config-server
+spring.profiles.active: native
+
+# CONFIG SERVER (modo local/native)
+spring.cloud.config.server.native.search-locations: file:./config-repo
