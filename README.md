@@ -26,36 +26,7 @@
 
 ***
 ## 1. Arquitectura General
-
-```mermaid
-graph LR
-    A[Clientes / Postman] -->|HTTP :8080| B[API Gateway]
-
-    subgraph Microservices
-        C[Auth :8081]
-        D[Catalogo :8082]
-        E[Promociones :8085]
-        F[Cliente :8083]
-        G[Ventas :8084]
-    end
-
-    B --> C
-    B --> D
-    B --> E
-
-    C --> F
-    D --> G
-
-    subgraph Infraestructura
-        H[Config Server :8888]
-        I[Eureka Discovery :8761]
-    end
-
-    B --> I
-    C --> I
-    D --> I
-    E --> I
-```
+![Arquitectura](imagenes/imagen1.jpeg)
 
 ## 2. Prerrequisitos
 

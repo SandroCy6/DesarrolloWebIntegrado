@@ -1,0 +1,1226 @@
+{
+  "info": {
+    "_postman_id": "ed2645fc-70e5-441d-8cb8-f26536ff7bd5",
+    "name": "Cinerama pruebas",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "49183581",
+    "_collection_link": "https://go.postman.co/collection/49183581-ed2645fc-70e5-441d-8cb8-f26536ff7bd5?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Usuario",
+      "item": [
+        {
+          "name": "crear",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"username\": \"gerente2_test2\",\r\n  \"password\": \"pass1234\",\r\n  \"nombre\": \"gerente2Test2\",\r\n  \"rol\": \"ROLE_GERENTE\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8080/usuarios",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "usuarios"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Actu. Usuario",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"username\": \"gerente_test\",\r\n  \"password\": \"gerente123\",\r\n  \"nombre\": \"Gerente Test Editado\",\r\n  \"rol\": \"ROLE_GERENTE\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://172.26.188.11:8080/usuarios/5",
+              "protocol": "http",
+              "host": [
+                "172",
+                "26",
+                "188",
+                "11"
+              ],
+              "port": "8080",
+              "path": [
+                "usuarios",
+                "5"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Listar Usuarios",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://172.26.188.11:8080/usuarios",
+              "protocol": "http",
+              "host": [
+                "172",
+                "26",
+                "188",
+                "11"
+              ],
+              "port": "8080",
+              "path": [
+                "usuarios"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "cambiar estado",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "http://172.26.188.11:8080/usuarios/5/desactivar",
+              "protocol": "http",
+              "host": [
+                "172",
+                "26",
+                "188",
+                "11"
+              ],
+              "port": "8080",
+              "path": [
+                "usuarios",
+                "5",
+                "desactivar"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "delete",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "http://172.26.188.11:8080/usuarios/4",
+              "protocol": "http",
+              "host": [
+                "172",
+                "26",
+                "188",
+                "11"
+              ],
+              "port": "8080",
+              "path": [
+                "usuarios",
+                "4"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Catalogo",
+      "item": [
+        {
+          "name": "Cine",
+          "item": [
+            {
+              "name": "Crear cine",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"nombre\": \"Cinerama Test\",\r\n  \"direccion\": \"Av. Prueba 123\",\r\n  \"ciudad\": \"Ica\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://172.26.188.11:8080/api/cines",
+                  "protocol": "http",
+                  "host": [
+                    "172",
+                    "26",
+                    "188",
+                    "11"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "api",
+                    "cines"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Obtener cine por ID",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://172.26.188.11:8080/api/cines/1",
+                  "protocol": "http",
+                  "host": [
+                    "172",
+                    "26",
+                    "188",
+                    "11"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "api",
+                    "cines",
+                    "1"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Listar Cines",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://172.26.188.11:8080/api/cines",
+                  "protocol": "http",
+                  "host": [
+                    "172",
+                    "26",
+                    "188",
+                    "11"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "api",
+                    "cines"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "eliminar",
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "http://172.26.188.11:8080/api/cines/1",
+                  "protocol": "http",
+                  "host": [
+                    "172",
+                    "26",
+                    "188",
+                    "11"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "api",
+                    "cines",
+                    "1"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Peliculas",
+          "item": [
+            {
+              "name": "Listar todas las películas",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://172.26.188.11:8080/catalogo/peliculas",
+                  "protocol": "http",
+                  "host": [
+                    "172",
+                    "26",
+                    "188",
+                    "11"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "catalogo",
+                    "peliculas"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Crear pelicula",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"id\": 2,\r\n  \"titulo\": \"Pelicula Test\",\r\n  \"genero\": \"Accion\",\r\n  \"duracion\": 120,\r\n  \"sinopsis\": \"Descripcion de prueba\",\r\n  \"imagenUrl\": \"https://imagen.com/test.jpg\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://172.26.188.11:8080/catalogo/peliculas",
+                  "protocol": "http",
+                  "host": [
+                    "172",
+                    "26",
+                    "188",
+                    "11"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "catalogo",
+                    "peliculas"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Ver pelicula",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://172.26.188.11:8080/catalogo/peliculas/1",
+                  "protocol": "http",
+                  "host": [
+                    "172",
+                    "26",
+                    "188",
+                    "11"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "catalogo",
+                    "peliculas",
+                    "1"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "New Request",
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "http://172.26.188.11:8080/catalogo/peliculas/1",
+                  "protocol": "http",
+                  "host": [
+                    "172",
+                    "26",
+                    "188",
+                    "11"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "catalogo",
+                    "peliculas",
+                    "1"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "salas",
+          "item": [
+            {
+              "name": "Ver salas",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://172.26.188.11:8080/catalogo/salas",
+                  "protocol": "http",
+                  "host": [
+                    "172",
+                    "26",
+                    "188",
+                    "11"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "catalogo",
+                    "salas"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Crear sala",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"numero\": 1,\r\n  \"capacidad\": 100,\r\n  \"cine\": {\r\n    \"id\": 2\r\n  }\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://172.26.188.11:8080/catalogo/salas",
+                  "protocol": "http",
+                  "host": [
+                    "172",
+                    "26",
+                    "188",
+                    "11"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "catalogo",
+                    "salas"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Ver sala",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://172.26.188.11:8080/catalogo/salas/1",
+                  "protocol": "http",
+                  "host": [
+                    "172",
+                    "26",
+                    "188",
+                    "11"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "catalogo",
+                    "salas",
+                    "1"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Eliminar Sala",
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "http://172.26.188.11:8080/catalogo/salas/1",
+                  "protocol": "http",
+                  "host": [
+                    "172",
+                    "26",
+                    "188",
+                    "11"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "catalogo",
+                    "salas",
+                    "1"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Horarios",
+          "item": [
+            {
+              "name": "Ver horarios",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://172.26.188.11:8080/catalogo/horarios",
+                  "protocol": "http",
+                  "host": [
+                    "172",
+                    "26",
+                    "188",
+                    "11"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "catalogo",
+                    "horarios"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Crear horario",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"fecha\": \"2026-06-01\",\r\n  \"horaInicio\": \"20:00:00\",\r\n  \"precio\": 15.00,\r\n  \"pelicula\": {\r\n    \"id\": 2\r\n  },\r\n  \"sala\": {\r\n    \"id\": 2\r\n  }\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://172.26.188.11:8080/catalogo/horarios",
+                  "protocol": "http",
+                  "host": [
+                    "172",
+                    "26",
+                    "188",
+                    "11"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "catalogo",
+                    "horarios"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Ver horario",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://172.26.188.11:8080/catalogo/horarios/1",
+                  "protocol": "http",
+                  "host": [
+                    "172",
+                    "26",
+                    "188",
+                    "11"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "catalogo",
+                    "horarios",
+                    "1"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "New Request",
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "http://172.26.188.11:8080/catalogo/horarios/1",
+                  "protocol": "http",
+                  "host": [
+                    "172",
+                    "26",
+                    "188",
+                    "11"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "catalogo",
+                    "horarios",
+                    "1"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Promociones",
+      "item": [
+        {
+          "name": "Productos",
+          "item": [
+            {
+              "name": "Listar productos",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://172.26.188.11:8080/productos",
+                  "protocol": "http",
+                  "host": [
+                    "172",
+                    "26",
+                    "188",
+                    "11"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "productos"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Crear Producto",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"nombre\": \"Combo Palomitas2\",\r\n  \"tipo\": \"COMBO\",\r\n  \"precio\": 12.50\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://172.26.188.11:8080/productos",
+                  "protocol": "http",
+                  "host": [
+                    "172",
+                    "26",
+                    "188",
+                    "11"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "productos"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Actualizar producto",
+              "request": {
+                "method": "PUT",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"nombre\": \"Combo Palomitas Grande\",\r\n  \"tipo\": \"COMBO\",\r\n  \"precio\": 15.00\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://172.26.188.11:8080/productos/1",
+                  "protocol": "http",
+                  "host": [
+                    "172",
+                    "26",
+                    "188",
+                    "11"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "productos",
+                    "1"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Eliminar producto",
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "http://172.26.188.11:8080/productos/1",
+                  "protocol": "http",
+                  "host": [
+                    "172",
+                    "26",
+                    "188",
+                    "11"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "productos",
+                    "1"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Promociones",
+          "item": [
+            {
+              "name": "Listar promociones",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://172.26.188.11:8080/promociones",
+                  "protocol": "http",
+                  "host": [
+                    "172",
+                    "26",
+                    "188",
+                    "11"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "promociones"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Crear promociones",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"titulo\": \"Promo Verano\",\r\n  \"descripcion\": \"Descuento de verano\",\r\n  \"tipo\": \"DESCUENTO\",\r\n  \"fechaInicio\": \"2026-06-01\",\r\n  \"fechaFin\": \"2026-06-30\",\r\n  \"estado\": true\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://172.26.188.11:8080/promociones",
+                  "protocol": "http",
+                  "host": [
+                    "172",
+                    "26",
+                    "188",
+                    "11"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "promociones"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Actualizar promocion",
+              "request": {
+                "method": "PUT",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"titulo\": \"Promo Verano Editada\",\r\n  \"descripcion\": \"Descuento especial\",\r\n  \"tipo\": \"DESCUENTO\",\r\n  \"fechaInicio\": \"2026-06-01\",\r\n  \"fechaFin\": \"2026-07-31\",\r\n  \"estado\": true\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://172.26.188.11:8080/promociones/1",
+                  "protocol": "http",
+                  "host": [
+                    "172",
+                    "26",
+                    "188",
+                    "11"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "promociones",
+                    "1"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Eliminar promocion",
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "http://172.26.188.11:8080/promociones/1",
+                  "protocol": "http",
+                  "host": [
+                    "172",
+                    "26",
+                    "188",
+                    "11"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "promociones",
+                    "1"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Promocion-producto",
+          "item": [
+            {
+              "name": "Listar relaciones",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://172.26.188.11:8080/promocion-producto",
+                  "protocol": "http",
+                  "host": [
+                    "172",
+                    "26",
+                    "188",
+                    "11"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "promocion-producto"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "crear relación promoción ↔ producto",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"idPromocion\": 1,\r\n  \"idProducto\": 1,\r\n  \"cantidad\": 2\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://172.26.188.11:8080/promocion-producto",
+                  "protocol": "http",
+                  "host": [
+                    "172",
+                    "26",
+                    "188",
+                    "11"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "promocion-producto"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Eliminar relacion",
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "http://172.26.188.11:8080/promocion-producto/1",
+                  "protocol": "http",
+                  "host": [
+                    "172",
+                    "26",
+                    "188",
+                    "11"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "promocion-producto",
+                    "1"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "reglas",
+          "item": [
+            {
+              "name": "Listar reglas",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://172.26.188.11:8080/reglas",
+                  "protocol": "http",
+                  "host": [
+                    "172",
+                    "26",
+                    "188",
+                    "11"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "reglas"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "crear regla",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"idPromocion\": 1,\r\n  \"tipoRegla\": \"DESCUENTO\",\r\n  \"valor1\": 50.0,\r\n  \"valor2\": 0.0\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://172.26.188.11:8080/reglas",
+                  "protocol": "http",
+                  "host": [
+                    "172",
+                    "26",
+                    "188",
+                    "11"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "reglas"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "ver regla",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://172.26.188.11:8080/reglas/1",
+                  "protocol": "http",
+                  "host": [
+                    "172",
+                    "26",
+                    "188",
+                    "11"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "reglas",
+                    "1"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "editar regla",
+              "request": {
+                "method": "PUT",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"descripcion\": \"2x1 los martes editado\",\r\n  \"condicion\": \"DIA_SEMANA\",\r\n  \"valor\": \"MARTES\",\r\n  \"descuento\": 40.0,\r\n  \"promocion\": {\r\n    \"id_promocion\": 1\r\n  }\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://172.26.188.11:8080/reglas/1",
+                  "protocol": "http",
+                  "host": [
+                    "172",
+                    "26",
+                    "188",
+                    "11"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "reglas",
+                    "1"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "New Request",
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "http://172.26.188.11:8080/reglas/1",
+                  "protocol": "http",
+                  "host": [
+                    "172",
+                    "26",
+                    "188",
+                    "11"
+                  ],
+                  "port": "8080",
+                  "path": [
+                    "reglas",
+                    "1"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "ventas",
+      "item": [
+        {
+          "name": "Crear venta",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"clienteDni\": \"12345678\",\r\n  \"clienteCorreo\": \"prueba@correo.com\",\r\n  \"detalles\": [\r\n    {\r\n      \"tipoItem\": \"ENTRADA\",\r\n      \"itemId\": 1,\r\n      \"cantidad\": 11,\r\n      \"precioUnitario\": 15.00\r\n    },\r\n    {\r\n      \"tipoItem\": \"SNACK\",\r\n      \"itemId\": 1,\r\n      \"cantidad\": 10,\r\n      \"precioUnitario\": 12.50\r\n    }\r\n  ]\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://172.26.188.11:8080/api/ventas",
+              "protocol": "http",
+              "host": [
+                "172",
+                "26",
+                "188",
+                "11"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "ventas"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Clientes",
+      "item": [
+        {
+          "name": "Ver clientes",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://172.26.188.11:8080/api/clientes",
+              "protocol": "http",
+              "host": [
+                "172",
+                "26",
+                "188",
+                "11"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "clientes"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Crear cliente",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"dni\": \"61282097\",\r\n  \"nombre\": \"Sandro Diaz\",\r\n  \"correo\": \"juan@correo.com\",\r\n  \"telefono\": \"987654321\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://172.26.188.11:8080/api/clientes/verificar",
+              "protocol": "http",
+              "host": [
+                "172",
+                "26",
+                "188",
+                "11"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "clientes",
+                "verificar"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "ver cliente",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://172.26.188.11:8080/api/clientes/61282097",
+              "protocol": "http",
+              "host": [
+                "172",
+                "26",
+                "188",
+                "11"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "clientes",
+                "61282097"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Login",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"username\": \"gerente2_test\",\r\n    \"password\": \"pass123\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://172.26.188.11:8080/auth/login",
+              "protocol": "http",
+              "host": [
+                "172",
+                "26",
+                "188",
+                "11"
+              ],
+              "port": "8080",
+              "path": [
+                "auth",
+                "login"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJnZXJlbnRlMl90ZXN0Iiwicm9sIjoiUk9MRV9HRVJFTlRFIiwiaWF0IjoxNzc5NzMyNjM3LCJleHAiOjE3Nzk4MTkwMzd9.3R0Xmq61Y73NS6Ac7v0pD8QtNIuEbc5XSGAfKf1-Hok",
+        "type": "string"
+      }
+    ]
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ]
+}
