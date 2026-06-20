@@ -4,6 +4,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -39,6 +40,8 @@ public class PeliculaService {
         dto.setGenero(pelicula.getGenero());
         dto.setDuracion(pelicula.getDuracion());
         dto.setImagenUrl(pelicula.getImagenUrl());
+        dto.setFechaEstreno(pelicula.getFechaEstreno());
+        dto.setTrailerUrl(pelicula.getTrailerUrl());
         return dto;
     }
 
@@ -60,6 +63,17 @@ public class PeliculaService {
     public List<PeliculaDTO> buscarPorGenero(String genero) {
         return peliculaRepository.findByGenero(genero)
         .stream().map(this::convertirADTO).collect(Collectors.toList());
+    }
+
+    public List<PeliculaDTO> obtenerProximosEstrenos() {
+        LocalDate hoy = LocalDate.now();
+        return peliculaRepository.findByFechaEstrenoAfter(hoy)
+                .stream().map(this::convertirADTO).collect(Collectors.toList());
+    }
+
+    public List<PeliculaDTO> obtenerPorCine(Long cineId) {
+        return peliculaRepository.findPeliculasByCineId(cineId)
+                .stream().map(this::convertirADTO).collect(Collectors.toList());
     }
 
     public PeliculaDTO guardar(Pelicula pelicula){

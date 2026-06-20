@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import jakarta.persistence.Table;
 import lombok.Data;
 
+import java.time.LocalDate;
+
 @Entity
 @Table(name = "peliculas")
 @Data
@@ -26,4 +28,10 @@ public class Pelicula {
 
     @Column(name = "imagen_url")
     private String imagenUrl; // URL de la imagen de la película
+
+    @Column(name = "fecha_estreno")
+    private LocalDate fechaEstreno;
+
+    @Column(name = "trailer_url")
+    private String trailerUrl;
 }

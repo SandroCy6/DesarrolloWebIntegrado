@@ -20,7 +20,10 @@ public class PeliculaController {
     private PeliculaService peliculaService;
 
     @GetMapping
-    public List<PeliculaDTO> listarPeliculas(){
+    public List<PeliculaDTO> listarPeliculas(@RequestParam(required = false) Long cineId) {
+        if (cineId != null) {
+            return peliculaService.obtenerPorCine(cineId);
+        }
         return peliculaService.obtenerTodas();
     }
 
@@ -73,6 +76,11 @@ public class PeliculaController {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al buscar en TMDB "+e.getMessage());
         }
+    }
+
+    @GetMapping("/proximos-estrenos")
+    public List<PeliculaDTO> listarProximosEstrenos() {
+        return peliculaService.obtenerProximosEstrenos();
     }
 
 }
