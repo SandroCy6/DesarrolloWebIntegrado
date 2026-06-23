@@ -7,7 +7,14 @@ import { HeaderComponent } from '../../shared/header/header';
 import { FooterComponent } from '../../shared/footer/footer';
 
 @NgModule({
-  declarations: [HomeComponent, CarteleraComponent, HeaderComponent, FooterComponent],
-  imports: [CommonModule, PublicRoutingModule],
+  declarations: [],
+  imports: [
+    CommonModule,
+    PublicRoutingModule,
+    HomeComponent,
+    CarteleraComponent,
+    HeaderComponent,
+    FooterComponent,
+  ],
 })
 export class PublicModule {}
