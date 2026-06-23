@@ -1,0 +1,45 @@
+<div class="login-wrapper">
+  <div class="login-card">
+    <div class="login-brand">
+      <div class="brand-logo">CINERAMA</div>
+      <p class="brand-sub">Panel de trabajadores</p>
+    </div>
+
+    <div *ngIf="errorMsg" class="alert alert-danger py-2 small mb-3">
+      <i class="bi bi-exclamation-triangle-fill me-1"></i>{{ errorMsg }}
+    </div>
+
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+      <div class="mb-3">
+        <label class="form-label small text-muted">Usuario</label>
+        <input
+          type="text"
+          class="form-control"
+          formControlName="username"
+          placeholder="Ingresa tu usuario"
+          autocomplete="username"
+        />
+      </div>
+
+      <div class="mb-4">
+        <label class="form-label small text-muted">Contraseña</label>
+        <input
+          type="password"
+          class="form-control"
+          formControlName="password"
+          placeholder="••••••••"
+          autocomplete="current-password"
+        />
+      </div>
+
+      <button type="submit" class="btn btn-primary w-100" [disabled]="loginForm.invalid || loading">
+        <span *ngIf="loading" class="spinner-border spinner-border-sm me-2"></span>
+        {{ loading ? 'Ingresando...' : 'Ingresar' }}
+      </button>
+    </form>
+
+    <p class="login-footer-text">
+      <i class="bi bi-shield-lock me-1"></i>Acceso restringido al personal autorizado
+    </p>
+  </div>
+</div>

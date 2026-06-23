@@ -1,0 +1,36 @@
+.dashboard-wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+.dashboard-body {
+  display: flex;
+  flex: 1;
+}
+.sidebar {
+  width: 220px;
+  background: var(--cr-surface);
+  border-right: 1px solid var(--cr-surface-3);
+  flex-shrink: 0;
+
+  .nav-link {
+    border-radius: var(--cr-radius);
+    color: var(--cr-muted) !important;
+    font-size: 0.9rem;
+    padding: 0.6rem 0.75rem;
+    &:hover {
+      background: var(--cr-surface-2);
+      color: var(--cr-white) !important;
+    }
+    &.active {
+      background: var(--cr-red);
+      color: var(--cr-white) !important;
+    }
+  }
+}
+.dashboard-content {
+  flex: 1;
+  padding: 1.5rem;
+  background: var(--cr-bg);
+  overflow-y: auto;
+}

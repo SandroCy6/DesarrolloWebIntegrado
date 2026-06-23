@@ -1,0 +1,301 @@
+/* You can add global styles to this file, and also import other style files */
+@use 'bootstrap/scss/bootstrap';
+@import 'bootstrap-icons/font/bootstrap-icons.css';
+// ============================================================
+//  CINERAMA PERÚ — Design Tokens
+//  Paleta basada en la identidad visual de Cinerama.com.pe
+//  Rojo carmesí + Amarillo dorado + Fondos negros
+// ============================================================
+
+// ------------------------------------------------------------
+//  1. COLORES BASE DE MARCA
+// ------------------------------------------------------------
+
+// Rojos — color principal de Cinerama
+$cinerama-red:          #E8001C;   // rojo corporativo (logo)
+$cinerama-red-dark:     #B0001A;   // hover / presionado
+$cinerama-red-deeper:   #7A0012;   // sombras, overlays
+$cinerama-red-light:    #FF3347;   // glows, badges activos
+
+// Amarillo dorado — acento secundario (popcorn, estrella)
+$cinerama-gold:         #F5C518;   // amarillo IMDb-style, rating stars
+$cinerama-gold-dark:    #C9A000;   // hover sobre dorado
+$cinerama-gold-light:   #FFE066;   // highlights sutiles
+
+// Fondos oscuros — atmósfera de sala oscura
+$cinerama-black:        #0A0A0A;   // fondo principal (más profundo que #000)
+$cinerama-bg:           #111111;   // body background
+$cinerama-surface:      #1A1A1A;   // cards, navbar
+$cinerama-surface-2:    #222222;   // cards hover, inputs
+$cinerama-surface-3:    #2E2E2E;   // bordes, separadores
+
+// Textos
+$cinerama-white:        #F5F5F5;   // texto principal
+$cinerama-text-muted:   #A0A0A0;   // texto secundario, subtítulos
+$cinerama-text-faint:   #5C5C5C;   // placeholders, disabled
+
+// Estado / semánticos
+$cinerama-success:      #27AE60;
+$cinerama-warning:      $cinerama-gold;
+$cinerama-danger:       $cinerama-red;
+$cinerama-info:         #2980B9;
+
+// ------------------------------------------------------------
+//  2. OVERRIDE DE VARIABLES BOOTSTRAP 5
+// ------------------------------------------------------------
+
+// Colores del sistema Bootstrap mapeados a Cinerama
+$primary:               $cinerama-red;
+$secondary:             $cinerama-surface-2;
+$success:               $cinerama-success;
+$info:                  $cinerama-info;
+$warning:               $cinerama-gold;
+$danger:                $cinerama-red-light;
+$light:                 #2E2E2E;
+$dark:                  $cinerama-black;
+
+// Body
+$body-bg:               $cinerama-bg;
+$body-color:            $cinerama-white;
+
+// Links
+$link-color:            $cinerama-gold;
+$link-hover-color:      $cinerama-gold-light;
+$link-decoration:       none;
+
+// ------------------------------------------------------------
+//  3. TIPOGRAFÍA
+// ------------------------------------------------------------
+
+// Fuentes (cargar desde Google Fonts en index.html o styles.scss)
+// <link> recomendado:
+//   Bebas Neue       → títulos, cartelera (display)
+//   Inter o Barlow   → body, UI general
+//   Roboto Mono      → horarios, códigos de sala
+
+$font-family-display:   'Bebas Neue', 'Impact', sans-serif;
+$font-family-sans-serif:'Inter', 'Barlow', system-ui, sans-serif;
+$font-family-mono:      'Roboto Mono', 'Courier New', monospace;
+$font-family-base:      $font-family-sans-serif;
+
+// Escala tipográfica
+$font-size-base:        1rem;       // 16px
+$font-size-sm:          0.875rem;   // 14px
+$font-size-lg:          1.125rem;   // 18px
+$h1-font-size:          3rem;       // 48px — títulos de cartelera
+$h2-font-size:          2rem;       // 32px
+$h3-font-size:          1.5rem;     // 24px
+$h4-font-size:          1.25rem;    // 20px
+$h5-font-size:          1rem;
+$h6-font-size:          0.875rem;
+
+$headings-font-family:  $font-family-display;
+$headings-font-weight:  400;        // Bebas Neue es naturally bold
+$headings-color:        $cinerama-white;
+$headings-line-height:  1.1;
+$headings-letter-spacing: 0.02em;
+
+$line-height-base:      1.6;
+$font-weight-normal:    400;
+$font-weight-medium:    500;
+$font-weight-bold:      700;
+
+// ------------------------------------------------------------
+//  4. ESPACIADO Y LAYOUT
+// ------------------------------------------------------------
+
+$spacer:                1rem;
+$grid-gutter-width:     1.5rem;
+
+$border-radius:         0.375rem;   // 6px — moderno, no muy redondeado
+$border-radius-sm:      0.25rem;
+$border-radius-lg:      0.75rem;
+$border-radius-pill:    50rem;
+
+$border-color:          $cinerama-surface-3;
+$border-width:          1px;
+
+// ------------------------------------------------------------
+//  5. COMPONENTES ESPECÍFICOS DE CINE
+// ------------------------------------------------------------
+
+// Navbar
+$navbar-dark-color:             rgba($cinerama-white, 0.85);
+$navbar-dark-hover-color:       $cinerama-gold;
+$navbar-dark-active-color:      $cinerama-gold;
+$navbar-dark-brand-color:       $cinerama-white;
+$navbar-dark-brand-hover-color: $cinerama-red-light;
+$navbar-dark-toggler-border-color: transparent;
+$navbar-padding-y:              1rem;
+
+// Cards (para movie cards, salas)
+$card-bg:                       $cinerama-surface;
+$card-border-color:             $cinerama-surface-3;
+$card-border-radius:            $border-radius-lg;
+$card-cap-bg:                   $cinerama-surface-2;
+$card-cap-color:                $cinerama-white;
+$card-color:                    $cinerama-text-muted;
+$card-box-shadow:               0 4px 20px rgba(0, 0, 0, 0.5);
+
+// Botones
+$btn-font-family:               $font-family-display;
+$btn-font-size:                 1rem;
+$btn-padding-y:                 0.6rem;
+$btn-padding-x:                 1.5rem;
+$btn-border-radius:             $border-radius;
+$btn-font-weight:               400;
+$btn-letter-spacing:            0.05em;
+
+// Inputs / Forms
+$input-bg:                      $cinerama-surface-2;
+$input-border-color:            $cinerama-surface-3;
+$input-color:                   $cinerama-white;
+$input-placeholder-color:       $cinerama-text-faint;
+$input-focus-bg:                $cinerama-surface-2;
+$input-focus-border-color:      $cinerama-red;
+$input-focus-color:             $cinerama-white;
+$input-focus-box-shadow:        0 0 0 0.2rem rgba($cinerama-red, 0.25);
+$input-border-radius:           $border-radius;
+
+// Badges (clasificación, formato 2D/3D/IMAX)
+$badge-font-size:               0.7em;
+$badge-font-weight:             700;
+$badge-border-radius:           $border-radius-sm;
+$badge-padding-y:               0.35em;
+$badge-padding-x:               0.6em;
+
+// Modales (selector de asientos, detalle de película)
+$modal-content-bg:              $cinerama-surface;
+$modal-content-border-color:    $cinerama-surface-3;
+$modal-header-bg:               $cinerama-black;
+$modal-backdrop-opacity:        0.85;
+$modal-content-border-radius:   $border-radius-lg;
+
+// Dropdowns
+$dropdown-bg:                   $cinerama-surface-2;
+$dropdown-border-color:         $cinerama-surface-3;
+$dropdown-color:                $cinerama-white;
+$dropdown-link-color:           $cinerama-white;
+$dropdown-link-hover-bg:        $cinerama-surface-3;
+$dropdown-link-hover-color:     $cinerama-gold;
+$dropdown-link-active-bg:       $cinerama-red;
+$dropdown-link-active-color:    $cinerama-white;
+
+// Paginación (horarios, funciones)
+$pagination-bg:                 $cinerama-surface;
+$pagination-border-color:       $cinerama-surface-3;
+$pagination-color:              $cinerama-text-muted;
+$pagination-hover-bg:           $cinerama-surface-2;
+$pagination-hover-color:        $cinerama-white;
+$pagination-active-bg:          $cinerama-red;
+$pagination-active-border-color:$cinerama-red;
+
+// Breadcrumb
+$breadcrumb-bg:                 transparent;
+$breadcrumb-divider-color:      $cinerama-text-faint;
+$breadcrumb-active-color:       $cinerama-gold;
+$breadcrumb-item-padding-x:     0.5rem;
+
+// Tablas
+$table-color:                   $cinerama-white;
+$table-bg:                      transparent;
+$table-striped-bg:              rgba($cinerama-white, 0.03);
+$table-hover-bg:                rgba($cinerama-red, 0.08);
+$table-border-color:            $cinerama-surface-3;
+
+// Toasts / alertas
+$toast-background-color:        $cinerama-surface-2;
+$toast-border-color:            $cinerama-surface-3;
+$toast-color:                   $cinerama-white;
+
+// Scrollbar personalizado (webkit)
+$scrollbar-width:               6px;
+$scrollbar-track:               $cinerama-surface;
+$scrollbar-thumb:               $cinerama-red-dark;
+$scrollbar-thumb-hover:         $cinerama-red;
+
+// ------------------------------------------------------------
+//  6. CUSTOM PROPERTIES (CSS vars para uso directo en Angular)
+//     Ideal para componentes que no usan Bootstrap directamente
+// ------------------------------------------------------------
+
+:root {
+  // Marca
+  --cr-red:             #{$cinerama-red};
+  --cr-red-dark:        #{$cinerama-red-dark};
+  --cr-red-light:       #{$cinerama-red-light};
+  --cr-gold:            #{$cinerama-gold};
+  --cr-gold-dark:       #{$cinerama-gold-dark};
+
+  // Fondos
+  --cr-black:           #{$cinerama-black};
+  --cr-bg:              #{$cinerama-bg};
+  --cr-surface:         #{$cinerama-surface};
+  --cr-surface-2:       #{$cinerama-surface-2};
+  --cr-surface-3:       #{$cinerama-surface-3};
+
+  // Texto
+  --cr-white:           #{$cinerama-white};
+  --cr-muted:           #{$cinerama-text-muted};
+  --cr-faint:           #{$cinerama-text-faint};
+
+  // Tipografía
+  --cr-font-display:    #{$font-family-display};
+  --cr-font-body:       #{$font-family-sans-serif};
+
+  // Radios
+  --cr-radius:          #{$border-radius};
+  --cr-radius-lg:       #{$border-radius-lg};
+
+  // Sombras de cine
+  --cr-shadow-card:     0 4px 20px rgba(0, 0, 0, 0.5);
+  --cr-shadow-glow-red: 0 0 20px rgba(232, 0, 28, 0.35);
+  --cr-shadow-glow-gold:0 0 20px rgba(245, 197, 24, 0.3);
+
+  // Gradientes de marca
+  --cr-gradient-hero:   linear-gradient(180deg, rgba(10,10,10,0) 0%, #{$cinerama-black} 100%);
+  --cr-gradient-card:   linear-gradient(180deg, transparent 50%, rgba(10,10,10,0.95) 100%);
+  --cr-gradient-red:    linear-gradient(135deg, #{$cinerama-red-deeper} 0%, #{$cinerama-red} 100%);
+}
+
+// ------------------------------------------------------------
+//  7. UTILITY CLASSES PERSONALIZADAS
+// ------------------------------------------------------------
+
+// Texto de rating tipo IMDb
+.text-rating {
+  color: $cinerama-gold;
+  font-family: $font-family-display;
+  font-size: 1.25rem;
+}
+
+// Badge de formato de proyección
+.badge-format {
+  font-family: $font-family-display;
+  letter-spacing: 0.08em;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+
+  &--2d  { background: $cinerama-surface-3; color: $cinerama-text-muted; }
+  &--3d  { background: $cinerama-red-dark;  color: $cinerama-white; }
+  &--imax{ background: $cinerama-gold-dark; color: $cinerama-black; font-weight: 700; }
+  &--4dx { background: $cinerama-red;       color: $cinerama-white; }
+}
+
+// Overlay oscuro sobre poster de película
+.movie-overlay {
+  background: var(--cr-gradient-card);
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+}
+
+// Scrollbar dark para Chrome/Edge/Safari
+* {
+  scrollbar-width: thin;
+  scrollbar-color: $scrollbar-thumb $scrollbar-track;
+}
+*::-webkit-scrollbar        { width: $scrollbar-width; }
+*::-webkit-scrollbar-track  { background: $scrollbar-track; }
+*::-webkit-scrollbar-thumb  { background: $scrollbar-thumb; border-radius: 3px; }
+*::-webkit-scrollbar-thumb:hover { background: $scrollbar-thumb-hover; }

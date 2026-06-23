@@ -1,0 +1,48 @@
+<div class="dashboard-wrapper">
+  <app-navbar-dashboard />
+  <div class="dashboard-body">
+    <aside class="sidebar">
+      <nav>
+        <ul class="nav flex-column p-3">
+          <li class="nav-item">
+            <a class="nav-link text-white" routerLink="home" routerLinkActive="active">
+              <i class="bi bi-speedometer2 me-2"></i>Inicio
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-white" routerLink="gestion-peliculas" routerLinkActive="active">
+              <i class="bi bi-film me-2"></i>Películas
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-white" routerLink="gestion-clientes" routerLinkActive="active">
+              <i class="bi bi-people me-2"></i>Clientes
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-white" routerLink="gestion-ventas" routerLinkActive="active">
+              <i class="bi bi-cart3 me-2"></i>Ventas
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-white" routerLink="gestion-funciones" routerLinkActive="active">
+              <i class="bi bi-calendar3 me-2"></i>Funciones
+            </a>
+          </li>
+          <li class="nav-item">
+            <a
+              class="nav-link text-white"
+              routerLink="gestion-promociones"
+              routerLinkActive="active"
+            >
+              <i class="bi bi-tag me-2"></i>Promociones
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </aside>
+    <main class="dashboard-content">
+      <router-outlet />
+    </main>
+  </div>
+</div>
