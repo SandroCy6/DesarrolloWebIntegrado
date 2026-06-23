@@ -4,15 +4,17 @@ import { DashboardRoutingModule } from './dashboard-routing-module';
 import { LayoutComponent } from './layout/layout';
 import { HomeDashboardComponent } from './home-dashboard/home-dashboard';
 import { NavbarDashboardComponent } from '../../shared/navbar-dashboard/navbar-dashboard';
-
+import { RouterModule } from '@angular/router';
 @NgModule({
-  declarations: [], 
+  declarations: [
+    LayoutComponent, // standalone: false → declarations
+    NavbarDashboardComponent, // standalone: false → declarations
+  ],
   imports: [
     CommonModule,
     DashboardRoutingModule,
-    LayoutComponent, 
-    HomeDashboardComponent,
-    NavbarDashboardComponent,
+    RouterModule, 
+    HomeDashboardComponent, // standalone (default) → imports
   ],
 })
 export class DashboardModule {}

@@ -1,6 +1,5 @@
 /* You can add global styles to this file, and also import other style files */
-@use 'bootstrap/scss/bootstrap';
-@import 'bootstrap-icons/font/bootstrap-icons.css';
+
 // ============================================================
 //  CINERAMA PERÚ — Design Tokens
 //  Paleta basada en la identidad visual de Cinerama.com.pe
@@ -218,7 +217,8 @@ $scrollbar-thumb-hover:         $cinerama-red;
 //  6. CUSTOM PROPERTIES (CSS vars para uso directo en Angular)
 //     Ideal para componentes que no usan Bootstrap directamente
 // ------------------------------------------------------------
-
+@use 'bootstrap/scss/bootstrap';
+@import 'bootstrap-icons/font/bootstrap-icons.css';
 :root {
   // Marca
   --cr-red:             #{$cinerama-red};
