@@ -4,12 +4,17 @@ import cinerama.ventas.dto.VentaRequestDTO;
 import cinerama.ventas.model.Venta;
 import cinerama.ventas.service.VentaService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -31,7 +36,7 @@ public class VentaController {
         }
     }
 
-    // Consultar estado de una venta específica
+    // Consultar detalle de una venta específica
     @GetMapping("/{id}")
     public ResponseEntity<?> consultarVenta(@PathVariable Long id) {
         try {
@@ -45,7 +50,23 @@ public class VentaController {
     // Historial de compras de un cliente
     @GetMapping("/cliente/{dni}")
     public ResponseEntity<?> consultarHistorialCliente(@PathVariable String dni) {
-        return ResponseEntity.ok(ventaService.obtenerHistorialPorDni(dni));
+        List<Venta> historial = ventaService.obtenerHistorialPorDni(dni);
+        return ResponseEntity.ok(historial);
+    }
+
+    // Listar todas las ventas (Solo ADMIN con Paginación)
+    @GetMapping
+    public ResponseEntity<?> listarTodasLasVentas(
+            @PageableDefault(size = 10, sort = "fecha", direction = Sort.Direction.DESC) Pageable pageable,
+            @RequestHeader(value = "X-User-Role", required = false) String role) {
+
+        // Control extra de seguridad por cabecera si el Api Gateway inyecta el Rol decodificado del JWT
+        if (role == null || !role.equalsIgnoreCase("ADMIN")) {
+            return ResponseEntity.status(403).body("Acceso denegado: Se requieren permisos de Administrador");
+        }
+
+        Page<Venta> ventasPaginadas = ventaService.obtenerTodasLasVentas(pageable);
+        return ResponseEntity.ok(ventasPaginadas);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

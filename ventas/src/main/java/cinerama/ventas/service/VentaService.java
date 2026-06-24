@@ -5,6 +5,8 @@ import cinerama.ventas.dto.VentaRequestDTO;
 import cinerama.ventas.model.DetalleVenta;
 import cinerama.ventas.model.Venta;
 import cinerama.ventas.repository.VentaRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -93,6 +95,10 @@ public class VentaService {
 
     public List<Venta> obtenerHistorialPorDni(String dni) {
         return ventaRepository.findByClienteDni(dni);
+    }
+
+    public Page<Venta> obtenerTodasLasVentas(Pageable pageable) {
+        return ventaRepository.findAll(pageable);
     }
 
 }
