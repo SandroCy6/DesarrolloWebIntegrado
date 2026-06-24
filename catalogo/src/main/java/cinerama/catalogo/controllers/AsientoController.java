@@ -54,4 +54,12 @@ public class AsientoController {
             return ResponseEntity.notFound().build();
         }
     }
+
+    // POST /api/cines/{salaId}/asientos
+    @PostMapping("/{salaId}/asientos")
+    public ResponseEntity<AsientoDTO> crearAsiento(
+            @PathVariable Long salaId,
+            @RequestBody AsientoDTO dto) {
+        return ResponseEntity.ok(asientoService.crearAsiento(salaId, dto));
+    }
 }

@@ -16,11 +16,17 @@ public class Venta {
     // Solo se guarda el DNI y correo como referencia al microservicio de Cliente
     private String clienteDni;
     private String clienteCorreo;
-
+    private String clienteCelular;
+    private String clienteNombre;
+    private String tituloPelicula; 
+    private String sala;  
+    private String codigoQr; 
+    private String asientos; 
     private BigDecimal total;
     private LocalDateTime fecha; // Registro automatico
 
-    // Una venta tiene muchos detalles. Si se guarda la venta, se guardan los detalles
+    // Una venta tiene muchos detalles. Si se guarda la venta, se guardan los
+    // detalles
     @OneToMany(mappedBy = "venta", cascade = CascadeType.ALL)
     private List<DetalleVenta> detalles;
 }

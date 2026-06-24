@@ -3,6 +3,7 @@ package cinerama.catalogo.services;
 import cinerama.catalogo.dtos.AsientoDTO;
 import cinerama.catalogo.models.Asiento;
 import cinerama.catalogo.models.EstadoAsiento;
+import cinerama.catalogo.models.Sala;
 import cinerama.catalogo.repositories.AsientoRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,13 +47,25 @@ public class AsientoService {
         Asiento asiento = asientoRepository.findByIdForUpdate(asientoId)
                 .orElseThrow(() -> new RuntimeException("Error: Asiento no encontrado"));
 
-        // 2. Validación de negocio extra: ¿Qué pasa si alguien más nos ganó el milisegundo anterior?
+        // 2. Validación de negocio extra: ¿Qué pasa si alguien más nos ganó el
+        // milisegundo anterior?
         if (nuevoEstado == EstadoAsiento.OCUPADO && asiento.getEstado() == EstadoAsiento.OCUPADO) {
             throw new IllegalStateException("Concurrencia: El asiento ya fue ocupado por otra transacción.");
         }
 
         // 3. Todo está bien, actualizamos el estado y guardamos.
         asiento.setEstado(nuevoEstado);
+        return convertirADTO(asientoRepository.save(asiento));
+    }
+
+    public AsientoDTO crearAsiento(Long salaId, AsientoDTO dto) {
+        Sala sala = new Sala();
+        sala.setId(salaId);
+        Asiento asiento = new Asiento();
+        asiento.setNumero(dto.getNumero());
+        asiento.setEstado(EstadoAsiento.LIBRE);
+        asiento.setPrecio(dto.getPrecio());
+        asiento.setSala(sala);
         return convertirADTO(asientoRepository.save(asiento));
     }
 }
