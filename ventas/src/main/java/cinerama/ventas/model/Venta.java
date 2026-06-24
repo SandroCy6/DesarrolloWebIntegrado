@@ -13,7 +13,6 @@ public class Venta {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // Solo se guarda el DNI y correo como referencia al microservicio de Cliente
     private String clienteDni;
     private String clienteCorreo;
     private String clienteCelular;
@@ -23,10 +22,12 @@ public class Venta {
     private String codigoQr; 
     private String asientos; 
     private BigDecimal total;
-    private LocalDateTime fecha; // Registro automatico
+    private LocalDateTime fecha;
 
-    // Una venta tiene muchos detalles. Si se guarda la venta, se guardan los
-    // detalles
+    private String metodoPago;
+    private String estadoPago; // PENDIENTE, APROBADO, RECHAZADO
+
+    // Una venta tiene muchos detalles. Si se guarda la venta, se guardan los detalles
     @OneToMany(mappedBy = "venta", cascade = CascadeType.ALL)
     private List<DetalleVenta> detalles;
 }
