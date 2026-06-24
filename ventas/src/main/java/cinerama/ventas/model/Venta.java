@@ -20,6 +20,9 @@ public class Venta {
     private BigDecimal total;
     private LocalDateTime fecha; // Registro automatico
 
+    private String metodoPago;
+    private String estadoPago; // PENDIENTE, APROBADO, RECHAZADO
+
     // Una venta tiene muchos detalles. Si se guarda la venta, se guardan los detalles
     @OneToMany(mappedBy = "venta", cascade = CascadeType.ALL)
     private List<DetalleVenta> detalles;

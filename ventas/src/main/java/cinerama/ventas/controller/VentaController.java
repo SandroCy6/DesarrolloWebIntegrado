@@ -31,6 +31,23 @@ public class VentaController {
         }
     }
 
+    // Consultar estado de una venta específica
+    @GetMapping("/{id}")
+    public ResponseEntity<?> consultarVenta(@PathVariable Long id) {
+        try {
+            Venta venta = ventaService.obtenerVentaPorId(id);
+            return ResponseEntity.ok(venta);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    // Historial de compras de un cliente
+    @GetMapping("/cliente/{dni}")
+    public ResponseEntity<?> consultarHistorialCliente(@PathVariable String dni) {
+        return ResponseEntity.ok(ventaService.obtenerHistorialPorDni(dni));
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, String>> manejarErroresValidacion(MethodArgumentNotValidException ex) {
         Map<String, String> errores = new HashMap<>();

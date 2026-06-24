@@ -14,6 +14,12 @@ public class VentaRequestDTO {
     @Email(message = "Formato de correo inválido")
     private String clienteCorreo;
 
+    @NotBlank(message = "El método de pago es obligatorio (ej. visa, master)")
+    private String metodoPago;
+
+    @NotBlank(message = "El token de la tarjeta es obligatorio")
+    private String tokenTarjeta;
+
     @NotEmpty(message = "La venta debe tener al menos un detalle")
     @Valid
     private List<DetalleRequestDTO> detalles;
