@@ -13,12 +13,16 @@ public class Venta {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // Solo se guarda el DNI y correo como referencia al microservicio de Cliente
     private String clienteDni;
     private String clienteCorreo;
-
+    private String clienteCelular;
+    private String clienteNombre;
+    private String tituloPelicula; 
+    private String sala;  
+    private String codigoQr; 
+    private String asientos; 
     private BigDecimal total;
-    private LocalDateTime fecha; // Registro automatico
+    private LocalDateTime fecha;
 
     private String metodoPago;
     private String estadoPago; // PENDIENTE, APROBADO, RECHAZADO

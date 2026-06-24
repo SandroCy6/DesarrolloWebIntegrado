@@ -1,5 +1,8 @@
 package cinerama.ventas.service;
 
+import cinerama.ventas.client.CatalogoClient;
+import cinerama.ventas.client.NotificacionClient;
+import cinerama.ventas.dto.AsientoDTO;
 import cinerama.ventas.dto.DetalleRequestDTO;
 import cinerama.ventas.dto.VentaRequestDTO;
 import cinerama.ventas.model.DetalleVenta;
@@ -15,13 +18,29 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.client.j2se.MatrixToImageWriter;
+import com.google.zxing.common.BitMatrix;
+import com.google.zxing.qrcode.QRCodeWriter;
+import java.io.ByteArrayOutputStream;
+import java.util.Base64;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
 @Service
 public class VentaService {
+    private final NotificacionClient notificacionClient;
     private final VentaRepository ventaRepository;
+    private final CatalogoClient catalogoClient;
     private final PagoService pagoService;
 
-    public VentaService(VentaRepository ventaRepository, PagoService pagoService) {
+    public VentaService(VentaRepository ventaRepository,
+            NotificacionClient notificacionClient,
+            CatalogoClient catalogoClient,
+            PagoService pagoService) {
         this.ventaRepository = ventaRepository;
+        this.notificacionClient = notificacionClient;
+        this.catalogoClient = catalogoClient;
         this.pagoService = pagoService;
     }
 
@@ -40,11 +59,22 @@ public class VentaService {
         Venta venta = new Venta();
         venta.setClienteDni(request.getClienteDni());
         venta.setClienteCorreo(request.getClienteCorreo());
+        venta.setClienteCelular(request.getClienteCelular());
+        venta.setClienteNombre(request.getClienteNombre());
         venta.setFecha(LocalDateTime.now()); // Fecha automática
         venta.setMetodoPago(request.getMetodoPago()); // Guardamos el metodo de pago
         venta.setEstadoPago("PENDIENTE"); // Estado inicial
         venta.setDetalles(new ArrayList<>());
-
+        if (request.getHorarioId() != null) {
+            try {
+                catalogoClient.obtenerHorario(request.getHorarioId()).ifPresent(h -> {
+                    venta.setTituloPelicula(h.getTituloPelicula());
+                    venta.setSala("Sala " + h.getNumeroSala() + " — " + h.getNombreCine());
+                });
+            } catch (Exception e) {
+                System.err.println("⚠️ No se pudo obtener horario: " + e.getMessage());
+            }
+        }
         BigDecimal totalVenta = BigDecimal.ZERO;
 
         // Procesar cada detalle y calcular el total
@@ -65,6 +95,8 @@ public class VentaService {
         }
 
         venta.setTotal(totalVenta);
+        String codigo = UUID.randomUUID().toString();
+        venta.setCodigoQr(codigo);
 
         // Integración de MercadoPago
         boolean pagoExitoso = pagoService.procesarPago(
@@ -82,7 +114,31 @@ public class VentaService {
         venta.setEstadoPago("APROBADO");
 
         // Guardar en BD
-        return ventaRepository.save(venta);
+        Venta saved = ventaRepository.save(venta);
+
+        // Marcar asientos como OCUPADO
+        if (request.getAsientosIds() != null && !request.getAsientosIds().isEmpty()) {
+            String asientosTexto = request.getAsientosIds().stream()
+                    .map(id -> {
+                        try {
+                            String numero = catalogoClient.obtenerAsiento(id)
+                                    .map(AsientoDTO::getNumero)
+                                    .orElse("A" + id);
+                            catalogoClient.ocuparAsiento(id, "\"OCUPADO\"");
+                            return numero;
+                        } catch (Exception e) {
+                            System.err.println("⚠️ Asiento " + id + ": " + e.getMessage());
+                            return "A" + id;
+                        }
+                    })
+                    .collect(Collectors.joining(", "));
+            saved.setAsientos(asientosTexto);
+            ventaRepository.save(saved);
+        }
+
+        // Notificar AL FINAL
+        notificacionClient.notificar(saved);
+        return saved;
     }
 
     public Venta obtenerVentaPorId(Long id) {
