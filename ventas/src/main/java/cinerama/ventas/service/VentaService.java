@@ -8,11 +8,15 @@ import cinerama.ventas.dto.VentaRequestDTO;
 import cinerama.ventas.model.DetalleVenta;
 import cinerama.ventas.model.Venta;
 import cinerama.ventas.repository.VentaRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
@@ -28,12 +32,16 @@ public class VentaService {
     private final NotificacionClient notificacionClient;
     private final VentaRepository ventaRepository;
     private final CatalogoClient catalogoClient;
+    private final PagoService pagoService;
 
     public VentaService(VentaRepository ventaRepository,
-            NotificacionClient notificacionClient, CatalogoClient catalogoClient) {
+            NotificacionClient notificacionClient,
+            CatalogoClient catalogoClient,
+            PagoService pagoService) {
         this.ventaRepository = ventaRepository;
         this.notificacionClient = notificacionClient;
         this.catalogoClient = catalogoClient;
+        this.pagoService = pagoService;
     }
 
     public Venta registrarVenta(VentaRequestDTO request) {
@@ -54,6 +62,8 @@ public class VentaService {
         venta.setClienteCelular(request.getClienteCelular());
         venta.setClienteNombre(request.getClienteNombre());
         venta.setFecha(LocalDateTime.now()); // Fecha automática
+        venta.setMetodoPago(request.getMetodoPago()); // Guardamos el metodo de pago
+        venta.setEstadoPago("PENDIENTE"); // Estado inicial
         venta.setDetalles(new ArrayList<>());
         if (request.getHorarioId() != null) {
             try {
@@ -88,6 +98,21 @@ public class VentaService {
         String codigo = UUID.randomUUID().toString();
         venta.setCodigoQr(codigo);
 
+        // Integración de MercadoPago
+        boolean pagoExitoso = pagoService.procesarPago(
+                totalVenta,
+                request.getMetodoPago(),
+                request.getTokenTarjeta(),
+                request.getClienteCorreo()
+        );
+
+        if (!pagoExitoso) {
+            // Rollback
+            throw new IllegalArgumentException("El pago fue RECHAZADO por MercadoPago");
+        }
+
+        venta.setEstadoPago("APROBADO");
+
         // Guardar en BD
         Venta saved = ventaRepository.save(venta);
 
@@ -115,4 +140,21 @@ public class VentaService {
         notificacionClient.notificar(saved);
         return saved;
     }
+
+    public Venta obtenerVentaPorId(Long id) {
+        Optional<Venta> venta = ventaRepository.findById(id);
+        if (venta.isEmpty()) {
+            throw new IllegalArgumentException("Venta no encontrada con ID: " + id);
+        }
+        return venta.get();
+    }
+
+    public List<Venta> obtenerHistorialPorDni(String dni) {
+        return ventaRepository.findByClienteDni(dni);
+    }
+
+    public Page<Venta> obtenerTodasLasVentas(Pageable pageable) {
+        return ventaRepository.findAll(pageable);
+    }
+
 }
