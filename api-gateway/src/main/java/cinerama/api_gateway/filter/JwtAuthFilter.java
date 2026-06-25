@@ -22,6 +22,16 @@ public class JwtAuthFilter extends AbstractGatewayFilterFactory<JwtAuthFilter.Co
     @Override
     public GatewayFilter apply(Config config) {
         return (exchange, chain) -> {
+
+            // 1. Extraemos la ruta y el método HTTP de la petición
+            String path = exchange.getRequest().getURI().getPath();
+            String method = exchange.getRequest().getMethod().name();
+
+            // 2. BYPASS PÚBLICO: Si es un GET hacia el catálogo, lo dejamos pasar libremente
+            if ((path.startsWith("/catalogo") || path.startsWith("/api/cines")) && "GET".equalsIgnoreCase(method)) {
+                return chain.filter(exchange);
+            }
+            
             String authHeader = exchange.getRequest()
                     .getHeaders()
                     .getFirst(HttpHeaders.AUTHORIZATION);

@@ -10,4 +10,5 @@ public class AsientoDTO {
     private EstadoAsiento estado;
     private double precio;
     private long SalaId;
+    private Long horarioId;
 }

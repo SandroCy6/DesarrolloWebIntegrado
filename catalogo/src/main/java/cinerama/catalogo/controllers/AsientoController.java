@@ -24,6 +24,12 @@ public class AsientoController {
         return asientoService.listarPorSala(salaId);
     }
 
+    // NUEVA RUTA PARA ANGULAR: Asientos específicos de una función
+    @GetMapping("/horarios/{horarioId}/asientos")
+    public List<AsientoDTO> listarAsientosPorHorario(@PathVariable Long horarioId) {
+        return asientoService.listarPorHorario(horarioId);
+    }
+
     // GET /api/cines/asientos/{asientoId}
     @GetMapping("/asientos/{asientoId}")
     public ResponseEntity<AsientoDTO> obtenerDetalleAsiento(@PathVariable Long asientoId) {
@@ -59,7 +65,8 @@ public class AsientoController {
     @PostMapping("/{salaId}/asientos")
     public ResponseEntity<AsientoDTO> crearAsiento(
             @PathVariable Long salaId,
+            @PathVariable Long horarioId,
             @RequestBody AsientoDTO dto) {
-        return ResponseEntity.ok(asientoService.crearAsiento(salaId, dto));
+        return ResponseEntity.ok(asientoService.crearAsiento(salaId,horarioId, dto));
     }
 }
