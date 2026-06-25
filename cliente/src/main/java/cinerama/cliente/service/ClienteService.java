@@ -101,8 +101,6 @@ public class ClienteService {
                 .toList();
     }
 
-  
-
     @Transactional(readOnly = true)
     public boolean estaBloqueadoPorDni(String dni) {
         return clienteRepository.findByDni(dni)
@@ -139,4 +137,15 @@ public class ClienteService {
                 .build();
     }
 
+    @Transactional
+    public ClienteResponse actualizar(Long id, ClienteRequest request) {
+        Cliente cliente = clienteRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Cliente no encontrado: " + id));
+        cliente.setCorreo(request.getCorreo());
+        cliente.setTelefono(request.getTelefono());
+        if (request.getNombre() != null)
+            cliente.setNombre(request.getNombre());
+        log.info("[CLIENTE] actualizado id={}", id);
+        return toResponse(clienteRepository.save(cliente));
+    }
 }
