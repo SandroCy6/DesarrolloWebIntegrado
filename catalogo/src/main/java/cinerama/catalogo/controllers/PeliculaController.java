@@ -13,7 +13,6 @@ import cinerama.catalogo.services.PeliculaService;
 
 @RestController
 @RequestMapping("/catalogo/peliculas")
-@CrossOrigin(origins = "*")
 public class PeliculaController {
     
     @Autowired
@@ -30,6 +29,16 @@ public class PeliculaController {
     @GetMapping("/cartelera")
     public List<PeliculaDTO> listarCartelera() {
         return peliculaService.listarCartelera();
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<PeliculaDTO> actualizarPelicula(
+            @PathVariable Long id,
+            @RequestBody Pelicula pelicula) {
+
+        PeliculaDTO peliculaActualizada = peliculaService.actualizar(id, pelicula);
+
+        return ResponseEntity.ok(peliculaActualizada);
     }
 
     @GetMapping("/{id}")

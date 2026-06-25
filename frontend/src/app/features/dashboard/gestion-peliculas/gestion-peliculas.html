@@ -1,1 +1,85 @@
-<p>gestion-peliculas works!</p>
+<div class="container-fluid py-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="text-white" style="font-family: var(--cr-font-display);">Gestión de Películas</h2>
+    
+    @if (vistaActual === 'lista') {
+      <button class="btn btn-danger" (click)="abrirFormularioNueva()">
+        <i class="bi bi-plus-lg me-2"></i>Añadir Película
+      </button>
+    }
+  </div>
+
+  @if (vistaActual === 'lista') {
+    <div class="card bg-dark border-secondary">
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table table-dark table-hover align-middle">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Póster</th>
+                <th>Título</th>
+                <th>Género</th>
+                <th>Estreno</th>
+                <th class="text-end">Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (peli of peliculas; track peli.id) {
+                <tr>
+                  <td>{{ peli.id }}</td>
+                  <td>
+                    <img [src]="peli.imagenUrl || 'assets/images/placeholder-movie.jpg'" alt="poster" width="50" class="rounded">
+                  </td>
+                  <td class="fw-bold">{{ peli.titulo }}</td>
+                  <td>{{ peli.genero }}</td>
+                  <td>{{ peli.fechaEstreno }}</td>
+                  <td class="text-end">
+                    <button class="btn btn-sm btn-outline-warning me-2" (click)="abrirFormularioEdicion(peli)">
+                      <i class="bi bi-pencil"></i>
+                    </button>
+                    <button class="btn btn-sm btn-outline-danger" (click)="eliminar(peli.id!)">
+                      <i class="bi bi-trash"></i>
+                    </button>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  }
+
+  @else {
+    <div class="card bg-dark border-secondary">
+      <div class="card-header border-secondary d-flex justify-content-between align-items-center">
+        <h5 class="mb-0 text-white">{{ peliculaActual.id ? 'Editar Película' : 'Nueva Película' }}</h5>
+        <button class="btn btn-sm btn-outline-light" (click)="volverALista()">
+          <i class="bi bi-arrow-left me-2"></i>Volver
+        </button>
+      </div>
+      <div class="card-body">
+        
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label class="form-label text-light">Título</label>
+            <input type="text" class="form-control bg-black text-white border-secondary" [(ngModel)]="peliculaActual.titulo">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label text-light">Género</label>
+            <input type="text" class="form-control bg-black text-white border-secondary" [(ngModel)]="peliculaActual.genero">
+          </div>
+          </div>
+
+        <div class="mt-4 text-end">
+          <button class="btn btn-secondary me-2" (click)="volverALista()">Cancelar</button>
+          <button class="btn btn-danger" (click)="guardarPelicula()">
+            <i class="bi bi-save me-2"></i>Guardar Película
+          </button>
+        </div>
+
+      </div>
+    </div>
+  }
+</div>

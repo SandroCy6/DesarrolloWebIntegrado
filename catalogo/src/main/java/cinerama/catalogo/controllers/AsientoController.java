@@ -12,7 +12,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/cines")
-@CrossOrigin(origins = "*")
 public class AsientoController {
 
     @Autowired

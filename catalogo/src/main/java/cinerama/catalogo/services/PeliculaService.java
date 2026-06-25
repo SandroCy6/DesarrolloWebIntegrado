@@ -87,6 +87,24 @@ public class PeliculaService {
         return convertirADTO(peliculaRepository.save(pelicula)); 
     }
 
+    public PeliculaDTO actualizar(Long id, Pelicula peliculaActualizada) {
+
+        Pelicula pelicula = peliculaRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Película no encontrada con id: " + id));
+
+        pelicula.setTitulo(peliculaActualizada.getTitulo());
+        pelicula.setSinopsis(peliculaActualizada.getSinopsis());
+        pelicula.setGenero(peliculaActualizada.getGenero());
+        pelicula.setDuracion(peliculaActualizada.getDuracion());
+        pelicula.setImagenUrl(peliculaActualizada.getImagenUrl());
+        pelicula.setFechaEstreno(peliculaActualizada.getFechaEstreno());
+        pelicula.setTrailerUrl(peliculaActualizada.getTrailerUrl());
+
+        Pelicula peliculaGuardada = peliculaRepository.save(pelicula);
+
+        return convertirADTO(peliculaGuardada);
+    }
+
     public void eliminar(Long id){
         peliculaRepository.deleteById(id);
     }
@@ -136,6 +154,7 @@ public class PeliculaService {
         nuevaPelicula.setTitulo(jsonNode.get("title").asText());
         nuevaPelicula.setSinopsis(jsonNode.get("overview").asText());
         nuevaPelicula.setDuracion(jsonNode.has("runtime")?jsonNode.get("runtime").asInt():0);
+        nuevaPelicula.setFechaEstreno(LocalDate.parse(jsonNode.get("release_date").asText()));
 
         String genero = "Desconocido";
         if(jsonNode.has("genres") && jsonNode.get("genres").size()>0){

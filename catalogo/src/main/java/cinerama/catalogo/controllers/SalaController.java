@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/catalogo/salas")
-@CrossOrigin(origins = "*")
 public class SalaController {
 
     @Autowired

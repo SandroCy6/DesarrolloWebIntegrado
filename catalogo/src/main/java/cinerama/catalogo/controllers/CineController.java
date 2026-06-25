@@ -14,8 +14,7 @@ import cinerama.catalogo.services.CineService;
 
 
 @RestController
-@RequestMapping("/api/cines")
-@CrossOrigin(origins = "*") // Permite que Angular se conecte sin errores de CORS
+@RequestMapping("/api/cines")// Permite que Angular se conecte sin errores de CORS
 public class CineController {
 
     @Autowired

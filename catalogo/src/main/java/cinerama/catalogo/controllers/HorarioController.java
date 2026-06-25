@@ -15,7 +15,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/catalogo/horarios")
-@CrossOrigin(origins = "*")
 public class HorarioController {
 
     @Autowired

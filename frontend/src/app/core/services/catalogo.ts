@@ -41,4 +41,29 @@ export class CatalogoService {
     // Apuntamos al nuevo endpoint transaccional
     return this.http.get<Asiento[]>(`${environment.apiUrl}/api/cines/horarios/${horarioId}/asientos`);
   }
+
+  // --- MÉTODOS ADMINISTRATIVOS (CRUD) ---
+
+  crearPelicula(pelicula: Pelicula): Observable<Pelicula> {
+    return this.http.post<Pelicula>(this.apiUrl, pelicula);
+  }
+
+  actualizarPelicula(id: number, pelicula: Pelicula): Observable<Pelicula> {
+    return this.http.put<Pelicula>(`${this.apiUrl}/${id}`, pelicula);
+  }
+
+  eliminarPelicula(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  }
+
+  // --- INTEGRACIÓN TMDB ---
+
+  buscarPeliculasTMDB(query: string): Observable<any> {
+    // Retorna la cadena JSON directamente desde tu backend
+    return this.http.get<any>(`${this.apiUrl}/tmdb/buscar`, { params: { query } });
+  }
+
+  importarPeliculaTMDB(tmdbId: number): Observable<Pelicula> {
+    return this.http.post<Pelicula>(`${this.apiUrl}/tmdb/importar/${tmdbId}`, {});
+  }
 }
