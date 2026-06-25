@@ -1,0 +1,218 @@
+.home-wrapper {
+  background-color: var(--cr-bg);
+  min-height: 100vh;
+}
+
+/* ==========================
+   HERO
+========================== */
+
+.hero-section {
+  min-height: 80vh;
+
+  background-image: url('https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?q=80&w=2070&auto=format&fit=crop');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+
+  .hero-overlay {
+    position: absolute;
+    inset: 0;
+
+    background: linear-gradient(
+      90deg,
+      rgba(0, 0, 0, 0.92) 0%,
+      rgba(0, 0, 0, 0.75) 50%,
+      rgba(0, 0, 0, 0.4) 100%
+    );
+
+    z-index: 1;
+  }
+}
+
+/* ==========================
+   ENCABEZADOS
+========================== */
+
+.destacadas-section h2,
+.proximos-section h2 {
+  letter-spacing: 1px;
+}
+
+.destacadas-section a,
+.proximos-section a {
+  transition: all 0.3s ease;
+}
+
+.destacadas-section a:hover {
+  color: #ff5a5a !important;
+}
+
+.proximos-section a:hover {
+  color: #ffd54a !important;
+}
+
+/* ==========================
+   TARJETAS
+========================== */
+
+.movie-card-home {
+  cursor: pointer;
+  transition: all 0.35s ease;
+
+  &:hover {
+    transform: translateY(-10px);
+
+    .movie-img-container img {
+      transform: scale(1.08);
+    }
+
+    .movie-overlay-home {
+      background: linear-gradient(
+        0deg,
+        rgba(0, 0, 0, 0.97) 0%,
+        rgba(0, 0, 0, 0.8) 55%,
+        rgba(0, 0, 0, 0.1) 100%
+      );
+    }
+
+    h5 {
+      color: var(--cr-gold);
+    }
+  }
+}
+
+/* ==========================
+   CONTENEDOR DE IMAGEN
+========================== */
+
+.movie-img-container {
+  aspect-ratio: 2 / 3;
+  position: relative;
+  overflow: hidden;
+
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,0.08);
+
+  background: #111;
+
+  box-shadow: 0 10px 25px rgba(0,0,0,.4);
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+
+    transition: transform .5s ease;
+  }
+}
+
+/* ==========================
+   OVERLAY
+========================== */
+.movie-overlay-home {
+  position: absolute;
+
+  left: 0;
+  right: 0;
+  bottom: 0;
+
+  padding: 1rem;
+
+  background: linear-gradient(
+    to top,
+    rgba(0,0,0,0.9),
+    rgba(0,0,0,0.55),
+    transparent
+  );
+
+  min-height: 120px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+/* ==========================
+   TEXTOS DE TARJETA
+========================== */
+
+.movie-overlay-home .text-warning {
+  color: #ffc107 !important;
+}
+
+.movie-overlay-home .text-muted {
+  color: #d0d0d0 !important;
+}
+
+/* ==========================
+   BADGE FECHA ESTRENO
+========================== */
+
+.badge.bg-danger {
+  font-size: .8rem;
+  font-weight: 600;
+
+  padding: .45rem .75rem;
+
+  border-radius: 8px;
+
+  box-shadow: 0 4px 12px rgba(220,53,69,.4);
+}
+
+/* ==========================
+   MENSAJES
+========================== */
+
+.alert {
+  border-radius: 12px;
+}
+
+.text-muted {
+  color: #b8b8b8 !important;
+}
+
+/* ==========================
+   PROXIMOS ESTRENOS
+========================== */
+
+.proximos-section {
+  background-color: var(--cr-surface);
+}
+
+.proximos-section .movie-img-container {
+  border: 1px solid rgba(255,255,255,.08);
+}
+
+/* ==========================
+   RESPONSIVE
+========================== */
+
+@media (max-width: 992px) {
+  .hero-section {
+    min-height: 65vh;
+    background-attachment: scroll;
+  }
+
+  .hero-section h1 {
+    font-size: 3rem !important;
+  }
+
+  .movie-overlay-home h5 {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .hero-section h1 {
+    font-size: 2.4rem !important;
+  }
+
+  .hero-section .lead {
+    font-size: 1.1rem !important;
+  }
+
+  .movie-overlay-home {
+    padding: 1rem;
+  }
+}

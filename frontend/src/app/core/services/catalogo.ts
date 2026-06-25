@@ -13,8 +13,16 @@ export class CatalogoService {
 
   constructor(private http: HttpClient) {}
 
-  obtenerCartelera(): Observable<Pelicula[]>{
+  obtenerTodoPeliculas(): Observable<Pelicula[]>{
     return this.http.get<Pelicula[]>(this.apiUrl);
+  }
+
+  obtenerCartelera(): Observable<Pelicula[]> {
+    return this.http.get<Pelicula[]>(`${environment.apiUrl}/catalogo/peliculas/cartelera`);
+  }
+
+  obtenerProximosEstrenos(): Observable<Pelicula[]> {
+    return this.http.get<Pelicula[]>(`${environment.apiUrl}/catalogo/peliculas/proximos-estrenos`);
   }
 
   obtenerPeliculaPorId(id: number): Observable<Pelicula> {

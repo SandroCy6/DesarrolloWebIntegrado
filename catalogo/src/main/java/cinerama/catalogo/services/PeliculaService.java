@@ -51,6 +51,13 @@ public class PeliculaService {
                 .map(this::convertirADTO).collect(Collectors.toList());
     }
 
+    public List<PeliculaDTO> listarCartelera(){
+        return peliculaRepository.findPeliculasEnCartelera()
+                .stream()
+                .map(this::convertirADTO).collect(Collectors.toList());
+    }
+
+
     public Optional<PeliculaDTO> obtenerPorId(Long id){
         return peliculaRepository.findById(id).map(this::convertirADTO);
     }

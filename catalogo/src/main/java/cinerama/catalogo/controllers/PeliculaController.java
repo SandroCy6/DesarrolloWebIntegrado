@@ -27,6 +27,11 @@ public class PeliculaController {
         return peliculaService.obtenerTodas();
     }
 
+    @GetMapping("/cartelera")
+    public List<PeliculaDTO> listarCartelera() {
+        return peliculaService.listarCartelera();
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<PeliculaDTO> obtenerPelicula(@PathVariable Long id){
         return peliculaService.obtenerPorId(id)

@@ -12,6 +12,9 @@ import java.util.List;
 @Repository
 public interface PeliculaRepository extends JpaRepository<Pelicula, Long> {
 
+    @Query("SELECT DISTINCT p FROM Pelicula p INNER JOIN Horario h ON p.id = h.pelicula.id WHERE h.fecha >= CURRENT_DATE AND p.fechaEstreno <= CURRENT_DATE")
+    List<Pelicula> findPeliculasEnCartelera();
+
     List<Pelicula> findByGenero(String genero);
      List<Pelicula> findByTituloContainingIgnoreCase(String titulo);
     List<Pelicula> findByFechaEstrenoAfter(LocalDate fechaActual);

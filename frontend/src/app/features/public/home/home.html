@@ -1,1 +1,136 @@
-<p>home works!</p>
+<div class="home-wrapper">
+  
+  <!-- SECCIÓN HERO (Bienvenida) -->
+  <section class="hero-section d-flex align-items-center position-relative overflow-hidden">
+    <div class="hero-overlay"></div>
+    <div class="container position-relative z-2">
+      <div class="row">
+        <div class="col-lg-8 col-md-10">
+          <span class="badge bg-danger text-uppercase mb-3 px-3 py-2" style="letter-spacing: 2px;">Vive la Magia</span>
+          <h1 class="display-2 fw-bold text-white mb-4 text-uppercase" style="font-family: var(--cr-font-display);">
+            Bienvenido a <span class="text-danger">Cinerama</span>
+          </h1>
+          <p class="lead text-light mb-5 fs-4" style="max-width: 600px;">
+            Disfruta de los mejores estrenos, en las mejores salas y con la máxima tecnología IMAX. Tu experiencia de cine definitiva empieza aquí.
+          </p>
+          <div class="d-flex gap-3 flex-wrap">
+            <button class="btn btn-danger btn-lg px-5 py-3 text-uppercase fw-bold" routerLink="/cartelera" style="letter-spacing: 1px;">
+              Ver Cartelera Completa <i class="bi bi-film ms-2"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN PELÍCULAS DESTACADAS -->
+  <section class="destacadas-section py-5 bg-black">
+    <div class="container py-4">
+      
+      <div class="d-flex justify-content-between align-items-end mb-5 border-bottom border-secondary pb-3">
+        <h2 class="display-6 text-white text-uppercase mb-0" style="font-family: var(--cr-font-display);">
+          <i class="bi bi-star-fill text-warning me-3"></i>Estrenos <span class="text-danger">Destacados</span>
+        </h2>
+        <a routerLink="/cartelera" class="text-danger text-decoration-none text-uppercase fw-bold" style="letter-spacing: 1px;">
+          Ver todas <i class="bi bi-arrow-right"></i>
+        </a>
+      </div>
+
+      <!-- Estados de Carga y Error -->
+      @if (cargando) {
+        <div class="text-center py-5">
+          <div class="spinner-border text-danger" role="status"></div>
+        </div>
+      }
+
+      @if (error) {
+        <div class="alert alert-dark text-danger border-danger text-center">
+          <i class="bi bi-exclamation-triangle-fill me-2"></i> {{ error }}
+        </div>
+      }
+
+      <!-- Grid de Destacadas -->
+      @if (!cargando && !error) {
+        <div class="row g-4">
+          @for (peli of peliculasDestacadas; track peli.id) {
+            <div class="col-xl-3 col-lg-4 col-md-6">
+              <div class="card h-100 bg-transparent border-0 movie-card-home" [routerLink]="['/detalle-pelicula', peli.id]">
+                <div class="position-relative overflow-hidden rounded shadow-lg movie-img-container">
+                  <img [src]="peli.imagenUrl || 'assets/images/placeholder-movie.jpg'" 
+                       class="w-100 h-100 object-fit-cover" 
+                       [alt]="peli.titulo">
+                  <div class="movie-overlay-home p-3 d-flex flex-column justify-content-end">
+                    <h5 class="text-white mb-2 movie-title-home">{{ peli.titulo }}</h5>
+                    <span class="text-warning small"><i class="bi bi-ticket-perforated me-1"></i> Comprar Entradas</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      }
+
+    </div>
+  </section>
+
+  <section class="proximos-section py-5" style="background-color: var(--cr-surface);">
+    <div class="container py-4">
+      
+      <div class="d-flex justify-content-between align-items-end mb-5 border-bottom border-dark pb-3">
+        <h2 class="display-6 text-white text-uppercase mb-0" style="font-family: var(--cr-font-display);">
+          <i class="bi bi-calendar-star text-danger me-3"></i>Próximos <span class="text-warning">Estrenos</span>
+        </h2>
+        <a routerLink="/proximos-estrenos" class="text-warning text-decoration-none text-uppercase fw-bold" style="letter-spacing: 1px;">
+          Ver todos <i class="bi bi-arrow-right"></i>
+        </a>
+      </div>
+
+      @if (cargandoProximos) {
+        <div class="text-center py-5">
+          <div class="spinner-border text-warning" role="status"></div>
+        </div>
+      }
+
+      @if (errorProximos) {
+        <div class="alert alert-dark text-warning border-warning text-center">
+          <i class="bi bi-exclamation-triangle-fill me-2"></i> {{ errorProximos }}
+        </div>
+      }
+
+      @if (!cargandoProximos && !errorProximos) {
+        
+        @if (proximosEstrenos.length === 0) {
+          <div class="text-center py-4">
+            <p class="text-muted fs-5">Pronto anunciaremos nuevas películas. ¡Mantente atento!</p>
+          </div>
+        }
+
+        <div class="row g-4">
+          @for (peli of proximosEstrenos; track peli.id) {
+            <div class="col-xl-3 col-lg-4 col-md-6">
+              <div class="card h-100 bg-transparent border-0 movie-card-home" [routerLink]="['/detalle-pelicula', peli.id]">
+                <div class="position-relative overflow-hidden rounded shadow-lg movie-img-container" style="border: 1px solid var(--cr-surface-3);">
+                  <img [src]="peli.imagenUrl || 'assets/images/placeholder-movie.jpg'" 
+                       class="w-100 h-100 object-fit-cover opacity-75" 
+                       [alt]="peli.titulo">
+                  
+                  <div class="position-absolute top-0 end-0 p-2 z-3">
+                    <span class="badge bg-danger border border-light shadow">
+                      Estreno: {{ peli.fechaEstreno }}
+                    </span>
+                  </div>
+
+                  <div class="movie-overlay-home p-3 d-flex flex-column justify-content-end">
+                    <h5 class="text-white mb-2 movie-title-home">{{ peli.titulo }}</h5>
+                    <span class="text-muted small"><i class="bi bi-info-circle me-1"></i> Ver Detalles</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  </section>
+
+</div>
