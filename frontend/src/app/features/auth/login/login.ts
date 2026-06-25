@@ -8,7 +8,7 @@ import { AuthService } from '../../../core/services/auth';
   selector: 'app-login',
   standalone: false,
   templateUrl: './login.html',
-  styleUrl: './login.scss'
+  styleUrl: './login.scss',
 })
 export class LoginComponent {
   loginForm: FormGroup;
@@ -18,11 +18,11 @@ export class LoginComponent {
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
   ) {
     this.loginForm = this.fb.group({
       username: ['', Validators.required],
-      password: ['', Validators.required]
+      password: ['', Validators.required],
     });
   }
 
@@ -32,11 +32,14 @@ export class LoginComponent {
     this.errorMsg = '';
 
     this.authService.login(this.loginForm.value).subscribe({
-      next: () => this.router.navigate(['/dashboard']),
+      next: () => {
+        this.loading = false;
+        this.router.navigate(['/dashboard']);
+      },
       error: () => {
         this.errorMsg = 'Usuario o contraseña incorrectos.';
         this.loading = false;
-      }
+      },
     });
   }
 }
