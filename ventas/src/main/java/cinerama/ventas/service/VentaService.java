@@ -83,15 +83,40 @@ public class VentaService {
             detalle.setTipoItem(detReq.getTipoItem().toUpperCase());
             detalle.setItemId(detReq.getItemId());
             detalle.setCantidad(detReq.getCantidad());
-            detalle.setPrecioUnitario(detReq.getPrecioUnitario());
 
-            // Subtotal = cantidad * precio
-            BigDecimal subtotal = detReq.getPrecioUnitario().multiply(new BigDecimal(detReq.getCantidad()));
+            BigDecimal precioSeguro = detReq.getPrecioUnitario();
+
+            if (detalle.getTipoItem().equals("ENTRADA")) {
+                try {
+                    // Llamamos a Catálogo para obtener la información real del asiento
+                    AsientoDTO asiento = catalogoClient.obtenerAsiento(detReq.getItemId())
+                            .orElseThrow(() -> new IllegalArgumentException("El asiento con ID " + detReq.getItemId() + " no existe."));
+
+                    // Verificar disponibilidad
+                    if ("OCUPADO".equalsIgnoreCase(asiento.getEstado())) {
+                        throw new IllegalArgumentException("El asiento " + asiento.getNumero() + " ya se encuentra ocupado. Por favor, seleccione otro.");
+                    }
+
+                    // Obtener precio desde catálogo (No confiamos en el precio del Request por seguridad)
+                    precioSeguro = BigDecimal.valueOf(asiento.getPrecio());
+
+                } catch (IllegalArgumentException e) {
+                    throw e;
+                } catch (Exception e) {
+                    // Manejo de fallos de comunicación (Try/Catch básico)
+                    throw new IllegalStateException("Error de comunicación con el Catálogo. No se pudo validar la disponibilidad de los asientos. Intente nuevamente.");
+                }
+            }
+
+            detalle.setPrecioUnitario(precioSeguro);
+
+            // Subtotal = cantidad * precio seguro
+            BigDecimal subtotal = precioSeguro.multiply(new BigDecimal(detReq.getCantidad()));
             detalle.setSubtotal(subtotal);
-            detalle.setVenta(venta); // Enlazar detalle a la venta
+            detalle.setVenta(venta);
 
             venta.getDetalles().add(detalle);
-            totalVenta = totalVenta.add(subtotal); // Sumar al total general
+            totalVenta = totalVenta.add(subtotal);
         }
 
         venta.setTotal(totalVenta);
@@ -121,13 +146,15 @@ public class VentaService {
             String asientosTexto = request.getAsientosIds().stream()
                     .map(id -> {
                         try {
+                            catalogoClient.ocuparAsiento(id, "\"OCUPADO\"");
+
                             String numero = catalogoClient.obtenerAsiento(id)
                                     .map(AsientoDTO::getNumero)
                                     .orElse("A" + id);
-                            catalogoClient.ocuparAsiento(id, "\"OCUPADO\"");
+
                             return numero;
                         } catch (Exception e) {
-                            System.err.println("⚠️ Asiento " + id + ": " + e.getMessage());
+                            System.err.println("⚠️ Falló la comunicación con Catálogo para ocupar el asiento ID " + id + ": " + e.getMessage());
                             return "A" + id;
                         }
                     })
