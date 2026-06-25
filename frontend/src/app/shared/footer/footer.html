@@ -1,1 +1,59 @@
-<p>footer works!</p>
+<footer class="cinerama-footer">
+  <div class="container">
+
+    <div class="row gy-4">
+
+      <!-- BRAND -->
+      <div class="col-lg-4">
+        <div class="d-flex align-items-center gap-2 mb-3">
+          <i class="bi bi-camera-reels-fill text-danger fs-4"></i>
+          <span class="footer-brand">CINERAMA</span>
+        </div>
+        <p class="footer-desc">
+          La mejor experiencia cinematográfica del Perú.
+          Cartelera actualizada, reserva online y snacks a tu gusto.
+        </p>
+        <div class="d-flex gap-3 mt-3">
+          <a href="#" class="footer-icon" aria-label="Facebook"><i class="bi bi-facebook"></i></a>
+          <a href="#" class="footer-icon" aria-label="Instagram"><i class="bi bi-instagram"></i></a>
+          <a href="#" class="footer-icon" aria-label="Twitter"><i class="bi bi-twitter-x"></i></a>
+          <a href="#" class="footer-icon" aria-label="TikTok"><i class="bi bi-tiktok"></i></a>
+        </div>
+      </div>
+
+      <!-- NAV LINKS -->
+      <div class="col-6 col-lg-2">
+        <h6 class="footer-heading">Películas</h6>
+        <ul class="footer-links">
+          <li><a routerLink="/cartelera">Cartelera</a></li>
+          <li><a routerLink="/proximos">Próximos estrenos</a></li>
+        </ul>
+      </div>
+
+      <div class="col-6 col-lg-2">
+        <h6 class="footer-heading">Mi cuenta</h6>
+        <ul class="footer-links">
+          <li><a routerLink="/auth/login">Iniciar sesión</a></li>
+          <li><a routerLink="/auth/register">Registrarse</a></li>
+        </ul>
+      </div>
+
+      <div class="col-6 col-lg-2">
+        <h6 class="footer-heading">Más</h6>
+        <ul class="footer-links">
+          <li><a routerLink="/snacks">Snacks</a></li>
+          <li><a routerLink="/compra">Comprar entradas</a></li>
+        </ul>
+      </div>
+
+    </div>
+
+    <hr class="footer-divider" />
+
+    <div class="d-flex flex-column flex-sm-row justify-content-between align-items-center gap-2 footer-bottom">
+      <p class="mb-0">© {{ year }} Cinerama Perú. Todos los derechos reservados.</p>
+      <p class="mb-0 text-faint">Hecho con <i class="bi bi-heart-fill text-danger"></i> en Ica, Perú</p>
+    </div>
+
+  </div>
+</footer>

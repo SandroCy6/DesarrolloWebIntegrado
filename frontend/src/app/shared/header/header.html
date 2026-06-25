@@ -1,1 +1,54 @@
-<p>header works!</p>
+<nav class="navbar navbar-expand-lg navbar-dark cinerama-navbar">
+  <div class="container">
+
+    <!-- BRAND -->
+    <a class="navbar-brand d-flex align-items-center gap-2" routerLink="/">
+      <i class="bi bi-camera-reels-fill text-danger fs-4"></i>
+      <span class="brand-text">CINERAMA</span>
+    </a>
+
+    <!-- TOGGLER MOBILE -->
+    <button class="navbar-toggler border-0" type="button"
+      data-bs-toggle="collapse" data-bs-target="#navMain"
+      aria-controls="navMain" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <!-- LINKS -->
+    <div class="collapse navbar-collapse" id="navMain">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact:true}">
+            <i class="bi bi-house-fill me-1"></i>Inicio
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/cartelera" routerLinkActive="active">
+            <i class="bi bi-film me-1"></i>Cartelera
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/proximos" routerLinkActive="active">
+            <i class="bi bi-calendar-event me-1"></i>Próximos Estrenos
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/snacks" routerLinkActive="active">
+            <i class="bi bi-cup-straw me-1"></i>Snacks
+          </a>
+        </li>
+      </ul>
+
+      <!-- ACCIONES DERECHA -->
+      <div class="d-flex align-items-center gap-2">
+        <a routerLink="/auth/login" class="btn btn-outline-light btn-sm px-3">
+          <i class="bi bi-person me-1"></i>Iniciar sesión
+        </a>
+        <a routerLink="/auth/register" class="btn btn-danger btn-sm px-3">
+          <i class="bi bi-person-plus me-1"></i>Registrarse
+        </a>
+      </div>
+    </div>
+
+  </div>
+</nav>

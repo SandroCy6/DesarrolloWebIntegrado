@@ -1,0 +1,68 @@
+.cinerama-footer {
+  background-color: var(--cr-surface);
+  border-top: 1px solid var(--cr-surface-3);
+  padding: 3rem 0 1.5rem;
+  margin-top: auto;
+
+  .footer-brand {
+    font-family: var(--cr-font-display);
+    font-size: 1.5rem;
+    letter-spacing: 0.12em;
+    color: var(--cr-white);
+  }
+
+  .footer-desc {
+    color: var(--cr-muted) !important;
+    font-size: 0.875rem;
+    line-height: 1.6;
+    max-width: 28ch;
+  }
+
+  .footer-icon {
+    color: var(--cr-muted);
+    font-size: 1.25rem;
+    transition: color 0.2s ease;
+    &:hover {
+      color: var(--cr-gold);
+    }
+  }
+
+  .footer-heading {
+    font-family: var(--cr-font-display);
+    font-size: 0.8rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--cr-red) !important;
+    margin-bottom: 0.75rem;
+  }
+
+  .footer-links {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+
+    li + li { margin-top: 0.4rem; }
+
+    a {
+      color: var(--cr-muted) !important;
+      font-size: 0.875rem;
+      text-decoration: none;
+      transition: color 0.2s ease;
+      &:hover {
+        color: var(--cr-gold) !important;
+      }
+    }
+  }
+
+  .footer-divider {
+    border-color: var(--cr-surface-3);
+    margin: 2rem 0 1rem;
+  }
+
+  .footer-bottom {
+    p, .text-faint {
+      color: var(--cr-faint) !important;
+      font-size: 0.8rem;
+    }
+  }
+}
