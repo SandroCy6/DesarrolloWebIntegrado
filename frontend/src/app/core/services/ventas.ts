@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { VentaRequest } from '../models/venta';
@@ -9,6 +9,8 @@ import { VentaRequest } from '../models/venta';
 })
 export class Ventas {
   private apiUrl = `${environment.apiUrl}/api/ventas`;
+
+  constructor(private http: HttpClient) {} // ← ESTO FALTABA
 
   getVentas(): Observable<any[]> {
     return this.http.get<any[]>(this.apiUrl);
