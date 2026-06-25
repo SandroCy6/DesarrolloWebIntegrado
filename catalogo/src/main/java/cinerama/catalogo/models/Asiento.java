@@ -24,4 +24,8 @@ public class Asiento {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sala_id", nullable = false)
     private Sala sala;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "horario_id", nullable = false)
+    private Horario horario;
 }

@@ -15,6 +15,8 @@ public interface AsientoRepository extends JpaRepository<Asiento, Long> {
 
     List<Asiento> findBySalaId(Long salaId);
 
+    List<Asiento> findByHorarioId(Long horarioId);
+
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("SELECT a FROM Asiento a WHERE a.id = :id")
     Optional<Asiento> findByIdForUpdate(Long id);

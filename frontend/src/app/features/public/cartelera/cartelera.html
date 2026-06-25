@@ -1,1 +1,64 @@
-<p>cartelera works!</p>
+<div class="cartelera-wrapper pt-5 pb-5">
+  <div class="container mt-4">
+    
+    <div class="d-flex align-items-center mb-5 pb-3 border-bottom border-dark position-relative">
+      <h1 class="display-4 text-uppercase mb-0 me-4 fw-bold" style="font-family: var(--cr-font-display); color: var(--cr-white); letter-spacing: 2px;">
+        En <span style="color: var(--cr-red); text-shadow: var(--cr-shadow-glow-red);">Cartelera</span>
+      </h1>
+      <span class="badge badge-format badge-format--imax mt-2 px-3 py-2 fs-6 shadow-sm">Ica Centro</span>
+    </div>
+
+    <div *ngIf="cargando" class="text-center py-5 my-5">
+      <div class="spinner-border" style="color: var(--cr-red); width: 3rem; height: 3rem;" role="status">
+        <span class="visually-hidden">Cargando...</span>
+      </div>
+      <p class="mt-4 text-muted fs-5" style="font-family: var(--cr-font-display); letter-spacing: 1px;">Preparando la sala...</p>
+    </div>
+
+    <div *ngIf="error" class="alert custom-alert-danger text-center shadow-lg border-0 d-flex align-items-center justify-content-center py-4">
+      <i class="bi bi-exclamation-triangle-fill fs-3 me-3 text-danger"></i> 
+      <span class="fs-5">{{ error }}</span>
+    </div>
+
+    <div *ngIf="!cargando && !error" class="row g-4 g-xl-5">
+      <div *ngIf="peliculas.length === 0" class="col-12 text-center py-5">
+        <h4 class="text-muted" style="font-family: var(--cr-font-display); font-size: 2rem;">No hay funciones programadas hoy.</h4>
+      </div>
+
+      <div class="col-xl-3 col-lg-4 col-md-6" *ngFor="let peli of peliculas">
+        <div class="premium-movie-card h-100">
+          
+          <div class="movie-img-container" [routerLink]="['/detalle-pelicula', peli.id]" style="cursor: pointer">
+            <img [src]="peli.imagenUrl || 'assets/images/placeholder-movie.jpg'" 
+                 class="movie-poster" 
+                 [alt]="peli.titulo">
+            
+            <div class="movie-overlay d-flex flex-column justify-content-between p-3">
+              <div class="d-flex justify-content-end">
+                <span class="badge bg-dark border border-secondary text-white shadow-sm">
+                  <i class="bi bi-clock me-1 text-warning"></i>{{ peli.duracion }} min
+                </span>
+              </div>
+              
+              <div class="movie-info text-start">
+                <p class="text-warning small mb-1 fw-bold text-uppercase tracking-wide">{{ peli.genero }}</p>
+                <h5 class="movie-title text-truncate mb-0" [title]="peli.titulo">
+                  {{ peli.titulo }}
+                </h5>
+              </div>
+            </div>
+          </div>
+
+          <div class="card-footer-premium p-3">
+            <button class="btn btn-premium w-100 d-flex align-items-center justify-content-center" [routerLink]="['/detalle-pelicula', peli.id]">
+              <i class="bi bi-ticket-perforated me-2 fs-5"></i>
+              <span>Ver Funciones</span>
+            </button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>

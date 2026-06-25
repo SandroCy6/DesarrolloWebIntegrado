@@ -3,6 +3,7 @@ package cinerama.catalogo.services;
 import cinerama.catalogo.dtos.AsientoDTO;
 import cinerama.catalogo.models.Asiento;
 import cinerama.catalogo.models.EstadoAsiento;
+import cinerama.catalogo.models.Horario;
 import cinerama.catalogo.models.Sala;
 import cinerama.catalogo.repositories.AsientoRepository;
 import jakarta.transaction.Transactional;
@@ -18,6 +19,8 @@ public class AsientoService {
     @Autowired
     private AsientoRepository asientoRepository;
 
+    private List<Asiento> asientos;
+
     private AsientoDTO convertirADTO(Asiento asiento) {
         AsientoDTO dto = new AsientoDTO();
         dto.setId(asiento.getId());
@@ -25,7 +28,17 @@ public class AsientoService {
         dto.setEstado(asiento.getEstado());
         dto.setPrecio(asiento.getPrecio());
         dto.setSalaId(asiento.getSala().getId());
+
+        if (asiento.getHorario() != null) {
+            dto.setHorarioId(asiento.getHorario().getId());
+        }
         return dto;
+    }
+    // NUEVO: Listar asientos por Horario (Para el flujo de compra)
+    public List<AsientoDTO> listarPorHorario(Long horarioId) {
+        return asientoRepository.findByHorarioId(horarioId).stream()
+                .map(this::convertirADTO)
+                .collect(Collectors.toList());
     }
 
     // Tarea 1: Listar asientos de una sala
@@ -58,14 +71,17 @@ public class AsientoService {
         return convertirADTO(asientoRepository.save(asiento));
     }
 
-    public AsientoDTO crearAsiento(Long salaId, AsientoDTO dto) {
+    public AsientoDTO crearAsiento(Long salaId,Long horarioId, AsientoDTO dto) {
         Sala sala = new Sala();
         sala.setId(salaId);
+        Horario horario = new Horario();
+        horario.setId(horarioId);
         Asiento asiento = new Asiento();
         asiento.setNumero(dto.getNumero());
         asiento.setEstado(EstadoAsiento.LIBRE);
         asiento.setPrecio(dto.getPrecio());
         asiento.setSala(sala);
+        asiento.setHorario(horario);
         return convertirADTO(asientoRepository.save(asiento));
     }
 }

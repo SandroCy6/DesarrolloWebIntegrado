@@ -1,17 +1,17 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { Cartelera } from './cartelera';
+import { CarteleraComponent } from './cartelera';
 
 describe('Cartelera', () => {
-  let component: Cartelera;
-  let fixture: ComponentFixture<Cartelera>;
+  let component: CarteleraComponent;
+  let fixture: ComponentFixture<CarteleraComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [Cartelera],
+      imports: [CarteleraComponent],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(Cartelera);
+    fixture = TestBed.createComponent(CarteleraComponent);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });
