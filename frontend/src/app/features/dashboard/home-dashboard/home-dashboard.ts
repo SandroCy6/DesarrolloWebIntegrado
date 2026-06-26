@@ -37,26 +37,23 @@ export class HomeDashboardComponent implements OnInit {
   }
 
   cargarDatos(): void {
-    // Ventas
     this.ventasService.getVentas().subscribe({
       next: (ventas: any[]) => {
         this.totalVentas = ventas.length;
         this.totalIngresos = ventas.reduce((sum, v) => sum + (v.total || 0), 0);
         this.ultimasVentas = ventas.slice(-5).reverse();
-        this.cargando = false;
+        this.cargando = false; // ← éxito
       },
       error: () => {
-        this.cargando = false;
+        this.cargando = false; // ← fallo también apaga el spinner
       },
     });
 
-    // Películas
     this.http.get<any[]>(`${environment.apiUrl}/api/peliculas`).subscribe({
       next: (p) => (this.totalPeliculas = p.length),
       error: () => {},
     });
 
-    // Clientes
     this.http.get<any[]>(`${environment.apiUrl}/api/clientes`).subscribe({
       next: (c) => (this.totalClientes = c.length),
       error: () => {},
