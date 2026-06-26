@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { Router, NavigationEnd, RouterOutlet } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { HeaderComponent } from './shared/header/header';
@@ -12,7 +12,8 @@ import { filter } from 'rxjs/operators';
   templateUrl: './app.html',
   styleUrl: './app.scss',
 })
-export class AppComponent implements OnInit {
+export class App implements OnInit {
+  protected readonly title = signal('cinerama-frontend');
   esDashboard = false;
 
   constructor(private router: Router) {}
