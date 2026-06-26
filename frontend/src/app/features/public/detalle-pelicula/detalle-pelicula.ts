@@ -6,7 +6,7 @@ import { CatalogoService } from '../../../core/services/catalogo';
 import { Pelicula } from '../../../core/models/pelicula';
 import { Horario } from '../../../core/models/horario';
 import { Asiento, EstadoAsiento } from '../../../core/models/asiento';
-
+import { Router } from '@angular/router';
 @Component({
   selector: 'app-detalle-pelicula',
   standalone: true,
@@ -15,6 +15,8 @@ import { Asiento, EstadoAsiento } from '../../../core/models/asiento';
   styleUrl: './detalle-pelicula.scss',
 })
 export class DetallePeliculaComponent implements OnInit {
+  total: number = 0;
+  cantidadSeleccionada: number = 0;
   pelicula: Pelicula | null = null;
   horarios: Horario[] = [];
   trailerSeguro: SafeResourceUrl | null = null;
@@ -34,17 +36,18 @@ export class DetallePeliculaComponent implements OnInit {
     private route: ActivatedRoute,
     private catalogoService: CatalogoService,
     private sanitizer: DomSanitizer,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private router: Router,
   ) {}
 
   ngOnInit(): void {
     // 1. Capturamos el ID de la URL
     const id = Number(this.route.snapshot.paramMap.get('id'));
-    
+
     if (id) {
       this.cargarDetalle(id);
     } else {
-      this.error = "Película no encontrada";
+      this.error = 'Película no encontrada';
       this.cargando = false;
     }
   }
@@ -53,7 +56,7 @@ export class DetallePeliculaComponent implements OnInit {
     this.catalogoService.obtenerPeliculaPorId(id).subscribe({
       next: (data) => {
         this.pelicula = data;
-        
+
         // 2. Convertimos la URL normal de YouTube a una URL 'embed' segura
         if (data.trailerUrl) {
           // Extrae el ID del video de YouTube (ej: de ?v=avengers a avengers)
@@ -71,24 +74,26 @@ export class DetallePeliculaComponent implements OnInit {
         this.error = 'No se pudo cargar la información de la película.';
         this.cargando = false;
         this.cdr.detectChanges();
-      }
+      },
     });
   }
-  
+
   cargarHorarios(peliculaId: number): void {
     this.cargandoHorarios = true;
-    this.catalogoService.obtenerHorariosPorPeliculaYFecha(peliculaId, this.fechaSeleccionada).subscribe({
-      next: (data) => {
-        this.horarios = data;
-        this.cargandoHorarios = false;
-        this.cdr.detectChanges();
-      },
-      error: (err) => {
-        console.error('No se pudieron cargar los horarios', err);
-        this.cargandoHorarios = false;
-        this.cdr.detectChanges();
-      }
-    });
+    this.catalogoService
+      .obtenerHorariosPorPeliculaYFecha(peliculaId, this.fechaSeleccionada)
+      .subscribe({
+        next: (data) => {
+          this.horarios = data;
+          this.cargandoHorarios = false;
+          this.cdr.detectChanges();
+        },
+        error: (err) => {
+          console.error('No se pudieron cargar los horarios', err);
+          this.cargandoHorarios = false;
+          this.cdr.detectChanges();
+        },
+      });
   }
 
   cambiarFecha(event: any): void {
@@ -100,11 +105,13 @@ export class DetallePeliculaComponent implements OnInit {
 
   seleccionarHorario(horario: Horario): void {
     this.horarioSeleccionado = horario;
-    this.asientosSeleccionados = []; // Reiniciamos selección
+    this.asientosSeleccionados = [];
+    this.actualizarTotales();
+    // Reiniciamos selección
     this.cargandoAsientos = true;
     this.cdr.detectChanges();
-    
-    this.catalogoService.obtenerAsientosPorHorario(horario.id).subscribe({
+
+    this.catalogoService.obtenerAsientosPorSala(horario.salaId).subscribe({
       next: (data) => {
         setTimeout(() => {
           this.asientos = data;
@@ -118,27 +125,29 @@ export class DetallePeliculaComponent implements OnInit {
           this.cargandoAsientos = false;
           this.cdr.detectChanges();
         }, 0);
-      }
+      },
     });
   }
   // Lógica para marcar o desmarcar un asiento
   toggleAsiento(asiento: Asiento): void {
-    if (asiento.estado !== EstadoAsiento.LIBRE) return; // Protección extra
+    if (asiento.estado !== EstadoAsiento.LIBRE) return;
 
-    const index = this.asientosSeleccionados.findIndex(a => a.id === asiento.id);
+    const index = this.asientosSeleccionados.findIndex((a) => a.id === asiento.id);
     if (index > -1) {
-      // Si ya estaba seleccionado, lo quitamos
       this.asientosSeleccionados.splice(index, 1);
     } else {
-      // Si no estaba, lo agregamos
       this.asientosSeleccionados.push(asiento);
     }
+    this.actualizarTotales(); // ← recalcula una sola vez
     this.cdr.detectChanges();
   }
-
+  actualizarTotales(): void {
+    this.cantidadSeleccionada = this.asientosSeleccionados.length;
+    this.total = this.asientosSeleccionados.reduce((sum, a) => sum + a.precio, 0);
+  }
   // Verifica visualmente si un asiento está en la lista de seleccionados
   esAsientoSeleccionado(asiento: Asiento): boolean {
-    return this.asientosSeleccionados.some(a => a.id === asiento.id);
+    return this.asientosSeleccionados.some((a) => a.id === asiento.id);
   }
 
   // Calcula el total a pagar en tiempo real
@@ -147,6 +156,23 @@ export class DetallePeliculaComponent implements OnInit {
   }
 
   obtenerNumerosAsientos(): string {
-    return this.asientosSeleccionados.map(asiento => asiento.numero).join(', ');
+    return this.asientosSeleccionados.map((asiento) => asiento.numero).join(', ');
+  }
+  irACompra(): void {
+    if (!this.horarioSeleccionado || this.asientosSeleccionados.length === 0) return;
+
+    this.router.navigate(['/compra'], {
+      queryParams: {
+        horarioId: this.horarioSeleccionado.id,
+        funcionId: this.horarioSeleccionado.id,
+        pelicula: this.pelicula?.titulo,
+        fecha: this.fechaSeleccionada,
+        hora: this.horarioSeleccionado.horaInicio.substring(0, 5),
+        sala: this.horarioSeleccionado.numeroSala,
+        asientos: this.asientosSeleccionados.map((a) => a.numero).join(','),
+        total: this.total.toFixed(2),
+        cantidad: this.cantidadSeleccionada,
+      },
+    });
   }
 }

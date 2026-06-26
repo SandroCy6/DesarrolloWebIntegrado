@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { Ventas } from '../../../core/services/ventas';
 import { VentaRequest } from '../../../core/models/venta';
+
 @Component({
   selector: 'app-compra',
   standalone: true,
@@ -12,21 +13,32 @@ import { VentaRequest } from '../../../core/models/venta';
   styleUrl: './compra.scss',
 })
 export class CompraComponent implements OnInit {
+  // Datos recibidos desde detalle-pelicula via queryParams
+  asientosDisponibles: string[] = [];
+  horarioId: number = 0;
   funcionId: string = '';
+  peliculaNombre: string = '';
+  fecha: string = '';
+  hora: string = '';
+  sala: string = '';
+  asientosSeleccionados: string[] = [];
+  total: number = 0;
+  cantidad: number = 0;
+  precioPorBoleto: number = 0;
 
-  // Objeto que se enviará al backend
+  // Datos del cliente (formulario)
   ventaRequest = {
     dni: '',
-    cantidad: 1,
+    correo: '',
+    celular: '',
+    nombre: '',
+    tokenTarjeta: '',
     metodoPago: 'TARJETA',
-    asientos: [] as string[],
+    cantidad: 1, // ← re-agrega
+    asientos: [] as string[], // ← re-agrega
   };
 
-  // Datos simulados (luego se conectarán con el servicio de Catálogo)
-  asientosDisponibles: string[] = ['A1', 'A2', 'A3', 'B1', 'B2', 'B3'];
-  precioPorBoleto: number = 20.0;
-
-  // Control de la vista
+  // Control de vista
   procesando: boolean = false;
   compraExitosa: boolean = false;
   codigoTransaccion: string = '';
@@ -36,13 +48,7 @@ export class CompraComponent implements OnInit {
     private route: ActivatedRoute,
     private ventasService: Ventas,
   ) {}
-
-  ngOnInit(): void {
-    // Obtenemos el ID de la función desde la URL (ej: /compra/12)
-    this.funcionId = this.route.snapshot.paramMap.get('id') || '';
-  }
-
-  toggleAsiento(asiento: string) {
+  toggleAsiento(asiento: string): void {
     const index = this.ventaRequest.asientos.indexOf(asiento);
     if (index > -1) {
       this.ventaRequest.asientos.splice(index, 1);
@@ -50,14 +56,29 @@ export class CompraComponent implements OnInit {
       this.ventaRequest.asientos.push(asiento);
     }
   }
+  ngOnInit(): void {
+    this.route.queryParams.subscribe((params) => {
+      this.horarioId = +params['horarioId'] || 0;
+      this.funcionId = params['funcionId'] || '';
+      this.peliculaNombre = params['pelicula'] || '';
+      this.fecha = params['fecha'] || '';
+      this.hora = params['hora'] || '';
+      this.sala = params['sala'] || '';
+      this.total = +params['total'] || 0;
+      this.cantidad = +params['cantidad'] || 0;
+      this.asientosSeleccionados = params['asientos'] ? params['asientos'].split(',') : [];
+      this.precioPorBoleto = this.cantidad > 0 ? this.total / this.cantidad : 0;
 
-  calcularTotal(): number {
-    return this.ventaRequest.cantidad * this.precioPorBoleto;
+      // Sincroniza con ventaRequest para que el HTML funcione
+      this.ventaRequest.cantidad = this.cantidad;
+      this.ventaRequest.asientos = [...this.asientosSeleccionados];
+      this.asientosDisponibles = [...this.asientosSeleccionados];
+    });
   }
-  // Reemplaza el método procesarCompra() con esto:
-  procesarCompra() {
-    if (this.ventaRequest.asientos.length !== this.ventaRequest.cantidad) {
-      this.mensajeError = 'Selecciona todos tus asientos antes de continuar.';
+
+  procesarCompra(): void {
+    if (!this.ventaRequest.dni || !this.ventaRequest.correo || !this.ventaRequest.tokenTarjeta) {
+      this.mensajeError = 'Por favor completa todos los campos requeridos.';
       return;
     }
 
@@ -66,13 +87,15 @@ export class CompraComponent implements OnInit {
 
     const payload: VentaRequest = {
       clienteDni: this.ventaRequest.dni,
-      clienteCorreo: '', // agrega un campo en ventaRequest si lo necesitas
-      horarioId: +this.funcionId, // convierte string a number
+      clienteCorreo: this.ventaRequest.correo,
+      clienteCelular: this.ventaRequest.celular,
+      clienteNombre: this.ventaRequest.nombre,
+      horarioId: this.horarioId,
       metodoPago: this.ventaRequest.metodoPago,
-      tokenTarjeta: '', // agrega campo o usa valor temporal
-      detalles: this.ventaRequest.asientos.map((asiento) => ({
+      tokenTarjeta: this.ventaRequest.tokenTarjeta,
+      detalles: this.asientosSeleccionados.map((asiento) => ({
         tipoItem: 'ENTRADA' as const,
-        itemId: 0, // adapta según tu lógica de asientos
+        itemId: 0,
         cantidad: 1,
         precioUnitario: this.precioPorBoleto,
       })),
@@ -88,9 +111,13 @@ export class CompraComponent implements OnInit {
       },
       error: (err) => {
         this.procesando = false;
-        this.mensajeError = 'Error al procesar el pago. Verifica tus datos o intenta más tarde.';
+        this.mensajeError = 'Error al procesar el pago. Verifica tus datos e intenta de nuevo.';
         console.error(err);
       },
     });
+  }
+
+  calcularTotal(): number {
+    return this.total;
   }
 }

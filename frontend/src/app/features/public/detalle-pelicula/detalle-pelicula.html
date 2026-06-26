@@ -1,8 +1,11 @@
 <div class="detalle-wrapper pt-5 pb-5 position-relative">
   <div class="container mt-4 position-relative z-1">
-    
     <div *ngIf="cargando" class="text-center py-5 my-5">
-      <div class="spinner-border" style="color: var(--cr-red); width: 3rem; height: 3rem;" role="status"></div>
+      <div
+        class="spinner-border"
+        style="color: var(--cr-red); width: 3rem; height: 3rem"
+        role="status"
+      ></div>
     </div>
 
     <div *ngIf="error" class="alert custom-alert-danger border-0 shadow-lg text-center py-4">
@@ -13,58 +16,107 @@
     </div>
 
     <div *ngIf="!cargando && pelicula" class="row gx-lg-5">
-      
       <div class="col-lg-4 mb-5 mb-lg-0">
-        <div class="poster-container shadow-lg rounded overflow-hidden sticky-lg-top" style="top: 100px;">
-          <img [src]="pelicula.imagenUrl || 'assets/images/placeholder-movie.jpg'" 
-               [alt]="pelicula.titulo" 
-               class="img-fluid w-100 poster-image">
+        <div
+          class="poster-container shadow-lg rounded overflow-hidden sticky-lg-top"
+          style="top: 100px"
+        >
+          <img
+            [src]="pelicula.imagenUrl || 'assets/images/placeholder-movie.jpg'"
+            [alt]="pelicula.titulo"
+            class="img-fluid w-100 poster-image"
+          />
         </div>
       </div>
 
       <div class="col-lg-8">
-        <h1 class="display-3 text-white text-uppercase fw-bold mb-3" style="font-family: var(--cr-font-display); letter-spacing: 2px;">
+        <h1
+          class="display-3 text-white text-uppercase fw-bold mb-3"
+          style="font-family: var(--cr-font-display); letter-spacing: 2px"
+        >
           {{ pelicula.titulo }}
         </h1>
-        
+
         <div class="d-flex flex-wrap gap-2 mb-4">
           <span class="badge badge-format badge-format--imax py-2 px-3 fs-6">IMAX</span>
-          <span class="badge bg-transparent border border-secondary text-white py-2 px-3 fs-6 rounded-pill">{{ pelicula.genero }}</span>
-          <span class="badge bg-transparent border border-secondary text-white py-2 px-3 fs-6 rounded-pill">
+          <span
+            class="badge bg-transparent border border-secondary text-white py-2 px-3 fs-6 rounded-pill"
+            >{{ pelicula.genero }}</span
+          >
+          <span
+            class="badge bg-transparent border border-secondary text-white py-2 px-3 fs-6 rounded-pill"
+          >
             <i class="bi bi-clock text-warning me-2"></i>{{ pelicula.duracion }} min
           </span>
-          <span *ngIf="pelicula.fechaEstreno" class="badge bg-transparent border border-secondary text-white py-2 px-3 fs-6 rounded-pill">
+          <span
+            *ngIf="pelicula.fechaEstreno"
+            class="badge bg-transparent border border-secondary text-white py-2 px-3 fs-6 rounded-pill"
+          >
             <i class="bi bi-calendar-event text-danger me-2"></i>{{ pelicula.fechaEstreno }}
           </span>
         </div>
 
-        <h4 class="mb-3 text-uppercase" style="font-family: var(--cr-font-display); color: var(--cr-red); font-size: 1.4rem; letter-spacing: 1px;">
-        Sinopsis
+        <h4
+          class="mb-3 text-uppercase"
+          style="
+            font-family: var(--cr-font-display);
+            color: var(--cr-red);
+            font-size: 1.4rem;
+            letter-spacing: 1px;
+          "
+        >
+          Sinopsis
         </h4>
         <p class="movie-synopsis mb-5">
-        {{ pelicula.sinopsis }}
+          {{ pelicula.sinopsis }}
         </p>
 
         <div *ngIf="trailerSeguro" class="mb-5">
-          <h4 class="text-white mb-3 text-uppercase" style="font-family: var(--cr-font-display);">
+          <h4 class="text-white mb-3 text-uppercase" style="font-family: var(--cr-font-display)">
             <i class="bi bi-play-fill text-danger me-2"></i>Tráiler Oficial
           </h4>
-          <div class="ratio ratio-16x9 rounded-4 overflow-hidden shadow-lg border border-secondary trailer-container">
-            <iframe [src]="trailerSeguro" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+          <div
+            class="ratio ratio-16x9 rounded-4 overflow-hidden shadow-lg border border-secondary trailer-container"
+          >
+            <iframe
+              [src]="trailerSeguro"
+              title="YouTube video player"
+              frameborder="0"
+              allow="
+                accelerometer;
+                autoplay;
+                clipboard-write;
+                encrypted-media;
+                gyroscope;
+                picture-in-picture;
+              "
+              allowfullscreen
+            ></iframe>
           </div>
         </div>
 
         <div class="funciones-section p-4 p-lg-5 rounded-4 mt-5">
-          <h3 class="text-white mb-4 d-flex align-items-center text-uppercase" style="font-family: var(--cr-font-display); letter-spacing: 1px;">
+          <h3
+            class="text-white mb-4 d-flex align-items-center text-uppercase"
+            style="font-family: var(--cr-font-display); letter-spacing: 1px"
+          >
             <i class="bi bi-ticket-detailed-fill text-warning me-3 fs-2"></i> Compra tus Entradas
           </h3>
 
-          <div class="mb-5 d-flex flex-column flex-md-row align-items-md-center bg-dark p-3 rounded-3 border border-secondary">
-            <label class="text-muted me-3 mb-2 mb-md-0 fw-bold text-uppercase" style="letter-spacing: 1px; font-size: 0.85rem;">Fecha de función:</label>
-            <input type="date" 
-                   class="form-control bg-transparent text-white border-0 shadow-none date-picker-premium w-auto cursor-pointer" 
-                   [value]="fechaSeleccionada" 
-                   (change)="cambiarFecha($event)">
+          <div
+            class="mb-5 d-flex flex-column flex-md-row align-items-md-center bg-dark p-3 rounded-3 border border-secondary"
+          >
+            <label
+              class="text-muted me-3 mb-2 mb-md-0 fw-bold text-uppercase"
+              style="letter-spacing: 1px; font-size: 0.85rem"
+              >Fecha de función:</label
+            >
+            <input
+              type="date"
+              class="form-control bg-transparent text-white border-0 shadow-none date-picker-premium w-auto cursor-pointer"
+              [value]="fechaSeleccionada"
+              (change)="cambiarFecha($event)"
+            />
           </div>
 
           @if (cargandoHorarios) {
@@ -73,124 +125,148 @@
               <span class="text-muted fs-5">Buscando las mejores salas...</span>
             </div>
           } @else {
-            
             @if (horarios.length === 0) {
-              <div class="alert custom-alert-danger text-white border-0 d-flex align-items-center p-4">
+              <div
+                class="alert custom-alert-danger text-white border-0 d-flex align-items-center p-4"
+              >
                 <i class="bi bi-calendar-x me-3 fs-3 text-muted"></i>
                 <span class="fs-5 text-muted">No hay funciones programadas para esta fecha.</span>
               </div>
             } @else {
-              
               <div class="d-flex flex-wrap gap-3">
                 @for (horario of horarios; track horario.id) {
-                  <button class="btn-horario"
-                          [class.seleccionado]="horarioSeleccionado?.id === horario.id"
-                          (click)="seleccionarHorario(horario)">
+                  <button
+                    class="btn-horario"
+                    [class.seleccionado]="horarioSeleccionado?.id === horario.id"
+                    (click)="seleccionarHorario(horario)"
+                  >
                     <div class="horario-hora">
                       {{ horario.horaInicio.substring(0, 5) }}
                     </div>
                     <div class="horario-sala">
                       <i class="bi bi-door-open me-1"></i> Sala {{ horario.numeroSala }}
                     </div>
-                    <div class="horario-precio">
-                      S/ {{ horario.precio.toFixed(2) }}
-                    </div>
+                    <div class="horario-precio">S/ {{ horario.precio.toFixed(2) }}</div>
                   </button>
                 }
               </div>
 
-             
-              
+              @if (horarioSeleccionado) {
+                <div class="asientos-wrapper mt-5 pt-5 border-top border-secondary fade-in">
+                  <h3
+                    class="text-white mb-4 d-flex align-items-center text-uppercase"
+                    style="font-family: var(--cr-font-display); letter-spacing: 1px"
+                  >
+                    <i class="bi bi-grid-3x3-gap-fill text-danger me-3 fs-2"></i> Elige tus asientos
+                  </h3>
 
-        @if (horarioSeleccionado) {
-        <div class="asientos-wrapper mt-5 pt-5 border-top border-secondary fade-in">
-            <h3 class="text-white mb-4 d-flex align-items-center text-uppercase" style="font-family: var(--cr-font-display); letter-spacing: 1px;">
-            <i class="bi bi-grid-3x3-gap-fill text-danger me-3 fs-2"></i> Elige tus asientos
-            </h3>
+                  @if (cargandoAsientos) {
+                    <div class="text-center py-5">
+                      <div
+                        class="spinner-grow text-danger"
+                        style="width: 3rem; height: 3rem"
+                        role="status"
+                      ></div>
+                      <p class="mt-3 text-muted">Cargando disponibilidad de la sala...</p>
+                    </div>
+                  } @else {
+                    <div
+                      class="sala-cine-container p-4 p-md-5 rounded-4 shadow-lg text-center mb-4"
+                    >
+                      <div class="pantalla-cine-wrapper">
+                        <div class="pantalla-cine"></div>
+                        <div class="pantalla-texto">PANTALLA</div>
+                      </div>
 
-            @if (cargandoAsientos) {
-            <div class="text-center py-5">
-                <div class="spinner-grow text-danger" style="width: 3rem; height: 3rem;" role="status"></div>
-                <p class="mt-3 text-muted">Cargando disponibilidad de la sala...</p>
-            </div>
-            } @else {
-            
-            <div class="sala-cine-container p-4 p-md-5 rounded-4 shadow-lg text-center mb-4">
-                
-                <div class="pantalla-cine-wrapper">
-            <div class="pantalla-cine"></div>
-            <div class="pantalla-texto">
-            PANTALLA
-            </div>
-        </div>
+                      <div class="asientos-grid">
+                        @for (asiento of asientos; track asiento.id) {
+                          <button
+                            class="asiento-btn"
+                            [disabled]="
+                              asiento.estado === 'OCUPADO' || asiento.estado === 'MANTENIMIENTO'
+                            "
+                            [class.ocupado]="asiento.estado === 'OCUPADO'"
+                            [class.mantenimiento]="asiento.estado === 'MANTENIMIENTO'"
+                            [class.seleccionado]="esAsientoSeleccionado(asiento)"
+                            (click)="toggleAsiento(asiento)"
+                            [title]="'Asiento ' + asiento.numero + ' - S/ ' + asiento.precio"
+                          >
+                            {{ asiento.numero }}
+                          </button>
+                        }
+                      </div>
 
-        <div class="asientos-grid">
-          @for (asiento of asientos; track asiento.id) {
-            <button class="asiento-btn"
-                    [disabled]="asiento.estado === 'OCUPADO' || asiento.estado === 'MANTENIMIENTO'"
-                    [class.ocupado]="asiento.estado === 'OCUPADO'"
-                    [class.mantenimiento]="asiento.estado === 'MANTENIMIENTO'"
-                    [class.seleccionado]="esAsientoSeleccionado(asiento)"
-                    (click)="toggleAsiento(asiento)"
-                    [title]="'Asiento ' + asiento.numero + ' - S/ ' + asiento.precio">
-              {{ asiento.numero }}
-            </button>
-          }
-        </div>
+                      <div class="leyenda-asientos">
+                        <div class="leyenda-item">
+                          <div class="leyenda-box libre"></div>
+                          <span>Libre</span>
+                        </div>
 
-        <div class="leyenda-asientos">
+                        <div class="leyenda-item">
+                          <div class="leyenda-box ocupado"></div>
+                          <span>Ocupado</span>
+                        </div>
 
-                <div class="leyenda-item">
-                <div class="leyenda-box libre"></div>
-                <span>Libre</span>
+                        <div class="leyenda-item">
+                          <div class="leyenda-box seleccionado"></div>
+                          <span>Tu selección</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    @if (asientosSeleccionados.length > 0) {
+                      <div
+                        class="checkout-bar p-4 rounded-4 d-flex justify-content-between align-items-center flex-wrap gap-4 slide-up"
+                      >
+                        <div>
+                          <h5
+                            class="text-white mb-2"
+                            style="
+                              font-family: var(--cr-font-display);
+                              letter-spacing: 1px;
+                              font-size: 1.5rem;
+                            "
+                          >
+                            Entradas seleccionadas:
+                            <span class="text-danger">{{ cantidadSeleccionada }}</span>
+                          </h5>
+                          <p class="text-muted mb-0 font-monospace">
+                            Butacas: {{ obtenerNumerosAsientos() }}
+                          </p>
+                        </div>
+                        <div
+                          class="text-end d-flex flex-column flex-md-row align-items-md-center gap-4"
+                        >
+                          <div class="d-flex flex-column text-md-end">
+                            <span class="text-muted small text-uppercase tracking-wide"
+                              >Total a pagar</span
+                            >
+                            <span
+                              class="text-warning display-6 fw-bold"
+                              style="font-family: var(--cr-font-display)"
+                            >
+                              S/ {{ total.toFixed(2) }}
+                            </span>
+                          </div>
+                          <button
+                            class="btn btn-primary btn-checkout px-5 py-3 fw-bold text-uppercase d-flex align-items-center justify-content-center"
+                            (click)="irACompra()"
+                          >
+                            Continuar al Pago <i class="bi bi-arrow-right ms-2 fs-5"></i>
+                          </button>
+                        </div>
+                      </div>
+                    }
+                  }
                 </div>
-
-                <div class="leyenda-item">
-                <div class="leyenda-box ocupado"></div>
-                <span>Ocupado</span>
-                </div>
-
-                <div class="leyenda-item">
-                <div class="leyenda-box seleccionado"></div>
-                <span>Tu selección</span>
-                </div>
-        </div>
-    </div>
-
-      @if (asientosSeleccionados.length > 0) {
-        <div class="checkout-bar p-4 rounded-4 d-flex justify-content-between align-items-center flex-wrap gap-4 slide-up">
-          <div>
-            <h5 class="text-white mb-2" style="font-family: var(--cr-font-display); letter-spacing: 1px; font-size: 1.5rem;">
-              Entradas seleccionadas: <span class="text-danger">{{ asientosSeleccionados.length }}</span>
-            </h5>
-            <p class="text-muted mb-0 font-monospace">
-              Butacas: {{ obtenerNumerosAsientos() }}
-            </p>
-          </div>
-          <div class="text-end d-flex flex-column flex-md-row align-items-md-center gap-4">
-            <div class="d-flex flex-column text-md-end">
-              <span class="text-muted small text-uppercase tracking-wide">Total a pagar</span>
-              <span class="text-warning display-6 fw-bold" style="font-family: var(--cr-font-display);">
-                S/ {{ calcularTotal().toFixed(2) }}
-              </span>
-            </div>
-            <button class="btn btn-primary btn-checkout px-5 py-3 fw-bold text-uppercase d-flex align-items-center justify-content-center">
-              Continuar al Pago <i class="bi bi-arrow-right ms-2 fs-5"></i>
-            </button>
-          </div>
-        </div>
-      }
-    }
-  </div>
-}
+              }
               <div class="info-note-premium mt-4">
-                <i class="bi bi-info-circle-fill fs-5"></i> 
+                <i class="bi bi-info-circle-fill fs-5"></i>
                 <span>Selecciona el horario que prefieras para proceder a elegir tus butacas.</span>
               </div>
             }
           }
         </div>
-
       </div>
     </div>
   </div>

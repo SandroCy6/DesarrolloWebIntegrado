@@ -1,5 +1,8 @@
-<app-header />
-
+<ng-container *ngIf="!esDashboard">
+  <app-header />
+</ng-container>
 <router-outlet />
 
-<app-footer />
+<ng-container *ngIf="!esDashboard">
+  <app-footer />
+</ng-container>
