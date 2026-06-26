@@ -5,16 +5,17 @@ import { LayoutComponent } from './layout/layout';
 import { HomeDashboardComponent } from './home-dashboard/home-dashboard';
 import { NavbarDashboardComponent } from '../../shared/navbar-dashboard/navbar-dashboard';
 import { RouterModule } from '@angular/router';
+
 @NgModule({
   declarations: [
-    LayoutComponent, // standalone: false → declarations
-    NavbarDashboardComponent, // standalone: false → declarations
+    LayoutComponent,
+    NavbarDashboardComponent,
+    HomeDashboardComponent, // standalone: false → declarations ✓
   ],
   imports: [
     CommonModule,
     DashboardRoutingModule,
-    RouterModule, 
-    HomeDashboardComponent, // standalone (default) → imports
+    RouterModule,
   ],
 })
 export class DashboardModule {}
