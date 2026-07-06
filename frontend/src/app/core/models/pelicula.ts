@@ -1,5 +1,6 @@
 export interface Pelicula {
-  id: number;
+  id?: number;
+  tmdbId?: number;
   titulo: string;
   sinopsis: string;
   genero: string;

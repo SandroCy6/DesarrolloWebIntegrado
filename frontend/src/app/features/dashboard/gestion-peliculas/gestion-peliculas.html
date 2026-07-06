@@ -51,10 +51,14 @@
     </div>
   }
 
+  <!-- VISTA 2: EL FORMULARIO -->
   @else {
     <div class="card bg-dark border-secondary">
       <div class="card-header border-secondary d-flex justify-content-between align-items-center">
-        <h5 class="mb-0 text-white">{{ peliculaActual.id ? 'Editar Película' : 'Nueva Película' }}</h5>
+        <h5 class="mb-0 text-white">
+          <i class="bi bi-film me-2"></i>
+          {{ peliculaActual.id ? 'Editar Película' : 'Nueva Película' }}
+        </h5>
         <button class="btn btn-sm btn-outline-light" (click)="volverALista()">
           <i class="bi bi-arrow-left me-2"></i>Volver
         </button>
@@ -62,20 +66,69 @@
       <div class="card-body">
         
         <div class="row g-3">
-          <div class="col-md-6">
-            <label class="form-label text-light">Título</label>
-            <input type="text" class="form-control bg-black text-white border-secondary" [(ngModel)]="peliculaActual.titulo">
+          
+          <!-- FILA 1: Identificadores (Solo Lectura) -->
+          <!-- Solo se muestran si la película ya existe -->
+          @if (peliculaActual.id) {
+            <div class="col-md-6">
+              <label class="form-label text-secondary">ID Interno (No editable)</label>
+              <input type="text" class="form-control bg-black text-secondary border-secondary" [value]="peliculaActual.id" readonly disabled>
+            </div>
+          }
+          
+          @if (peliculaActual.tmdbId) {
+            <div class="col-md-6">
+              <label class="form-label text-info"><i class="bi bi-cloud-check me-1"></i>ID TMDB (Importada)</label>
+              <input type="text" class="form-control bg-black text-info border-info" [value]="peliculaActual.tmdbId" readonly disabled>
+            </div>
+          }
+
+          <!-- FILA 2: Datos Principales -->
+          <div class="col-md-8">
+            <label class="form-label text-light">Título de la Película</label>
+            <input type="text" class="form-control bg-black text-white border-secondary" [(ngModel)]="peliculaActual.titulo" placeholder="Ej: Avengers: Endgame">
           </div>
-          <div class="col-md-6">
+          <div class="col-md-4">
             <label class="form-label text-light">Género</label>
-            <input type="text" class="form-control bg-black text-white border-secondary" [(ngModel)]="peliculaActual.genero">
-          </div>
+            <input type="text" class="form-control bg-black text-white border-secondary" [(ngModel)]="peliculaActual.genero" placeholder="Ej: Acción, Ciencia Ficción">
           </div>
 
-        <div class="mt-4 text-end">
-          <button class="btn btn-secondary me-2" (click)="volverALista()">Cancelar</button>
-          <button class="btn btn-danger" (click)="guardarPelicula()">
-            <i class="bi bi-save me-2"></i>Guardar Película
+          <!-- FILA 3: Detalles Técnicos -->
+          <div class="col-md-6">
+            <label class="form-label text-light">Fecha de Estreno</label>
+            <input type="date" class="form-control bg-black text-white border-secondary" [(ngModel)]="peliculaActual.fechaEstreno">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label text-light">Duración (minutos)</label>
+            <div class="input-group">
+              <input type="number" class="form-control bg-black text-white border-secondary" [(ngModel)]="peliculaActual.duracion" placeholder="120">
+              <span class="input-group-text bg-secondary text-white border-secondary">min</span>
+            </div>
+          </div>
+
+          <!-- FILA 4: Sinopsis -->
+          <div class="col-12">
+            <label class="form-label text-light">Sinopsis</label>
+            <textarea class="form-control bg-black text-white border-secondary" [(ngModel)]="peliculaActual.sinopsis" rows="4" placeholder="Describe la trama de la película..."></textarea>
+          </div>
+
+          <!-- FILA 5: Multimedia -->
+          <div class="col-md-6">
+            <label class="form-label text-light">URL del Póster (Imagen)</label>
+            <input type="text" class="form-control bg-black text-white border-secondary" [(ngModel)]="peliculaActual.imagenUrl" placeholder="https://ejemplo.com/poster.jpg">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label text-light">URL del Tráiler (YouTube)</label>
+            <input type="text" class="form-control bg-black text-white border-secondary" [(ngModel)]="peliculaActual.trailerUrl" placeholder="https://youtube.com/watch?v=...">
+          </div>
+
+        </div>
+
+        <!-- Botones de Acción -->
+        <div class="mt-4 text-end border-top border-secondary pt-3">
+          <button class="btn btn-outline-secondary me-2" (click)="volverALista()">Cancelar</button>
+          <button class="btn btn-danger px-4" (click)="guardarPelicula()">
+            <i class="bi bi-save me-2"></i>Guardar Cambios
           </button>
         </div>
 

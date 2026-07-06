@@ -30,7 +30,17 @@ export class DetallePeliculaComponent implements OnInit {
   cargandoHorarios: boolean = false;
   error: string | null = null;
 
-  fechaSeleccionada: string = new Date().toISOString().split('T')[0];
+fechaSeleccionada = this.obtenerFechaHoy();
+
+private obtenerFechaHoy(): string {
+  const hoy = new Date();
+
+  return [
+    hoy.getFullYear(),
+    String(hoy.getMonth() + 1).padStart(2, '0'),
+    String(hoy.getDate()).padStart(2, '0')
+  ].join('-');
+}
 
   constructor(
     private route: ActivatedRoute,
@@ -98,7 +108,7 @@ export class DetallePeliculaComponent implements OnInit {
 
   cambiarFecha(event: any): void {
     this.fechaSeleccionada = event.target.value;
-    if (this.pelicula) {
+    if (this.pelicula && this.pelicula.id) {
       this.cargarHorarios(this.pelicula.id);
     }
   }

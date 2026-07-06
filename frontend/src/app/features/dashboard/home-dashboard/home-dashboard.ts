@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit,ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../../core/services/auth';
 import { Ventas } from '../../../core/services/ventas';
@@ -28,6 +28,7 @@ export class HomeDashboardComponent implements OnInit {
     private auth: AuthService,
     private ventasService: Ventas,
     private http: HttpClient,
+    private cdr: ChangeDetectorRef,
   ) {
     this.username = auth.getUsername();
   }
@@ -46,6 +47,7 @@ export class HomeDashboardComponent implements OnInit {
       },
       error: () => {
         this.cargando = false; // ← fallo también apaga el spinner
+        this.cdr.detectChanges();
       },
     });
 
@@ -58,5 +60,5 @@ export class HomeDashboardComponent implements OnInit {
       next: (c) => (this.totalClientes = c.length),
       error: () => {},
     });
-  }
+  }  
 }

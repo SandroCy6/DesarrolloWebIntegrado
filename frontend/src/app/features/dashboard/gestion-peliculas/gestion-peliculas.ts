@@ -90,6 +90,6 @@ export class GestionPeliculasComponent implements OnInit{
   // --- UTILIDADES ---
   
   crearPeliculaVacia(): Pelicula {
-    return { id: 0, titulo: '', sinopsis: '', duracion: 0, genero: '', imagenUrl: '', trailerUrl: '', fechaEstreno: '' };
+    return { id: undefined, tmdbId: undefined, titulo: '', sinopsis: '', duracion: 0, genero: '', imagenUrl: '', trailerUrl: '', fechaEstreno: '' };
   }
 }
