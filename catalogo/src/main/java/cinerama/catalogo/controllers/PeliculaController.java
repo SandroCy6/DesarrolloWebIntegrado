@@ -31,6 +31,11 @@ public class PeliculaController {
         return peliculaService.listarCartelera();
     }
 
+    @GetMapping("/{id}/cartelera")
+    public ResponseEntity<Boolean> estaEnCartelera(@PathVariable Long id){
+        return ResponseEntity.ok(peliculaService.estaEnCartelera(id));
+    }
+
     @PutMapping("/{id}")
     public ResponseEntity<PeliculaDTO> actualizarPelicula(
             @PathVariable Long id,

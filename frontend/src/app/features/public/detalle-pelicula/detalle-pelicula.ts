@@ -26,6 +26,7 @@ export class DetallePeliculaComponent implements OnInit {
   asientos: Asiento[] = [];
   asientosSeleccionados: Asiento[] = [];
   cargandoAsientos: boolean = false;
+  estaEnCartelera: boolean = true;
 
   cargandoHorarios: boolean = false;
   error: string | null = null;
@@ -66,6 +67,12 @@ private obtenerFechaHoy(): string {
     this.catalogoService.obtenerPeliculaPorId(id).subscribe({
       next: (data) => {
         this.pelicula = data;
+
+        this.catalogoService.obtenerEstadoCartelera(id).subscribe({
+          next: (estado) => {
+            this.estaEnCartelera = estado;
+          }
+        });
 
         // 2. Convertimos la URL normal de YouTube a una URL 'embed' segura
         if (data.trailerUrl) {

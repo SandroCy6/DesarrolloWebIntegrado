@@ -85,6 +85,10 @@ public class PeliculaService {
                 .stream().map(this::convertirADTO).collect(Collectors.toList());
     }
 
+    public boolean estaEnCartelera(Long id){
+        return peliculaRepository.estaEnCartelera(id);
+    }
+
     public PeliculaDTO guardar(Pelicula pelicula){
         return convertirADTO(peliculaRepository.save(pelicula)); 
     }

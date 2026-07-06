@@ -24,4 +24,12 @@ public interface PeliculaRepository extends JpaRepository<Pelicula, Long> {
     // Busca las películas que tienen horarios programados en las salas de un cine específico
     @Query("SELECT DISTINCT h.pelicula FROM Horario h WHERE h.sala.cine.id = :cineId")
     List<Pelicula> findPeliculasByCineId(@Param("cineId") Long cineId);
+
+    @Query("""
+    SELECT COUNT(h) > 0
+    FROM Horario h
+    WHERE h.pelicula.id = :id
+    AND h.fecha >= CURRENT_DATE
+    """)
+    boolean estaEnCartelera(@Param("id") Long id);
 }
