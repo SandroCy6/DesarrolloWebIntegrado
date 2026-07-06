@@ -26,11 +26,12 @@ public class AsientoService {
         dto.setId(asiento.getId());
         dto.setNumero(asiento.getNumero());
         dto.setEstado(asiento.getEstado());
-        dto.setPrecio(asiento.getPrecio());
-        dto.setSalaId(asiento.getSala().getId());
 
         if (asiento.getHorario() != null) {
             dto.setHorarioId(asiento.getHorario().getId());
+            if (asiento.getHorario().getSala() != null) {
+                dto.setSalaId(asiento.getHorario().getSala().getId());
+            }
         }
         return dto;
     }
@@ -71,16 +72,13 @@ public class AsientoService {
         return convertirADTO(asientoRepository.save(asiento));
     }
 
-    public AsientoDTO crearAsiento(Long salaId,Long horarioId, AsientoDTO dto) {
-        Sala sala = new Sala();
-        sala.setId(salaId);
+    public AsientoDTO crearAsiento(Long horarioId, AsientoDTO dto) {
         Horario horario = new Horario();
         horario.setId(horarioId);
+
         Asiento asiento = new Asiento();
         asiento.setNumero(dto.getNumero());
         asiento.setEstado(EstadoAsiento.LIBRE);
-        asiento.setPrecio(dto.getPrecio());
-        asiento.setSala(sala);
         asiento.setHorario(horario);
         return convertirADTO(asientoRepository.save(asiento));
     }

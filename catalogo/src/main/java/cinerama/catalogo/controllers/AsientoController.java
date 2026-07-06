@@ -61,11 +61,10 @@ public class AsientoController {
     }
 
     // POST /api/cines/{salaId}/asientos
-    @PostMapping("/{salaId}/asientos")
+    @PostMapping("/horarios/{salaId}/asientos")
     public ResponseEntity<AsientoDTO> crearAsiento(
-            @PathVariable Long salaId,
             @PathVariable Long horarioId,
             @RequestBody AsientoDTO dto) {
-        return ResponseEntity.ok(asientoService.crearAsiento(salaId,horarioId, dto));
+        return ResponseEntity.ok(asientoService.crearAsiento(horarioId, dto));
     }
 }

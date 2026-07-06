@@ -26,11 +26,22 @@ export class DetallePeliculaComponent implements OnInit {
   asientos: Asiento[] = [];
   asientosSeleccionados: Asiento[] = [];
   cargandoAsientos: boolean = false;
+  estaEnCartelera: boolean = true;
 
   cargandoHorarios: boolean = false;
   error: string | null = null;
 
-  fechaSeleccionada: string = new Date().toISOString().split('T')[0];
+fechaSeleccionada = this.obtenerFechaHoy();
+
+private obtenerFechaHoy(): string {
+  const hoy = new Date();
+
+  return [
+    hoy.getFullYear(),
+    String(hoy.getMonth() + 1).padStart(2, '0'),
+    String(hoy.getDate()).padStart(2, '0')
+  ].join('-');
+}
 
   constructor(
     private route: ActivatedRoute,
@@ -56,6 +67,12 @@ export class DetallePeliculaComponent implements OnInit {
     this.catalogoService.obtenerPeliculaPorId(id).subscribe({
       next: (data) => {
         this.pelicula = data;
+
+        this.catalogoService.obtenerEstadoCartelera(id).subscribe({
+          next: (estado) => {
+            this.estaEnCartelera = estado;
+          }
+        });
 
         // 2. Convertimos la URL normal de YouTube a una URL 'embed' segura
         if (data.trailerUrl) {
@@ -98,7 +115,7 @@ export class DetallePeliculaComponent implements OnInit {
 
   cambiarFecha(event: any): void {
     this.fechaSeleccionada = event.target.value;
-    if (this.pelicula) {
+    if (this.pelicula && this.pelicula.id) {
       this.cargarHorarios(this.pelicula.id);
     }
   }
@@ -111,7 +128,7 @@ export class DetallePeliculaComponent implements OnInit {
     this.cargandoAsientos = true;
     this.cdr.detectChanges();
 
-    this.catalogoService.obtenerAsientosPorSala(horario.salaId).subscribe({
+    this.catalogoService.obtenerAsientosPorHorario(horario.id).subscribe({
       next: (data) => {
         setTimeout(() => {
           this.asientos = data;
@@ -143,7 +160,9 @@ export class DetallePeliculaComponent implements OnInit {
   }
   actualizarTotales(): void {
     this.cantidadSeleccionada = this.asientosSeleccionados.length;
-    this.total = this.asientosSeleccionados.reduce((sum, a) => sum + a.precio, 0);
+    this.total = this.horarioSeleccionado 
+      ? this.cantidadSeleccionada * this.horarioSeleccionado.precio 
+      : 0;
   }
   // Verifica visualmente si un asiento está en la lista de seleccionados
   esAsientoSeleccionado(asiento: Asiento): boolean {
@@ -152,7 +171,9 @@ export class DetallePeliculaComponent implements OnInit {
 
   // Calcula el total a pagar en tiempo real
   calcularTotal(): number {
-    return this.asientosSeleccionados.reduce((total, asiento) => total + asiento.precio, 0);
+    return this.horarioSeleccionado 
+      ? this.asientosSeleccionados.length * this.horarioSeleccionado.precio 
+      : 0;
   }
 
   obtenerNumerosAsientos(): string {

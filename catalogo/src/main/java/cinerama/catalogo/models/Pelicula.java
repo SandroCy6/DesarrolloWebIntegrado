@@ -11,8 +11,11 @@ import java.time.LocalDate;
 @Data
 public class Pelicula {
     @Id
-    //@GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(name ="tmdb_id",unique = true)
+    private Long tmdbId;
 
     @Column(name = "titulo", nullable = false)
     private String titulo;

@@ -29,6 +29,10 @@ export class CatalogoService {
     return this.http.get<Pelicula>(`${this.apiUrl}/${id}`);
   }
 
+  obtenerEstadoCartelera(id: number): Observable<boolean> {
+    return this.http.get<boolean>(`${this.apiUrl}/${id}/cartelera`);
+  }
+
   obtenerHorariosPorPeliculaYFecha(peliculaId: number, fecha: string): Observable<Horario[]> {
     return this.http.get<Horario[]>(`${environment.apiUrl}/catalogo/horarios/pelicula/${peliculaId}/fecha/${fecha}`);
   }

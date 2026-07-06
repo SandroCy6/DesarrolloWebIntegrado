@@ -7,6 +7,7 @@ import java.time.LocalDate;
 @Data
 public class PeliculaDTO {
     private Long id;
+    private Long tmdbId;
     private String titulo;
     private String sinopsis;
     private String genero;

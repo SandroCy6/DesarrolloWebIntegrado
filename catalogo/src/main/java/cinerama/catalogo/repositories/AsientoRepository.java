@@ -5,6 +5,7 @@ import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -13,8 +14,8 @@ import java.util.Optional;
 @Repository
 public interface AsientoRepository extends JpaRepository<Asiento, Long> {
 
-    List<Asiento> findBySalaId(Long salaId);
-
+    @Query("SELECT a FROM Asiento a WHERE a.horario.sala.id = :salaId")
+    List<Asiento> findBySalaId(@Param("salaId") Long salaId);
     List<Asiento> findByHorarioId(Long horarioId);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)

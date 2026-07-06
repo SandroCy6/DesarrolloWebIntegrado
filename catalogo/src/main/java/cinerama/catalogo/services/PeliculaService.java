@@ -5,6 +5,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -35,6 +36,7 @@ public class PeliculaService {
     private PeliculaDTO convertirADTO(Pelicula pelicula) {
         PeliculaDTO dto = new PeliculaDTO();
         dto.setId(pelicula.getId());
+        dto.setTmdbId(pelicula.getTmdbId());
         dto.setTitulo(pelicula.getTitulo());
         dto.setSinopsis(pelicula.getSinopsis());
         dto.setGenero(pelicula.getGenero());
@@ -83,6 +85,10 @@ public class PeliculaService {
                 .stream().map(this::convertirADTO).collect(Collectors.toList());
     }
 
+    public boolean estaEnCartelera(Long id){
+        return peliculaRepository.estaEnCartelera(id);
+    }
+
     public PeliculaDTO guardar(Pelicula pelicula){
         return convertirADTO(peliculaRepository.save(pelicula)); 
     }
@@ -128,7 +134,7 @@ public class PeliculaService {
     }
 
     public PeliculaDTO importarDesdeTMDB(Long tmdbId) throws Exception{
-        Optional<Pelicula> existente = peliculaRepository.findById(tmdbId);
+        Optional<Pelicula> existente = peliculaRepository.findByTmdbId(tmdbId);
         if(existente.isPresent()){
             return convertirADTO(existente.get());
         }
@@ -150,7 +156,7 @@ public class PeliculaService {
         JsonNode jsonNode = objectMapper.readTree(response.body());
 
         Pelicula nuevaPelicula = new Pelicula();
-        nuevaPelicula.setId(jsonNode.get("id").asLong());
+        nuevaPelicula.setTmdbId(jsonNode.get("id").asLong());
         nuevaPelicula.setTitulo(jsonNode.get("title").asText());
         nuevaPelicula.setSinopsis(jsonNode.get("overview").asText());
         nuevaPelicula.setDuracion(jsonNode.has("runtime")?jsonNode.get("runtime").asInt():0);
@@ -167,6 +173,47 @@ public class PeliculaService {
             nuevaPelicula.setImagenUrl("https://image.tmdb.org/t/p/w342" + posterPath);
         }
 
+        String videoUrl = "https://api.themoviedb.org/3/movie/" + tmdbId + "/videos?language=es-MX";
+
+        HttpRequest videoRequest = HttpRequest.newBuilder()
+                .uri(URI.create(videoUrl))
+                .header("accept", "application/json")
+                .header("Authorization", "Bearer " + tmdbToken)
+                .GET()
+                .build();
+        HttpResponse<String> videoResponse = HttpClient.newHttpClient().send(videoRequest,HttpResponse.BodyHandlers.ofString());
+
+
+        if (videoResponse.statusCode() == 200) {
+            JsonNode videoJson= objectMapper.readTree(videoResponse.body());
+            JsonNode resultado = videoJson.get("results");
+
+            if(resultado != null && resultado.isArray()){
+                List<JsonNode> trailers = new ArrayList<>();
+
+                for(JsonNode v : resultado){
+                    if(!"YouTube".equals(v.get("site").asText())) continue;
+                    String type = v.path("type").asText();
+                    if("Trailer".equals(type)){
+                        trailers.add(v);
+                    }
+                }
+                trailers.sort((a,b)->{
+                    boolean ao = a.path("official").asBoolean();
+                    boolean bo = b.path("official").asBoolean();
+
+                    if(ao != bo) return  Boolean.compare(ao, bo);
+
+                    return b.path("published_at").asText("")
+                            .compareTo(a.path("published_at").asText(""));
+                });
+
+                if(!trailers.isEmpty()){
+                    String key = trailers.get(0).path("key").asText();
+                    nuevaPelicula.setTrailerUrl("https://www.youtube.com/watch?v=" + key);
+                }
+            }
+        }
         return  convertirADTO(peliculaRepository.save(nuevaPelicula));
     }
 
