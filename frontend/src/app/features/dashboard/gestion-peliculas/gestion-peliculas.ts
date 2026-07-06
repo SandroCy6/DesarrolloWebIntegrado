@@ -15,7 +15,7 @@ export class GestionPeliculasComponent implements OnInit{
   peliculas: Pelicula[] = [];
   
   // Control de vista: 'lista' muestra la tabla, 'formulario' muestra el modo edición/creación
-  vistaActual: 'lista' | 'formulario' = 'lista'; 
+  vistaActual: 'lista' | 'formulario' | 'importar'= 'lista'; 
   
   // Objeto para el formulario
   peliculaActual: Pelicula = this.crearPeliculaVacia();
@@ -23,6 +23,8 @@ export class GestionPeliculasComponent implements OnInit{
   // Para TMDB
   busquedaTMDB: string = '';
   resultadosTMDB: any[] = [];
+  buscandoTMDB: boolean = false;
+  importandoId: number | null = null;
 
   constructor(private catalogoService: CatalogoService,
     private cdr: ChangeDetectorRef
@@ -45,6 +47,12 @@ export class GestionPeliculasComponent implements OnInit{
   }
 
   // --- NAVEGACIÓN INTERNA ---
+
+  abrirPanelImportar():void {
+    this.vistaActual = 'importar';
+    this.busquedaTMDB = '';
+    this.resultadosTMDB = []
+  }
   
   abrirFormularioNueva(): void {
     this.peliculaActual = this.crearPeliculaVacia();
@@ -85,6 +93,45 @@ export class GestionPeliculasComponent implements OnInit{
         this.cargarPeliculas();
       });
     }
+  }
+
+  // --- INTEGRACIÓN TMDB ---
+  buscarTMDB(): void{
+    if(!this.busquedaTMDB.trim()) return;
+    this.buscandoTMDB = true;
+        this.catalogoService.buscarPeliculasTMDB(this.busquedaTMDB).subscribe({
+          next: (respuesta) => {
+            const data = typeof respuesta === 'string' ? JSON.parse(respuesta) : respuesta; 
+
+            this.resultadosTMDB = data.results || [];
+            this.buscandoTMDB = false;
+            this.cdr.detectChanges();
+          },
+          error: (err) => {
+            this.buscandoTMDB = false;
+            this.cdr.detectChanges();
+          }
+        });
+  }
+
+  importarDeTMDB(tmdbId: number): void {
+    this.importandoId = tmdbId;
+    this.cdr.detectChanges();
+
+    this.catalogoService.importarPeliculaTMDB(tmdbId).subscribe({
+      next: (peliculaImportada) => {
+        this.importandoId = null;
+        this.cargarPeliculas();
+        this.volverALista();
+      },
+      error: (err)=> {
+        console.error('Error al importar Peliculas:', err);
+        alert('Hubo un error al importar. Revisa la consola');
+        this.importandoId = null;
+        this.cdr.detectChanges();
+      }
+      
+    })
   }
 
   // --- UTILIDADES ---
