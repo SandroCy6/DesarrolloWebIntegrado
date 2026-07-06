@@ -17,10 +17,10 @@ public class Venta {
     private String clienteCorreo;
     private String clienteCelular;
     private String clienteNombre;
-    private String tituloPelicula; 
-    private String sala;  
-    private String codigoQr; 
-    private String asientos; 
+    private String tituloPelicula;
+    private String sala;
+    private String codigoQr;
+    private String asientos;
     private BigDecimal total;
     private LocalDateTime fecha;
 
@@ -30,4 +30,11 @@ public class Venta {
     // Una venta tiene muchos detalles. Si se guarda la venta, se guardan los detalles
     @OneToMany(mappedBy = "venta", cascade = CascadeType.ALL)
     private List<DetalleVenta> detalles;
+
+    // Atributos para ingresar datos de las promociones
+    @Column(name = "descuento_aplicado")
+    private java.math.BigDecimal descuentoAplicado;
+
+    @Column(name = "codigo_promo")
+    private String codigoPromo;
 }

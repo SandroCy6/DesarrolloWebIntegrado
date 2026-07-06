@@ -1,6 +1,8 @@
 package cinerama.ventas.service;
 
 import cinerama.ventas.client.CatalogoClient;
+import cinerama.ventas.client.PromocionClient;
+
 import cinerama.ventas.client.NotificacionClient;
 import cinerama.ventas.dto.AsientoDTO;
 import cinerama.ventas.dto.DetalleRequestDTO;
@@ -33,15 +35,18 @@ public class VentaService {
     private final VentaRepository ventaRepository;
     private final CatalogoClient catalogoClient;
     private final PagoService pagoService;
+    private final PromocionClient promocionClient;
 
     public VentaService(VentaRepository ventaRepository,
             NotificacionClient notificacionClient,
             CatalogoClient catalogoClient,
-            PagoService pagoService) {
+            PagoService pagoService,
+             PromocionClient promocionClient) {
         this.ventaRepository = ventaRepository;
         this.notificacionClient = notificacionClient;
         this.catalogoClient = catalogoClient;
         this.pagoService = pagoService;
+        this.promocionClient = promocionClient; //
     }
 
     public Venta registrarVenta(VentaRequestDTO request) {
@@ -120,6 +125,34 @@ public class VentaService {
         }
 
         venta.setTotal(totalVenta);
+        venta.setDescuentoAplicado(BigDecimal.ZERO);
+        venta.setCodigoPromo(request.getCodigoPromo());
+        // Si el cliente envió un código promocional en la venta
+        if (request.getCodigoPromo() != null && !request.getCodigoPromo().isEmpty()) {
+            try {
+                cinerama.ventas.dto.ValidarPromoRequestDTO promoReq = new cinerama.ventas.dto.ValidarPromoRequestDTO(request.getCodigoPromo());
+                cinerama.ventas.dto.PromocionResponseDTO promoResponse = promocionClient.validarPromocion(promoReq);
+
+                if (promoResponse != null && promoResponse.getEsValida()) {
+                    BigDecimal porcentajeDescuento = promoResponse.getDescuento(); // Ej. 10.00 %
+
+                    // Calculamos el dinero a descontar: (Total * Porcentaje) / 100
+                    BigDecimal dineroADescontar = totalVenta.multiply(porcentajeDescuento)
+                            .divide(new BigDecimal("100"));
+
+                    // Restamos el descuento al total original
+                    totalVenta = totalVenta.subtract(dineroADescontar);
+
+                    // Actualizamos el objeto venta con los nuevos montos
+                    venta.setTotal(totalVenta);
+                    venta.setDescuentoAplicado(dineroADescontar);
+                } else {
+                    System.out.println("⚠️ El código promocional no es válido o ya expiró.");
+                }
+            } catch (Exception e) {
+                System.err.println("⚠️ No se pudo conectar con el servicio de promociones: " + e.getMessage());
+            }
+        }
         String codigo = UUID.randomUUID().toString();
         venta.setCodigoQr(codigo);
 

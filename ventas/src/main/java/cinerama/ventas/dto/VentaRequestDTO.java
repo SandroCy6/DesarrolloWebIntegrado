@@ -28,4 +28,6 @@ public class VentaRequestDTO {
     @NotEmpty(message = "La venta debe tener al menos un detalle")
     @Valid
     private List<DetalleRequestDTO> detalles;
+
+    private String codigoPromo;
 }

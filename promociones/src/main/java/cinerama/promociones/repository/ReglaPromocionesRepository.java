@@ -5,9 +5,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface ReglaPromocionesRepository extends JpaRepository<ReglaPromociones, Long> {
-    List<ReglaPromociones> findByIdPromocion(Long idPromocion);
 
+    // Buscar la regla usando el ID de la promoción
+    Optional<ReglaPromociones> findByIdPromocion(Long idPromocion);
 }
