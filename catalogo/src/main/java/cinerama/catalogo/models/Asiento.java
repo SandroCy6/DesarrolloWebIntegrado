@@ -18,13 +18,6 @@ public class Asiento {
     @Column(name = "estado", nullable = false)
     private EstadoAsiento estado;
 
-    @Column(name = "precio", nullable = false)
-    private Double precio;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "sala_id", nullable = false)
-    private Sala sala;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "horario_id", nullable = false)
     private Horario horario;

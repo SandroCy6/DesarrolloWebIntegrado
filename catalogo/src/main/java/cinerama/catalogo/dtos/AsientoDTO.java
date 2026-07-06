@@ -8,7 +8,6 @@ public class AsientoDTO {
     private Long id;
     private String numero;
     private EstadoAsiento estado;
-    private double precio;
     private long SalaId;
     private Long horarioId;
 }

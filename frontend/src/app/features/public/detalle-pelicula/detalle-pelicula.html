@@ -190,7 +190,7 @@
                               [class.mantenimiento]="asiento.estado === 'MANTENIMIENTO'"
                               [class.seleccionado]="esAsientoSeleccionado(asiento)"
                               (click)="toggleAsiento(asiento)"
-                              [title]="'Asiento ' + asiento.numero + ' - S/ ' + asiento.precio"
+                              [title]="'Asiento ' + asiento.numero + ' - S/ ' + horarioSeleccionado?.precio"
                             >
                               {{ asiento.numero }}
                             </button>

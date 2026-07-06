@@ -128,7 +128,7 @@ private obtenerFechaHoy(): string {
     this.cargandoAsientos = true;
     this.cdr.detectChanges();
 
-    this.catalogoService.obtenerAsientosPorSala(horario.salaId).subscribe({
+    this.catalogoService.obtenerAsientosPorHorario(horario.id).subscribe({
       next: (data) => {
         setTimeout(() => {
           this.asientos = data;
@@ -160,7 +160,9 @@ private obtenerFechaHoy(): string {
   }
   actualizarTotales(): void {
     this.cantidadSeleccionada = this.asientosSeleccionados.length;
-    this.total = this.asientosSeleccionados.reduce((sum, a) => sum + a.precio, 0);
+    this.total = this.horarioSeleccionado 
+      ? this.cantidadSeleccionada * this.horarioSeleccionado.precio 
+      : 0;
   }
   // Verifica visualmente si un asiento está en la lista de seleccionados
   esAsientoSeleccionado(asiento: Asiento): boolean {
@@ -169,7 +171,9 @@ private obtenerFechaHoy(): string {
 
   // Calcula el total a pagar en tiempo real
   calcularTotal(): number {
-    return this.asientosSeleccionados.reduce((total, asiento) => total + asiento.precio, 0);
+    return this.horarioSeleccionado 
+      ? this.asientosSeleccionados.length * this.horarioSeleccionado.precio 
+      : 0;
   }
 
   obtenerNumerosAsientos(): string {
