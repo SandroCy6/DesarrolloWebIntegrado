@@ -1,0 +1,83 @@
+.dash-card {
+  background: var(--cr-surface, #1c1b1f);
+  border-radius: 12px;
+  padding: 1.5rem;
+  border: 1px solid rgba(255, 255, 255, .08);
+}
+
+.table {
+  margin-bottom: 0;
+
+  thead th {
+    color: #9ca3af;
+    font-size: .82rem;
+    letter-spacing: .5px;
+    border-bottom: 1px solid rgba(255, 255, 255, .08);
+  }
+
+  tbody td {
+    vertical-align: middle;
+    border-color: rgba(255, 255, 255, .05);
+  }
+}
+
+.form-control,
+.form-select {
+  background: var(--cr-bg);
+  border: 1px solid rgba(255, 255, 255, .08);
+  color: white;
+}
+
+.form-control:focus,
+.form-select:focus {
+  background: var(--cr-bg);
+  color: white;
+  border-color: var(--cr-red);
+  box-shadow: none;
+}
+
+.form-select option {
+  background: #1c1b1f;
+  color: white;
+}
+
+.btn-warning {
+  font-weight: 600;
+}
+
+h2,
+h3 {
+  font-family: var(--cr-font-display);
+}
+
+.kpi-card {
+  background: var(--cr-surface);
+  border-radius: 12px;
+  padding: 1.2rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  border: 1px solid rgba(255, 255, 255, .07);
+}
+
+.kpi-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.3rem;
+}
+
+.kpi-value {
+  color: white;
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.kpi-label {
+  color: #9ca3af;
+  font-size: .8rem;
+  text-transform: uppercase;
+}

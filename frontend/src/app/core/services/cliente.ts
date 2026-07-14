@@ -4,17 +4,25 @@ import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { Cliente } from '../models/cliente';
 
-@Injectable({ providedIn: 'root' })
+@Injectable({
+  providedIn: 'root',
+})
 export class ClienteService {
-  private url = `${environment.apiUrl}/clientes`;
+
+  private apiUrl = `${environment.apiUrl}/api/clientes`;
 
   constructor(private http: HttpClient) {}
 
-  getAll(): Observable<Cliente[]> {
-    return this.http.get<Cliente[]>(this.url);
+  listarClientes(): Observable<Cliente[]> {
+    return this.http.get<Cliente[]>(this.apiUrl);
   }
 
-  getById(id: number): Observable<Cliente> {
-    return this.http.get<Cliente>(`${this.url}/${id}`);
+  buscarPorDni(dni: string): Observable<Cliente> {
+    return this.http.get<Cliente>(`${this.apiUrl}/${dni}`);
   }
+
+  actualizarCliente(id: number, cliente: Cliente): Observable<Cliente> {
+    return this.http.put<Cliente>(`${this.apiUrl}/${id}`, cliente);
+  }
+
 }

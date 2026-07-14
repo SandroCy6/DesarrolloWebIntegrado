@@ -1,1 +1,368 @@
-<p>gestion-promociones works!</p>
+<div class="container-fluid">
+
+  <!-- LISTA -->
+  <div *ngIf="vistaActual === 'lista'">
+
+    <!-- ENCABEZADO -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <div>
+        <h2 class="text-white fw-bold mb-1">
+          <i class="bi bi-tags-fill text-warning me-2"></i>
+          Gestión de Promociones
+        </h2>
+        <p class="text-muted mb-0">
+          Administración de promociones del sistema.
+        </p>
+      </div>
+
+      <button class="btn btn-warning" (click)="abrirFormularioNueva()">
+        <i class="bi bi-plus-circle me-1"></i>
+        Nueva Promoción
+      </button>
+    </div>
+
+    <!-- MENSAJES -->
+    <div
+      *ngIf="mensaje"
+      class="alert mb-4"
+      [ngClass]="{
+        'alert-success': tipoMensaje === 'success',
+        'alert-danger': tipoMensaje === 'danger'
+      }">
+      {{ mensaje }}
+    </div>
+
+    <!-- KPI -->
+    <div class="row mb-4">
+
+      <div class="col-md-4 mb-3">
+        <div class="kpi-card">
+          <div class="kpi-icon">
+            <i class="bi bi-tags-fill"></i>
+          </div>
+
+          <div>
+            <div class="kpi-value">
+              {{ promociones.length }}
+            </div>
+            <div class="kpi-label">
+              Promociones registradas
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-4 mb-3">
+        <div class="kpi-card">
+          <div class="kpi-icon">
+            <i class="bi bi-check-circle-fill"></i>
+          </div>
+
+          <div>
+            <div class="kpi-value">
+              {{ promocionesActivas }}
+            </div>
+            <div class="kpi-label">
+              Promociones activas
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- CARGANDO -->
+    <div *ngIf="cargando" class="text-center text-light py-5">
+      <div class="spinner-border text-warning mb-3"></div>
+      <p>Cargando promociones...</p>
+    </div>
+
+    <!-- TABLA -->
+    <div *ngIf="!cargando" class="dash-card">
+
+      <div class="table-responsive">
+        <table class="table table-dark table-hover align-middle mb-0">
+
+          <thead>
+          <tr class="text-uppercase small text-muted">
+            <th>Título</th>
+            <th>Tipo</th>
+            <th>Fecha inicio</th>
+            <th>Fecha fin</th>
+            <th>Estado</th>
+            <th class="text-center">Acciones</th>
+          </tr>
+          </thead>
+
+          <tbody>
+
+          <tr *ngFor="let promocion of promociones">
+
+            <td>
+              <strong>{{ promocion.titulo }}</strong>
+              <div class="small text-muted">
+                {{ promocion.descripcion }}
+              </div>
+            </td>
+
+            <td>
+              {{ promocion.tipo }}
+            </td>
+
+            <td>
+              {{ promocion.fechaInicio }}
+            </td>
+
+            <td>
+              {{ promocion.fechaFin }}
+            </td>
+
+            <td>
+                <span
+                  class="badge"
+                  [ngClass]="
+                    promocion.estado
+                      ? 'bg-success'
+                      : 'bg-secondary'
+                  ">
+                  {{ promocion.estado ? 'Activa' : 'Inactiva' }}
+                </span>
+            </td>
+
+            <td class="text-center">
+
+              <button
+                class="btn btn-warning btn-sm me-2"
+                (click)="abrirFormularioEdicion(promocion)">
+                <i class="bi bi-pencil-square"></i>
+                Editar
+              </button>
+
+              <button
+                class="btn btn-danger btn-sm"
+                (click)="eliminarPromocion(promocion)">
+                <i class="bi bi-trash"></i>
+                Eliminar
+              </button>
+
+            </td>
+
+          </tr>
+
+          <tr *ngIf="promociones.length === 0">
+            <td colspan="6" class="text-center text-muted py-4">
+              No existen promociones registradas.
+            </td>
+          </tr>
+
+          </tbody>
+
+        </table>
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- FORMULARIO -->
+  <div *ngIf="vistaActual === 'formulario'">
+
+    <button
+      class="btn btn-outline-light mb-4"
+      (click)="volverALista()">
+      <i class="bi bi-arrow-left"></i>
+      Volver
+    </button>
+
+    <!-- MENSAJES DEL FORMULARIO -->
+    <div
+      *ngIf="mensaje"
+      class="alert mb-4"
+      [ngClass]="{
+        'alert-success': tipoMensaje === 'success',
+        'alert-danger': tipoMensaje === 'danger'
+      }">
+      {{ mensaje }}
+    </div>
+
+    <div class="dash-card">
+
+      <h3 class="text-white mb-4">
+        <i class="bi bi-tag-fill text-warning me-2"></i>
+
+        {{
+        promocionActual.id_promocion
+        ? 'Editar Promoción'
+        : 'Nueva Promoción'
+        }}
+      </h3>
+
+      <div class="row">
+
+        <!-- TÍTULO -->
+        <div class="col-md-6 mb-3">
+          <label class="form-label text-light">
+            Título
+          </label>
+
+          <input
+            type="text"
+            class="form-control"
+            [(ngModel)]="promocionActual.titulo"
+            placeholder="Ej: Promo 2x1">
+        </div>
+
+        <!-- TIPO -->
+        <div class="col-md-6 mb-3">
+          <label class="form-label text-light">Tipo de promoción</label>
+
+          <select
+            class="form-select"
+            [(ngModel)]="promocionActual.tipo">
+
+            <option value="" disabled>Seleccione un tipo</option>
+            <option value="descuento">Descuento</option>
+            <option value="2x1">2x1</option>
+            <option value="combo">Combo</option>
+
+          </select>
+        </div>
+
+        <!-- DESCRIPCIÓN -->
+        <div class="col-12 mb-3">
+          <label class="form-label text-light">
+            Descripción
+          </label>
+
+          <textarea
+            class="form-control"
+            rows="3"
+            [(ngModel)]="promocionActual.descripcion"
+            placeholder="Descripción de la promoción">
+          </textarea>
+        </div>
+
+        <!-- FECHA INICIO -->
+        <div class="col-md-6 mb-3">
+          <label class="form-label text-light">
+            Fecha de inicio
+          </label>
+
+          <input
+            type="date"
+            class="form-control"
+            [(ngModel)]="promocionActual.fechaInicio">
+        </div>
+
+        <!-- FECHA FIN -->
+        <div class="col-md-6 mb-3">
+          <label class="form-label text-light">
+            Fecha de fin
+          </label>
+
+          <input
+            type="date"
+            class="form-control"
+            [(ngModel)]="promocionActual.fechaFin">
+        </div>
+
+        <!-- ESTADO -->
+        <div class="col-md-6 mb-4">
+
+          <label class="form-label text-light d-block">
+            Estado
+          </label>
+
+          <div class="form-check form-switch">
+
+            <input
+              class="form-check-input"
+              type="checkbox"
+              id="estadoPromocion"
+              [(ngModel)]="promocionActual.estado">
+
+            <label
+              class="form-check-label text-light"
+              for="estadoPromocion">
+              {{
+              promocionActual.estado
+              ? 'Activa'
+              : 'Inactiva'
+              }}
+            </label>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- ─── SECCIÓN NUEVA: REGLA ASOCIADA (Mismo formulario) ─── -->
+      <div class="col-12"><hr class="text-muted my-4"></div>
+      <h5 class="text-warning mb-3">
+        <i class="bi bi-gear-fill me-2"></i>Regla de Descuento
+      </h5>
+
+      <!-- TIPO DE REGLA -->
+      <div class="col-md-6 mb-3" *ngIf="promocionActual.regla">
+        <label class="form-label text-light">Tipo de Regla</label>
+        <select
+          class="form-select"
+          [(ngModel)]="promocionActual.regla.tipo">
+          <option value="" disabled>Seleccione el tipo de regla</option>
+          <option value="PORCENTAJE">Porcentaje (%)</option>
+          <option value="MONTO_FIJO">Monto Fijo ($)</option>
+        </select>
+      </div>
+
+      <!-- VALOR DE LA REGLA -->
+      <div class="col-md-6 mb-4" *ngIf="promocionActual.regla">
+        <label class="form-label text-light">
+          Valor {{ promocionActual.regla.tipo === 'PORCENTAJE' ? '(%)' : '($)' }}
+        </label>
+        <input
+          type="number"
+          class="form-control"
+          [(ngModel)]="promocionActual.regla.valor1"
+          placeholder="Ej: 50.00">
+      </div>
+      <!-- ─────────────────────────────────────────────────────── -->
+
+    </div>
+
+      <!-- BOTONES -->
+      <div class="d-flex gap-2">
+
+        <button
+          class="btn btn-outline-light"
+          (click)="volverALista()"
+          [disabled]="guardando">
+          Cancelar
+        </button>
+
+        <button
+          class="btn btn-warning"
+          (click)="guardarPromocion()"
+          [disabled]="guardando">
+
+          <span
+            *ngIf="guardando"
+            class="spinner-border spinner-border-sm me-2">
+          </span>
+
+          {{
+          guardando
+          ? 'Guardando...'
+          : 'Guardar Promoción'
+          }}
+
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

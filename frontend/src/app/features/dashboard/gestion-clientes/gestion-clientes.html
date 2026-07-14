@@ -1,1 +1,211 @@
-<p>gestion-clientes works!</p>
+<div class="container-fluid">
+
+  <!-- LISTA -->
+  <div *ngIf="vistaActual === 'lista'">
+
+    <!-- Encabezado -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <div>
+        <h2 class="text-white fw-bold mb-1">
+          <i class="bi bi-people-fill text-warning me-2"></i>
+          Gestión de Clientes
+        </h2>
+        <p class="text-muted mb-0">
+          Consulta y administración de clientes registrados.
+        </p>
+      </div>
+    </div>
+
+    <!-- Mensajes de Alerta -->
+    <div *ngIf="mensaje" class="alert mb-4" [ngClass]="{
+        'alert-success': tipoMensaje === 'success',
+        'alert-danger': tipoMensaje === 'danger'
+      }">
+      {{ mensaje }}
+    </div>
+
+    <!-- TARJETA DE ESTADÍSTICAS (KPI) -->
+    <div class="row mb-4">
+      <div class="col-md-4">
+        <div class="kpi-card">
+          <div class="kpi-icon" style="background:#7c4dff22">
+            <i class="bi bi-people-fill" style="color:#7c4dff"></i>
+          </div>
+          <div>
+            <div class="kpi-value">
+              {{ clientes.length }}
+            </div>
+            <div class="kpi-label">
+              Clientes registrados
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BUSCADOR -->
+    <div class="dash-card mb-4">
+      <div class="row align-items-end">
+        <div class="col-md-5">
+          <label class="form-label text-light">Buscar por DNI</label>
+          <input
+            class="form-control"
+            placeholder="Ingrese el DNI..."
+            [(ngModel)]="dniBusqueda"
+            (keyup.enter)="buscarCliente()">
+        </div>
+
+        <div class="col-md-3">
+          <button class="btn btn-warning w-100" (click)="buscarCliente()">
+            <i class="bi bi-search"></i> Buscar
+          </button>
+        </div>
+
+        <div class="col-md-3">
+          <button class="btn btn-outline-light w-100" (click)="dniBusqueda=''; cargarClientes();">
+            Mostrar todos
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Spinner de carga -->
+    <div *ngIf="cargando" class="text-center py-5">
+      <div class="spinner-border text-warning"></div>
+      <p class="text-muted mt-3">
+        Cargando clientes...
+      </p>
+    </div>
+
+    <!-- TABLA DE CLIENTES -->
+    <div *ngIf="!cargando" class="dash-card">
+      <table class="table table-dark table-hover align-middle mb-0">
+        <thead>
+        <tr class="text-uppercase small text-muted">
+          <th>DNI</th>
+          <th>Nombre</th>
+          <th>Correo</th>
+          <th>Teléfono</th>
+          <th class="text-center">Estado</th>
+          <th class="text-center">DNI Verificado</th>
+          <th class="text-center">Acciones</th>
+        </tr>
+        </thead>
+        <tbody>
+        <!-- MODIFICADO: Filas con los nuevos badges de Estado y DNI verificado -->
+        <tr *ngFor="let cliente of clientes">
+          <td>{{ cliente.dni }}</td>
+          <td>{{ cliente.nombre }}</td>
+          <td>{{ cliente.correo }}</td>
+          <td>{{ cliente.telefono }}</td>
+
+          <td class="text-center">
+            <span
+              class="badge"
+              [ngClass]="cliente.activo ? 'bg-success' : 'bg-danger'">
+              {{ cliente.activo ? 'Activo' : 'Inactivo' }}
+            </span>
+          </td>
+
+          <td class="text-center">
+            <span
+              class="badge"
+              [ngClass]="cliente.dniVerificado ? 'bg-success' : 'bg-warning text-dark'">
+              <i
+                class="bi me-1"
+                [ngClass]="cliente.dniVerificado
+                  ? 'bi-check-circle-fill'
+                  : 'bi-exclamation-circle-fill'">
+              </i>
+              {{ cliente.dniVerificado ? 'Sí' : 'No' }}
+            </span>
+          </td>
+
+          <td class="text-center">
+            <button
+              class="btn btn-outline-warning btn-sm"
+              (click)="abrirFormularioEdicion(cliente)"
+              title="Editar cliente">
+              <i class="bi bi-pencil-fill"></i>
+            </button>
+          </td>
+        </tr>
+
+        <!-- MODIFICADO: Estado vacío ahora con colspan="7" -->
+        <tr *ngIf="clientes.length === 0">
+          <td colspan="7" class="text-center py-5">
+            <i class="bi bi-people text-secondary fs-1"></i>
+            <h5 class="mt-3 text-light">
+              No existen clientes registrados
+            </h5>
+            <p class="text-muted mb-0">
+              Los clientes aparecerán automáticamente cuando realicen su primera compra.
+            </p>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+
+  <!-- FORMULARIO -->
+  <div *ngIf="vistaActual === 'formulario'">
+
+    <!-- BOTÓN PARA VOLVER -->
+    <button class="btn btn-outline-light mb-4" (click)="volverALista()">
+      <i class="bi bi-arrow-left"></i> Volver
+    </button>
+
+    <div class="dash-card">
+      <h3 class="text-white mb-4">
+        <i class="bi bi-pencil-square text-warning me-2"></i>
+        Editar Cliente
+      </h3>
+
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <label class="form-label text-light">DNI</label>
+          <input
+            class="form-control"
+            [(ngModel)]="clienteActual.dni"
+            readonly>
+        </div>
+
+        <div class="col-md-6 mb-3">
+          <label class="form-label text-light">Nombre</label>
+          <input
+            class="form-control"
+            maxlength="100"
+            [(ngModel)]="clienteActual.nombre">
+        </div>
+
+        <div class="col-md-6 mb-3">
+          <label class="form-label text-light">Correo</label>
+          <input
+            type="email"
+            class="form-control"
+            [(ngModel)]="clienteActual.correo">
+        </div>
+
+        <div class="col-md-6 mb-4">
+          <label class="form-label text-light">Teléfono</label>
+          <input
+            class="form-control"
+            maxlength="9"
+            [(ngModel)]="clienteActual.telefono">
+        </div>
+      </div>
+
+      <div class="d-flex gap-2">
+        <button class="btn btn-danger" (click)="volverALista()">
+          Cancelar
+        </button>
+        <button class="btn btn-warning" (click)="guardarCliente()">
+          Guardar Cambios
+        </button>
+      </div>
+    </div>
+  </div>
+
+</div>
