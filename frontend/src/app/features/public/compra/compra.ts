@@ -93,9 +93,10 @@ export class CompraComponent implements OnInit {
       horarioId: this.horarioId,
       metodoPago: this.ventaRequest.metodoPago,
       tokenTarjeta: this.ventaRequest.tokenTarjeta,
+      asientosIds: this.asientosSeleccionados.map((_, index) => index + 1), // se mapea los IDs numericos si se requiere
       detalles: this.asientosSeleccionados.map((asiento) => ({
         tipoItem: 'ENTRADA' as const,
-        itemId: 0,
+        itemId: 0, //
         cantidad: 1,
         precioUnitario: this.precioPorBoleto,
       })),
@@ -104,6 +105,14 @@ export class CompraComponent implements OnInit {
     this.ventasService.createVenta(payload).subscribe({
       next: (response) => {
         this.procesando = false;
+
+        // Logica de Mercado Pago
+        if (response.estadoPago === 'RECHAZADO') {
+          this.compraExitosa = false;
+          this.mensajeError = 'Tu pago fue rechazado por Mercado Pago. Verifica el saldo o tu token de tarjeta.';
+          return;
+        }
+
         this.compraExitosa = true;
         this.codigoTransaccion = response.id
           ? `TXN-${response.id}`
@@ -111,7 +120,7 @@ export class CompraComponent implements OnInit {
       },
       error: (err) => {
         this.procesando = false;
-        this.mensajeError = 'Error al procesar el pago. Verifica tus datos e intenta de nuevo.';
+        this.mensajeError = err.error?.message || 'Error de conexión con la pasarela de pago. Intenta de nuevo.';
         console.error(err);
       },
     });

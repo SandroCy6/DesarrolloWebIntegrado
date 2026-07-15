@@ -70,16 +70,26 @@ public class VentaService {
         venta.setMetodoPago(request.getMetodoPago()); // Guardamos el metodo de pago
         venta.setEstadoPago("PENDIENTE"); // Estado inicial
         venta.setDetalles(new ArrayList<>());
+
+        BigDecimal precioBaseHorario = BigDecimal.ZERO; // NUEVA VARIABLE
+
         if (request.getHorarioId() != null) {
             try {
-                catalogoClient.obtenerHorario(request.getHorarioId()).ifPresent(h -> {
+                cinerama.ventas.dto.HorarioResponseDTO h = catalogoClient.obtenerHorario(request.getHorarioId()).orElse(null);
+                if (h != null) {
                     venta.setTituloPelicula(h.getTituloPelicula());
                     venta.setSala("Sala " + h.getNumeroSala() + " — " + h.getNombreCine());
-                });
+
+                    // 🛡️ GUARDAMOS EL PRECIO DEL HORARIO
+                    if (h.getPrecio() != null) {
+                        precioBaseHorario = BigDecimal.valueOf(h.getPrecio());
+                    }
+                }
             } catch (Exception e) {
                 System.err.println("⚠️ No se pudo obtener horario: " + e.getMessage());
             }
         }
+
         BigDecimal totalVenta = BigDecimal.ZERO;
 
         // Procesar cada detalle y calcular el total
@@ -102,14 +112,17 @@ public class VentaService {
                         throw new IllegalArgumentException("El asiento " + asiento.getNumero() + " ya se encuentra ocupado. Por favor, seleccione otro.");
                     }
 
-                    // Obtener precio desde catálogo (No confiamos en el precio del Request por seguridad)
-                    precioSeguro = BigDecimal.valueOf(asiento.getPrecio());
+                    // 🛡️ AHORA USAMOS EL PRECIO DEL HORARIO, YA NO EL DEL ASIENTO
+                    if (precioBaseHorario.compareTo(BigDecimal.ZERO) == 0) {
+                        throw new IllegalStateException("Error: El horario seleccionado no tiene un precio válido configurado.");
+                    }
+                    precioSeguro = precioBaseHorario;
 
                 } catch (IllegalArgumentException e) {
                     throw e;
                 } catch (Exception e) {
-                    // Manejo de fallos de comunicación (Try/Catch básico)
-                    throw new IllegalStateException("Error de comunicación con el Catálogo. No se pudo validar la disponibilidad de los asientos. Intente nuevamente.");
+                    System.err.println("🔴 ERROR REAL DE FEIGN: " + e.getMessage());
+                    throw new IllegalStateException("Error de comunicación con el Catálogo. No se pudo validar la disponibilidad de los asientos.");
                 }
             }
 
