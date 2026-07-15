@@ -217,11 +217,11 @@ export class GestionPromocionesComponent implements OnInit {
       tipo: '',
       fechaInicio: '',
       fechaFin: '',
-      estado: true
-      // 🔽 REGLA 🔽
-            regla: {
-              tipo: '',
-              valor1: 0
+      estado: true,
+      regla: {
+        tipo: '',
+        valor1: 0
+      }
     };
   }
 
