@@ -15,6 +15,9 @@ public class PagoService {
     private final String ACCESS_TOKEN = "TEST-4996197481824528-062402-963b4c7e100b898383dca862280d16da-3492632721";
 
     public boolean procesarPago(BigDecimal monto, String metodoPago, String tokenTarjeta, String emailCliente) {
+        // 🛡️ BYPASS PARA PRUEBAS EN POSTMAN: Si mandamos "tok_test", forzamos la aprobación
+        if ("tok_test".equals(tokenTarjeta)) return true;
+
         RestTemplate restTemplate = new RestTemplate();
         String url = "https://api.mercadopago.com/v1/payments";
 
@@ -28,7 +31,7 @@ public class PagoService {
 
         // 2. Armar el cuerpo de la petición (JSON)
         Map<String, Object> body = new HashMap<>();
-        body.put("transaction_amount", monto);
+        body.put("transaction_amount", monto.doubleValue());
         body.put("description", "Compra de entradas - Cinerama");
         body.put("payment_method_id", metodoPago.toLowerCase()); // ejemplo: "visa"
         body.put("token", tokenTarjeta); // El token de la tarjeta de prueba
@@ -52,9 +55,11 @@ public class PagoService {
             }
             return false;
 
-        } catch (HttpClientErrorException e) {
-            // Si el token es falso o la tarjeta de prueba no tiene fondos
-            System.err.println("El pago fue rechazado por MercadoPago: " + e.getResponseBodyAsString());
+        } catch (org.springframework.web.client.RestClientResponseException e) {
+            System.err.println("El pago fue rechazado o falló en MercadoPago: " + e.getResponseBodyAsString());
+            return false;
+        } catch (Exception e) {
+            System.err.println("Error interno en la comunicación con Mercado Pago: " + e.getMessage());
             return false;
         }
     }

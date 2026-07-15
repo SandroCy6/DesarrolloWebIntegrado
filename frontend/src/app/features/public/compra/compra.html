@@ -1,158 +1,57 @@
-<div class="container py-5">
-  <div class="d-flex justify-content-between align-items-center mb-4">
-    <h2 class="text-uppercase" style="font-family: var(--cr-font-display); color: var(--cr-gold)">
-      Checkout de Entradas
-    </h2>
-    <button class="btn btn-outline-light" routerLink="/cartelera">Volver a Cartelera</button>
-  </div>
+<div class="container-fluid bg-dark text-white py-5" style="min-height: 100vh;">
+  <div class="container">
+    <h2 class="text-center mb-4" style="color: var(--cr-gold);">Checkout de Entradas</h2>
 
-  <div class="alert alert-danger" *ngIf="mensajeError">
-    {{ mensajeError }}
-  </div>
+    <div class="row justify-content-center">
+      <div class="col-md-8">
+        <form (ngSubmit)="procesarCompra()" class="card bg-dark border-secondary p-4">
 
-  <div class="row g-4" *ngIf="!compraExitosa">
-    <div class="col-lg-8">
-      <div
-        class="card p-4 border-0"
-        style="background-color: var(--cr-surface); box-shadow: var(--cr-shadow-card)"
-      >
-        <h4 class="mb-4 text-white">Datos de Compra</h4>
-
-        <form (ngSubmit)="procesarCompra()">
-          <div class="row g-3">
+          <h4 class="mb-3 border-bottom border-secondary pb-2">Datos del Cliente</h4>
+          <div class="row mb-3">
             <div class="col-md-6">
-              <label class="form-label" style="color: var(--cr-muted)">DNI del Cliente</label>
-              <input
-                type="text"
-                class="form-control"
-                name="dni"
-                [(ngModel)]="ventaRequest.dni"
-                required
-              />
+              <label class="form-label">DNI</label>
+              <input type="text" class="form-control bg-dark text-white border-secondary" [(ngModel)]="ventaRequest.dni" name="dni" required>
             </div>
+            <div class="col-md-6">
+              <label class="form-label">Nombre Completo</label>
+              <input type="text" class="form-control bg-dark text-white border-secondary" [(ngModel)]="ventaRequest.nombre" name="nombre" required>
+            </div>
+          </div>
+          <div class="row mb-4">
             <div class="col-md-6">
               <label class="form-label">Correo Electrónico</label>
-              <input
-                type="email"
-                class="form-control"
-                name="correo"
-                [(ngModel)]="ventaRequest.correo"
-                placeholder="tucorreo@email.com"
-                required
-              />
+              <input type="email" class="form-control bg-dark text-white border-secondary" [(ngModel)]="ventaRequest.correo" name="correo" required>
             </div>
             <div class="col-md-6">
-              <label class="form-label" style="color: var(--cr-muted)">Cantidad de Entradas</label>
-              <input
-                type="number"
-                class="form-control"
-                name="cantidad"
-                [(ngModel)]="ventaRequest.cantidad"
-                min="1"
-                max="10"
-                required
-              />
-            </div>
-            <div class="col-12">
-              <label class="form-label">Número de Tarjeta / Token de Pago</label>
-              <input
-                type="text"
-                class="form-control"
-                name="tokenTarjeta"
-                [(ngModel)]="ventaRequest.tokenTarjeta"
-                placeholder="Ej: 4111 1111 1111 1111"
-                maxlength="19"
-                required
-              />
-              <div class="form-text" style="color: var(--cr-faint)">
-                Ingresa los 16 dígitos de tu tarjeta.
-              </div>
-            </div>
-            <div class="col-12 mt-4">
-              <label class="form-label mb-2" style="color: var(--cr-muted)">
-                Elige tus Asientos (Faltan
-                {{ ventaRequest.cantidad - ventaRequest.asientos.length }})
-              </label>
-              <div
-                class="d-flex flex-wrap gap-2 p-3 rounded"
-                style="background-color: var(--cr-surface-2)"
-              >
-                <button
-                  type="button"
-                  class="btn btn-sm"
-                  *ngFor="let asiento of asientosDisponibles"
-                  [ngClass]="
-                    ventaRequest.asientos.includes(asiento)
-                      ? 'btn-primary'
-                      : 'btn-outline-secondary'
-                  "
-                  (click)="toggleAsiento(asiento)"
-                  style="width: 50px"
-                >
-                  {{ asiento }}
-                </button>
-              </div>
-            </div>
-
-            <div class="col-12 mt-3">
-              <label class="form-label" style="color: var(--cr-muted)">Método de Pago</label>
-              <select class="form-select" name="metodoPago" [(ngModel)]="ventaRequest.metodoPago">
-                <option value="TARJETA">Tarjeta (Crédito/Débito)</option>
-                <option value="YAPE">Yape / Plin</option>
-              </select>
+              <label class="form-label">Celular</label>
+              <input type="text" class="form-control bg-dark text-white border-secondary" [(ngModel)]="ventaRequest.celular" name="celular" required>
             </div>
           </div>
 
-          <button
-            type="submit"
-            class="btn btn-primary mt-4 w-100 py-3"
-            [disabled]="procesando"
-            style="font-family: var(--cr-font-display); font-size: 1.2rem"
-          >
-            <span *ngIf="procesando" class="spinner-border spinner-border-sm me-2"></span>
-            {{ procesando ? 'Procesando...' : 'Pagar S/ ' + calcularTotal() }}
+          <h4 class="mb-3 border-bottom border-secondary pb-2">Datos de Pago (Tarjeta)</h4>
+          <div class="mb-3">
+            <label class="form-label">Titular de la Tarjeta</label>
+            <input type="text" class="form-control bg-dark text-white border-secondary" placeholder="Como aparece en la tarjeta" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Número de Tarjeta</label>
+            <input type="text" class="form-control bg-dark text-white border-secondary" placeholder="0000 0000 0000 0000" maxlength="16" required>
+          </div>
+          <div class="row mb-4">
+            <div class="col-md-6">
+              <label class="form-label">Fecha de Vencimiento</label>
+              <input type="text" class="form-control bg-dark text-white border-secondary" placeholder="MM/AA" maxlength="5" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Código de Seguridad (CVV)</label>
+              <input type="password" class="form-control bg-dark text-white border-secondary" placeholder="123" maxlength="4" required>
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-primary w-100 py-3" style="font-size: 1.2rem;">
+            Pagar S/ {{ calcularTotal() }}
           </button>
         </form>
-      </div>
-    </div>
-
-    <div class="col-lg-4">
-      <div class="card p-4 border-0 h-100" style="background-color: var(--cr-surface-2)">
-        <h4 class="mb-4 text-white">Resumen</h4>
-        <ul class="list-unstyled" style="color: var(--cr-muted)">
-          <li class="d-flex justify-content-between mb-2">
-            <span>Entradas x{{ ventaRequest.cantidad }}</span>
-            <span class="text-white">S/ {{ calcularTotal() }}</span>
-          </li>
-          <li class="d-flex justify-content-between mb-2">
-            <span>Asientos</span>
-            <span class="text-white">{{ ventaRequest.asientos.join(', ') || '-' }}</span>
-          </li>
-          <hr style="border-color: var(--cr-surface-3)" />
-          <li class="d-flex justify-content-between align-items-center mt-3">
-            <span class="text-white fs-5">Total</span>
-            <span class="fs-4" style="color: var(--cr-gold); font-family: var(--cr-font-display)"
-              >S/ {{ calcularTotal() }}</span
-            >
-          </li>
-        </ul>
-      </div>
-    </div>
-  </div>
-
-  <div class="row justify-content-center" *ngIf="compraExitosa">
-    <div class="col-md-6 text-center">
-      <div class="card p-5 border-0" style="background-color: var(--cr-surface)">
-        <i class="bi bi-check-circle-fill mb-3" style="font-size: 4rem; color: var(--cr-gold)"></i>
-        <h2 class="text-white" style="font-family: var(--cr-font-display)">¡Compra Confirmada!</h2>
-        <p style="color: var(--cr-muted)">Presenta este código en la entrada de la sala.</p>
-        <div
-          class="p-3 my-4 rounded"
-          style="background-color: var(--cr-surface-2); border: 2px dashed var(--cr-surface-3)"
-        >
-          <h3 class="text-white m-0 font-monospace">{{ codigoTransaccion }}</h3>
-        </div>
-        <button class="btn btn-outline-light" routerLink="/">Volver al Inicio</button>
       </div>
     </div>
   </div>

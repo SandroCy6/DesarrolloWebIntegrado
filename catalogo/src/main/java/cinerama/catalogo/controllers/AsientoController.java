@@ -61,7 +61,7 @@ public class AsientoController {
     }
 
     // POST /api/cines/{salaId}/asientos
-    @PostMapping("/horarios/{salaId}/asientos")
+    @PostMapping("/horarios/{horarioId}/asientos")
     public ResponseEntity<AsientoDTO> crearAsiento(
             @PathVariable Long horarioId,
             @RequestBody AsientoDTO dto) {
