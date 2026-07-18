@@ -1,1 +1,133 @@
-<p>gestion-funciones works!</p>
+<div class="container-fluid py-4 text-white min-vh-100">
+  
+  <div class="row mb-4">
+    <div class="col d-flex justify-content-between align-items-center border-bottom border-secondary pb-2">
+      <div>
+        <h2 class="fw-bold text-uppercase mb-0">Cartelera y Funciones</h2>
+        <p class="text-muted mb-0">Gestión de horarios, asignación de salas y precios</p>
+      </div>
+      <div>
+        <button class="btn btn-outline-light me-2" (click)="cargarFunciones()">
+          <i class="bi bi-arrow-clockwise"></i> Refrescar
+        </button>
+        <button class="btn btn-primary fw-bold" (click)="abrirModalCrear()">
+          <i class="bi bi-plus-circle"></i> Nueva Función
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-12">
+      <div class="card bg-dark text-white border-secondary shadow-lg">
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table table-dark table-hover align-middle mb-0">
+              <thead class="table-active">
+                <tr>
+                  <th>ID</th>
+                  <th>Película</th>
+                  <th>Sala</th>
+                  <th>Fecha</th>
+                  <th>Hora de Inicio</th>
+                  <th>Precio</th>
+                  <th class="text-center">Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let f of funciones">
+                  <td class="fw-bold text-primary">#{{ f.id }}</td>
+                  <td><i class="bi bi-film text-muted me-1"></i> {{ f.tituloPelicula || f.peliculaId }}</td>
+                  <td>Sala {{ f.numeroSala || f.salaId }}</td>
+                  <td>{{ f.fecha | date:'mediumDate' }}</td>
+                  <td><i class="bi bi-clock text-warning"></i> {{ f.horaInicio }}</td>
+                  <td class="fw-bold text-success">S/ {{ f.precio }}</td>
+                  <td class="text-center">
+                    <button class="btn btn-sm btn-outline-light me-2" title="Editar" (click)="abrirModalEditar(f)">
+                      <i class="bi bi-pencil-square"></i>
+                    </button>
+                    <button class="btn btn-sm btn-outline-danger" title="Eliminar" (click)="eliminarFuncion(f.id)">
+                      <i class="bi bi-trash"></i>
+                    </button>
+                  </td>
+                </tr>
+                <tr *ngIf="funciones.length === 0">
+                  <td colspan="7" class="text-center text-muted py-5">
+                    No hay funciones programadas actualmente.
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" [ngClass]="{'show d-block': modalAbierto}" tabindex="-1" 
+     [style.background-color]="modalAbierto ? 'rgba(0,0,0,0.7)' : 'transparent'"
+     [style.pointer-events]="modalAbierto ? 'auto' : 'none'">
+  
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content bg-dark text-white border-secondary shadow-lg">
+      
+      <div class="modal-header border-secondary bg-secondary text-white">
+        <h5 class="modal-title fw-bold">
+          <i class="bi" [ngClass]="modoEdicion ? 'bi-pencil' : 'bi-calendar-plus'"></i>
+          {{ modoEdicion ? 'Editar Función #' + funcionActual.id : 'Programar Nueva Función' }}
+        </h5>
+        <button type="button" class="btn-close btn-close-white" (click)="cerrarModal()" aria-label="Close"></button>
+      </div>
+      
+      <div class="modal-body">
+        <form (ngSubmit)="guardarFuncion()" #funcionForm="ngForm">
+          
+          <div class="mb-3">
+            <label class="form-label text-muted small mb-1 fw-bold">Seleccionar Película</label>
+            <select class="form-select bg-dark text-white border-secondary" [(ngModel)]="funcionActual.peliculaId" name="peliculaId" required>
+              <option [ngValue]="null" disabled>-- Elige una película --</option>
+              <option *ngFor="let p of peliculas" [ngValue]="p.id">{{ p.titulo }}</option>
+            </select>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label text-muted small mb-1 fw-bold">Asignar Sala</label>
+            <select class="form-select bg-dark text-white border-secondary" [(ngModel)]="funcionActual.salaId" name="salaId" required>
+              <option [ngValue]="null" disabled>-- Elige una sala --</option>
+              <option *ngFor="let s of salas" [ngValue]="s.id">Sala {{ s.numero }}</option>
+            </select>
+          </div>
+
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label text-muted small mb-1 fw-bold">Fecha</label>
+              <input type="date" class="form-control bg-dark text-white border-secondary" [(ngModel)]="funcionActual.fecha" name="fecha" required>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label text-muted small mb-1 fw-bold">Hora de Inicio</label>
+              <input type="time" step="2" class="form-control bg-dark text-white border-secondary" [(ngModel)]="funcionActual.horaInicio" name="horaInicio" required>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label text-muted small mb-1 fw-bold">Precio de la Entrada (S/)</label>
+            <div class="input-group">
+              <span class="input-group-text bg-secondary text-white border-secondary">S/</span>
+              <input type="number" class="form-control bg-dark text-white border-secondary" [(ngModel)]="funcionActual.precio" name="precio" min="0" step="0.50" placeholder="Ej. 15.00" required>
+            </div>
+          </div>
+
+          <div class="modal-footer border-secondary px-0 pb-0 pt-3 mt-4">
+            <button type="button" class="btn btn-outline-light" (click)="cerrarModal()">Cancelar</button>
+            <button type="submit" class="btn btn-primary fw-bold" [disabled]="!funcionForm.form.valid">
+              <i class="bi bi-save"></i> Guardar Función
+            </button>
+          </div>
+
+        </form>
+      </div>
+      
+    </div>
+  </div>
+</div>

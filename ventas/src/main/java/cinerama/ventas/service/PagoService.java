@@ -16,7 +16,7 @@ public class PagoService {
 
     public boolean procesarPago(BigDecimal monto, String metodoPago, String tokenTarjeta, String emailCliente) {
         // 🛡️ BYPASS PARA PRUEBAS EN POSTMAN: Si mandamos "tok_test", forzamos la aprobación
-        if ("tok_test".equals(tokenTarjeta)) return true;
+        //if ("tok_test".equals(tokenTarjeta)) return true;
 
         RestTemplate restTemplate = new RestTemplate();
         String url = "https://api.mercadopago.com/v1/payments";

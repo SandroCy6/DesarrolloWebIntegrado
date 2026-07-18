@@ -1,1 +1,126 @@
-<p>gestion-ventas works!</p>
+<div class="container-fluid py-4 text-white min-vh-100">
+  
+  <div class="row mb-4">
+    <div class="col d-flex justify-content-between align-items-center border-bottom border-secondary pb-2">
+      <div>
+        <h2 class="fw-bold text-uppercase mb-0">Gestión de Ventas</h2>
+        <p class="text-muted mb-0">Control de transacciones y estados de pago</p>
+      </div>
+      <button class="btn btn-primary" (click)="cargarVentas()">
+        <i class="bi bi-arrow-clockwise"></i> Refrescar
+      </button>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-12">
+      <div class="card bg-dark text-white border-secondary shadow-lg">
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table table-dark table-hover align-middle mb-0">
+              <thead class="table-active">
+                <tr>
+                  <th>ID Venta</th>
+                  <th>DNI Cliente</th>
+                  <th>Fecha</th>
+                  <th>Método de Pago</th>
+                  <th>Total (S/)</th>
+                  <th>Estado</th>
+                  <th class="text-center">Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let v of ventas">
+                  <td class="fw-bold text-primary">#{{ v.id }}</td>
+                  <td>{{ v.clienteDni }}</td>
+                  <td>{{ v.fechaVenta | date:'short' }}</td>
+                  <td>{{ v.metodoPago }}</td>
+                  <td class="fw-bold">S/ {{ v.total }}</td>
+                  <td>
+                    <span class="badge" 
+                          [ngClass]="{
+                            'bg-success': v.estadoPago === 'APROBADO',
+                            'bg-warning text-dark': v.estadoPago === 'PENDIENTE',
+                            'bg-danger': v.estadoPago === 'RECHAZADO'
+                          }">
+                      {{ v.estadoPago }}
+                    </span>
+                  </td>
+                  <td class="text-center">
+                    <button class="btn btn-sm btn-outline-light" (click)="abrirModalDetalle(v.id)">
+                      <i class="bi bi-pencil-square"></i> Detalle / Editar
+                    </button>
+                  </td>
+                </tr>
+                <tr *ngIf="ventas.length === 0">
+                  <td colspan="7" class="text-center text-muted py-5">
+                    No hay ventas registradas en el sistema.
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" [ngClass]="{'show d-block': modalAbierto}" tabindex="-1" 
+     [style.background-color]="modalAbierto ? 'rgba(0,0,0,0.7)' : 'transparent'"
+     [style.pointer-events]="modalAbierto ? 'auto' : 'none'">
+  
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content bg-dark text-white border-secondary shadow-lg" *ngIf="ventaSeleccionada">
+      
+      <div class="modal-header border-secondary bg-secondary text-white">
+        <h5 class="modal-title fw-bold">
+          <i class="bi bi-receipt"></i> Detalle de la Venta #{{ ventaSeleccionada.id }}
+        </h5>
+        <button type="button" class="btn-close btn-close-white" (click)="cerrarModal()" aria-label="Close"></button>
+      </div>
+      
+      <div class="modal-body">
+        <div class="row mb-4">
+          <div class="col-md-6">
+            <p class="mb-1 text-muted small">DNI del Cliente</p>
+            <p class="fs-5 fw-bold">{{ ventaSeleccionada.clienteDni }}</p>
+          </div>
+          <div class="col-md-6 text-md-end">
+            <p class="mb-1 text-muted small">Monto Total</p>
+            <p class="fs-4 fw-bold text-success">S/ {{ ventaSeleccionada.total }}</p>
+          </div>
+        </div>
+
+        <h6 class="fw-bold mb-3 border-bottom border-secondary pb-2">Asientos Adquiridos</h6>
+        <div class="row">
+          <div class="col-md-6 col-lg-4 mb-2" *ngFor="let det of ventaSeleccionada.detalles">
+            <div class="card bg-secondary text-white border-0">
+              <div class="card-body py-2 d-flex justify-content-between align-items-center">
+                <span><i class="bi bi-geo-alt-fill text-primary"></i> Asiento {{ det.asientoId }}</span>
+                <span class="fw-bold text-light">S/ {{ det.precioUnitario }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-4 bg-black p-3 rounded border border-secondary">
+          <label class="form-label fw-bold mb-2">Modificar Estado de la Transacción:</label>
+          <select class="form-select bg-dark text-white border-secondary" [(ngModel)]="nuevoEstado">
+            <option value="PENDIENTE">⏳ PENDIENTE</option>
+            <option value="APROBADO">✅ APROBADO</option>
+            <option value="RECHAZADO">❌ RECHAZADO</option>
+          </select>
+        </div>
+      </div>
+      
+      <div class="modal-footer border-secondary">
+        <button type="button" class="btn btn-outline-light" (click)="cerrarModal()">Cerrar</button>
+        <button type="button" class="btn btn-primary fw-bold" (click)="actualizarEstado()">
+          <i class="bi bi-save"></i> Guardar Cambios
+        </button>
+      </div>
+      
+    </div>
+  </div>
+</div>

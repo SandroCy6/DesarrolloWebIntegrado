@@ -70,4 +70,29 @@ export class CatalogoService {
   importarPeliculaTMDB(tmdbId: number): Observable<Pelicula> {
     return this.http.post<Pelicula>(`${this.apiUrl}/tmdb/importar/${tmdbId}`, {});
   }
+
+  // --- MÉTODOS PARA GESTIÓN DE HORARIOS (FUNCIONES) ---
+
+  obtenerTodosHorarios(): Observable<Horario[]> {
+    return this.http.get<Horario[]>(`${environment.apiUrl}/catalogo/horarios`);
+  }
+
+  crearHorario(horario: any): Observable<Horario> {
+    return this.http.post<Horario>(`${environment.apiUrl}/catalogo/horarios`, horario);
+  }
+
+  actualizarHorario(id: number, horario: any): Observable<Horario> {
+    return this.http.put<Horario>(`${environment.apiUrl}/catalogo/horarios/${id}`, horario);
+  }
+
+  eliminarHorario(id: number): Observable<void> {
+    return this.http.delete<void>(`${environment.apiUrl}/catalogo/horarios/${id}`);
+  }
+
+  // --- MÉTODOS PARA GESTIÓN DE SALAS ---
+
+  obtenerTodasSalas(): Observable<any[]> {
+    return this.http.get<any[]>(`${environment.apiUrl}/catalogo/salas`);
+  }
+  
 }
