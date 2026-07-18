@@ -20,8 +20,14 @@ public class Promocion {
     @Column(name = "fecha_fin")
     private LocalDate fechaFin;
     private Boolean estado;
+    @Column(name = "imagen_url", length = 500)
+    private String imagenUrl;
 
-    public Promocion(Long id_promocion, String titulo, String descripcion, String tipo, LocalDate fechaInicio, LocalDate fechaFin, Boolean estado) {
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "id_regla", referencedColumnName = "id_regla") // Cambia "id_regla" si en tu BD se llama diferente
+    private ReglaPromociones regla;
+
+    public Promocion(Long id_promocion, String titulo, String descripcion, String tipo, LocalDate fechaInicio, LocalDate fechaFin, Boolean estado, String imagenUrl, ReglaPromociones regla) {
         this.id_promocion = id_promocion;
         this.titulo = titulo;
         this.descripcion = descripcion;
@@ -29,6 +35,8 @@ public class Promocion {
         this.fechaInicio = fechaInicio;
         this.fechaFin = fechaFin;
         this.estado = estado;
+        this.imagenUrl = imagenUrl;
+        this.regla = regla;
     }
 
     public Promocion() {
@@ -88,5 +96,21 @@ public class Promocion {
 
     public void setEstado(Boolean estado) {
         this.estado = estado;
+    }
+
+    public String getImagenUrl() {
+        return imagenUrl;
+    }
+
+    public void setImagenUrl(String imagenUrl) {
+        this.imagenUrl = imagenUrl;
+    }
+
+    public ReglaPromociones getRegla() {
+        return regla;
+    }
+
+    public void setRegla(ReglaPromociones regla) {
+        this.regla = regla;
     }
 }

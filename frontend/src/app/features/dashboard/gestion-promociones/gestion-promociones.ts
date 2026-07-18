@@ -68,9 +68,18 @@ export class GestionPromocionesComponent implements OnInit {
   }
 
   abrirFormularioEdicion(promocion: Promocion): void {
-    this.promocionActual = { ...promocion,
-      regla: promocion.regla ? { ...promocion.regla } : { tipo: '', valor1: 0 }
-      };
+
+    this.promocionActual = {
+      ...promocion,
+      imagenUrl: promocion.imagenUrl ?? '',
+      regla: promocion.regla
+        ? { ...promocion.regla }
+        : {
+            tipo: '',
+            valor1: 0
+          }
+    };
+
     this.vistaActual = 'formulario';
   }
 
@@ -82,7 +91,10 @@ export class GestionPromocionesComponent implements OnInit {
     if (!this.validarFormulario()) {
       return;
     }
-
+// ─── MODIFICADO: Registro en consola antes de enviar al servicio ───
+    console.log('OBJETO A ENVIAR');
+    console.log(this.promocionActual);
+    // ──────────────────────────────────────────────────────────────────
     this.guardando = true;
 
     const id = this.promocionActual.id_promocion;
@@ -217,6 +229,7 @@ export class GestionPromocionesComponent implements OnInit {
       tipo: '',
       fechaInicio: '',
       fechaFin: '',
+      imagenUrl: '',
       estado: true,
       regla: {
         tipo: '',

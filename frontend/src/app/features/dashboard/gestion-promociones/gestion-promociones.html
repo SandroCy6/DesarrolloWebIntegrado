@@ -1,3 +1,4 @@
+
 <div class="container-fluid">
 
   <!-- LISTA -->
@@ -84,7 +85,9 @@
         <table class="table table-dark table-hover align-middle mb-0">
 
           <thead>
+          <!-- MODIFICADO: Se añade la columna Imagen al encabezado -->
           <tr class="text-uppercase small text-muted">
+            <th>Imagen</th>
             <th>Título</th>
             <th>Tipo</th>
             <th>Fecha inicio</th>
@@ -97,6 +100,15 @@
           <tbody>
 
           <tr *ngFor="let promocion of promociones">
+
+            <!-- MODIFICADO: Celda que renderiza la imagen o el marcador por defecto -->
+            <td>
+              <img
+                [src]="promocion.imagenUrl || 'assets/images/placeholder-promo.jpg'"
+                alt="Promoción"
+                width="70"
+                class="rounded">
+            </td>
 
             <td>
               <strong>{{ promocion.titulo }}</strong>
@@ -149,8 +161,9 @@
 
           </tr>
 
+          <!-- MODIFICADO: Incrementado el colspan a 7 por la nueva columna -->
           <tr *ngIf="promociones.length === 0">
-            <td colspan="6" class="text-center text-muted py-4">
+            <td colspan="7" class="text-center text-muted py-4">
               No existen promociones registradas.
             </td>
           </tr>
@@ -243,6 +256,29 @@
           </textarea>
         </div>
 
+        <!-- MODIFICADO: Campo para la URL de la Imagen -->
+        <div class="col-12 mb-3">
+          <label class="form-label text-light">
+            URL de la Imagen
+          </label>
+          <input
+            type="text"
+            class="form-control"
+            [(ngModel)]="promocionActual.imagenUrl"
+            placeholder="https://...">
+        </div>
+
+        <!-- MODIFICADO: Sección de Vista Previa de la Imagen -->
+        <div
+          class="col-12 mb-4 text-center"
+          *ngIf="promocionActual.imagenUrl">
+          <img
+            [src]="promocionActual.imagenUrl"
+            class="img-thumbnail"
+            style="max-height:220px;"
+            alt="Vista previa de la promoción">
+        </div>
+
         <!-- FECHA INICIO -->
         <div class="col-md-6 mb-3">
           <label class="form-label text-light">
@@ -298,41 +334,40 @@
 
       </div>
 
-      <!-- ─── SECCIÓN NUEVA: REGLA ASOCIADA (Mismo formulario) ─── -->
+      <!-- ─── SECCIÓN: REGLA ASOCIADA ─── -->
       <div class="col-12"><hr class="text-muted my-4"></div>
       <h5 class="text-warning mb-3">
         <i class="bi bi-gear-fill me-2"></i>Regla de Descuento
       </h5>
 
-      <!-- TIPO DE REGLA -->
-      <div class="col-md-6 mb-3" *ngIf="promocionActual.regla">
-        <label class="form-label text-light">Tipo de Regla</label>
-        <select
-          class="form-select"
-          [(ngModel)]="promocionActual.regla.tipo">
-          <option value="" disabled>Seleccione el tipo de regla</option>
-          <option value="PORCENTAJE">Porcentaje (%)</option>
-          <option value="MONTO_FIJO">Monto Fijo ($)</option>
-        </select>
-      </div>
+      <div class="row">
+        <!-- TIPO DE REGLA -->
+        <div class="col-md-6 mb-3" *ngIf="promocionActual.regla">
+          <label class="form-label text-light">Tipo de Regla</label>
+          <select
+            class="form-select"
+            [(ngModel)]="promocionActual.regla.tipo">
+            <option value="" disabled>Seleccione el tipo de regla</option>
+            <option value="PORCENTAJE">Porcentaje (%)</option>
+            <option value="MONTO_FIJO">Monto Fijo ($)</option>
+          </select>
+        </div>
 
-      <!-- VALOR DE LA REGLA -->
-      <div class="col-md-6 mb-4" *ngIf="promocionActual.regla">
-        <label class="form-label text-light">
-          Valor {{ promocionActual.regla.tipo === 'PORCENTAJE' ? '(%)' : '($)' }}
-        </label>
-        <input
-          type="number"
-          class="form-control"
-          [(ngModel)]="promocionActual.regla.valor1"
-          placeholder="Ej: 50.00">
+        <!-- VALOR DE LA REGLA -->
+        <div class="col-md-6 mb-4" *ngIf="promocionActual.regla">
+          <label class="form-label text-light">
+            Valor {{ promocionActual.regla.tipo === 'PORCENTAJE' ? '(%)' : '($)' }}
+          </label>
+          <input
+            type="number"
+            class="form-control"
+            [(ngModel)]="promocionActual.regla.valor1"
+            placeholder="Ej: 50.00">
+        </div>
       </div>
-      <!-- ─────────────────────────────────────────────────────── -->
-
-    </div>
 
       <!-- BOTONES -->
-      <div class="d-flex gap-2">
+      <div class="d-flex gap-2 mt-2">
 
         <button
           class="btn btn-outline-light"
@@ -364,3 +399,6 @@
     </div>
 
   </div>
+
+</div>
+

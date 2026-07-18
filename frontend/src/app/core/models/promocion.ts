@@ -6,6 +6,7 @@ export interface Promocion {
   fechaInicio: string;
   fechaFin: string;
   estado: boolean;
+imagenUrl: string;
 
   regla?: {
       tipo: string;

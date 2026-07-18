@@ -37,9 +37,13 @@ public class PromocionService {
 
     // ACTUALIZAR
     public Promocion actualizar(Long id, Promocion obj) {
+        System.out.println("IMAGEN RECIBIDA: " + obj.getImagenUrl());
+
         Promocion existente = promocionRepository.findById(id).orElse(null);
 
+
         if (existente != null) {
+
             existente.setTitulo(obj.getTitulo());
             existente.setDescripcion(obj.getDescripcion());
             existente.setTipo(obj.getTipo());
@@ -47,6 +51,7 @@ public class PromocionService {
             existente.setFechaFin(obj.getFechaFin());
             existente.setEstado(obj.getEstado());
 
+            existente.setImagenUrl(obj.getImagenUrl());
             return promocionRepository.save(existente);
         }
 

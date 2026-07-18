@@ -1,0 +1,137 @@
+<div class="promociones-wrapper pt-5 pb-5">
+  <div class="container mt-4">
+
+    <!-- HEADER DE LA SECCIÓN -->
+    <div class="d-flex align-items-center mb-5 pb-3 border-bottom border-dark position-relative">
+      <h1
+        class="display-4 text-uppercase mb-0 me-4 fw-bold"
+        style="font-family: var(--cr-font-display); color: var(--cr-white); letter-spacing: 2px"
+      >
+        Nuestras
+        <span style="color: var(--cr-red); text-shadow: var(--cr-shadow-glow-red)">Promociones</span>
+      </h1>
+      <span class="badge badge-format badge-format--imax mt-2 px-3 py-2 fs-6 shadow-sm">
+        Exclusivo
+      </span>
+    </div>
+
+    <!-- ESTADO: CARGANDO -->
+    <div *ngIf="cargando" class="text-center py-5 my-5">
+      <div
+        class="spinner-border"
+        style="color: var(--cr-red); width: 3rem; height: 3rem"
+        role="status"
+      >
+        <span class="visually-hidden">Cargando...</span>
+      </div>
+      <p
+        class="mt-4 text-muted fs-5"
+        style="font-family: var(--cr-font-display); letter-spacing: 1px"
+      >
+        Buscando los mejores beneficios...
+      </p>
+    </div>
+
+    <!-- ESTADO: ERROR -->
+    <div
+      *ngIf="error"
+      class="alert custom-alert-danger text-center shadow-lg border-0 d-flex align-items-center justify-content-center py-4"
+    >
+      <i class="bi bi-exclamation-triangle-fill fs-3 me-3 text-danger"></i>
+      <span class="fs-5">{{ error }}</span>
+    </div>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <div *ngIf="!cargando && !error" class="row g-4 g-xl-5">
+
+      <!-- SIN PROMOCIONES DISPONIBLES -->
+      <div *ngIf="promociones.length === 0" class="col-12">
+        <div class="text-center py-5 mx-auto" style="max-width: 520px">
+          <div class="mb-4" style="font-size: 5rem; line-height: 1">🎁</div>
+          <h3
+            style="
+              font-family: var(--cr-font-display);
+              font-size: 2rem;
+              color: var(--cr-white);
+              letter-spacing: 1px;
+            "
+          >
+            No hay promociones activas
+          </h3>
+          <p
+            style="
+              color: var(--cr-muted);
+              font-size: 1rem;
+              max-width: 38ch;
+              margin: 0.75rem auto 1.5rem;
+            "
+          >
+            Por el momento no contamos con cupones o beneficios activos. ¡Pero no te despegues, regresarán muy pronto!
+          </p>
+          <div class="d-flex gap-3 justify-content-center flex-wrap">
+            <button
+              class="btn btn-danger px-4"
+              style="font-family: var(--cr-font-display); letter-spacing: 0.05em"
+              (click)="cargarPromociones()"
+            >
+              <i class="bi bi-arrow-clockwise me-2"></i>Reintentar
+            </button>
+            <a
+              routerLink="/cartelera"
+              class="btn btn-outline-light px-4"
+              style="font-family: var(--cr-font-display); letter-spacing: 0.05em"
+            >
+              <i class="bi bi-film me-2"></i>Ver Cartelera
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- LISTADO DE TARJETAS DE PROMOCIONES -->
+      <div class="col-xl-3 col-lg-4 col-md-6" *ngFor="let promo of promociones">
+        <div class="premium-promo-card">
+          <div class="promo-img-container">
+            <img
+              [src]="promo.imagenUrl || 'assets/images/placeholder-promo.jpg'"
+              class="promo-banner"
+              [alt]="promo.titulo"
+            />
+
+            <!-- OVERLAY DE INFORMACIÓN -->
+            <div class="promo-overlay d-flex flex-column justify-content-between p-3">
+              <div class="d-flex justify-content-end">
+                <span class="badge bg-dark border border-secondary text-white shadow-sm text-uppercase">
+                  <i class="bi bi-tag-fill me-1 text-warning"></i>{{ promo.regla?.tipo || promo.tipo }}
+                </span>
+              </div>
+
+              <div class="promo-info text-start">
+                <p class="text-warning small mb-1 fw-bold text-uppercase tracking-wide">
+                  Vence: {{ promo.fechaFin | date:'dd/MM/yyyy' }}
+                </p>
+                <h5 class="promo-title text-truncate mb-1" [title]="promo.titulo">
+                  {{ promo.titulo }}
+                </h5>
+                <p class="text-muted small text-truncate mb-0">
+                  {{ promo.descripcion }}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- ACCIÓN DE LA TARJETA -->
+          <div class="card-footer-premium p-3">
+            <button
+              class="btn btn-premium w-100 d-flex align-items-center justify-content-center"
+              (click)="aplicarOVerMas(promo)"
+            >
+              <i class="bi bi-gift me-2 fs-5"></i>
+              <span>Aprovechar Promo</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
