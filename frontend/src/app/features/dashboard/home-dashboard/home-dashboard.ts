@@ -38,27 +38,44 @@ export class HomeDashboardComponent implements OnInit {
   }
 
   cargarDatos(): void {
+    // 1. Cargar Ventas
     this.ventasService.getVentas().subscribe({
-      next: (ventas: any[]) => {
-        this.totalVentas = ventas.length;
-        this.totalIngresos = ventas.reduce((sum, v) => sum + (v.total || 0), 0);
-        this.ultimasVentas = ventas.slice(-5).reverse();
-        this.cargando = false; // ← éxito
+      next: (ventas: any) => {
+        // Manejamos si viene con paginación (data.content) o un arreglo directo
+        const listaVentas = ventas.content ? ventas.content : ventas;
+        
+        this.totalVentas = listaVentas.length;
+        this.totalIngresos = listaVentas.reduce((sum: any, v: any) => sum + (v.total || 0), 0);
+        this.ultimasVentas = listaVentas.slice(-5).reverse();
+        this.cargando = false; 
+        this.cdr.detectChanges();
       },
       error: () => {
-        this.cargando = false; // ← fallo también apaga el spinner
+        this.cargando = false; 
         this.cdr.detectChanges();
       },
     });
 
-    this.http.get<any[]>(`${environment.apiUrl}/api/peliculas`).subscribe({
-      next: (p) => (this.totalPeliculas = p.length),
-      error: () => {},
+    // 2. Cargar Películas (Ruta Corregida a /catalogo/peliculas)
+    this.http.get<any[]>(`${environment.apiUrl}/catalogo/peliculas`).subscribe({
+      next: (p) => {
+        this.totalPeliculas = p.length;
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        this.totalPeliculas = 0; // Evita que se quede colgado si falla
+      },
     });
 
-    this.http.get<any[]>(`${environment.apiUrl}/api/clientes`).subscribe({
-      next: (c) => (this.totalClientes = c.length),
-      error: () => {},
+    // 3. Cargar Clientes/Usuarios (Ruta Corregida a /usuarios)
+    this.http.get<any[]>(`${environment.apiUrl}/usuarios`).subscribe({
+      next: (c) => {
+        this.totalClientes = c.length;
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        this.totalClientes = 0; // Evita que se quede colgado si falla
+      },
     });
-  }  
+  }
 }
