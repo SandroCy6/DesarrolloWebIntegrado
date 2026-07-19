@@ -1,10 +1,12 @@
 package cinerama.ventas.service;
 
 import cinerama.ventas.client.CatalogoClient;
+import cinerama.ventas.client.ClienteClient;
 import cinerama.ventas.client.PromocionClient;
 
 import cinerama.ventas.client.NotificacionClient;
 import cinerama.ventas.dto.AsientoDTO;
+import cinerama.ventas.dto.ClienteRequestDTO;
 import cinerama.ventas.dto.DetalleRequestDTO;
 import cinerama.ventas.dto.VentaRequestDTO;
 import cinerama.ventas.model.DetalleVenta;
@@ -36,17 +38,20 @@ public class VentaService {
     private final CatalogoClient catalogoClient;
     private final PagoService pagoService;
     private final PromocionClient promocionClient;
+    private final ClienteClient clienteClient;
 
     public VentaService(VentaRepository ventaRepository,
             NotificacionClient notificacionClient,
             CatalogoClient catalogoClient,
             PagoService pagoService,
-             PromocionClient promocionClient) {
+             PromocionClient promocionClient,
+            ClienteClient clienteClient) {
         this.ventaRepository = ventaRepository;
         this.notificacionClient = notificacionClient;
         this.catalogoClient = catalogoClient;
         this.pagoService = pagoService;
-        this.promocionClient = promocionClient; //
+        this.promocionClient = promocionClient;
+        this.clienteClient = clienteClient;//
     }
 
     public Venta registrarVenta(VentaRequestDTO request) {
@@ -197,6 +202,23 @@ public class VentaService {
                     .collect(Collectors.joining(", "));
             saved.setAsientos(asientosTexto);
             ventaRepository.save(saved);
+        }
+        // PASO 8.5: Sincronizar con el microservicio de Clientes
+        try {
+            ClienteRequestDTO clienteReq = new ClienteRequestDTO();
+            clienteReq.setDni(request.getClienteDni());
+            clienteReq.setNombre(request.getClienteNombre());
+            clienteReq.setCorreo(request.getClienteCorreo());
+
+            // Verificamos que no sea nulo antes de setearlo
+            if(request.getClienteCelular() != null) {
+                clienteReq.setTelefono(request.getClienteCelular());
+            }
+
+            clienteClient.verificarORegistrar(clienteReq);
+            System.out.println("✅ Cliente sincronizado exitosamente: " + request.getClienteDni());
+        } catch (Exception e) {
+            System.err.println("⚠️ No se pudo sincronizar el cliente con el microservicio: " + e.getMessage());
         }
 
         // 9. Notificar al final
