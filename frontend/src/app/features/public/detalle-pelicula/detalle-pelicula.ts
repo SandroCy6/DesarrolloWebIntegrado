@@ -191,6 +191,7 @@ private obtenerFechaHoy(): string {
         hora: this.horarioSeleccionado.horaInicio.substring(0, 5),
         sala: this.horarioSeleccionado.numeroSala,
         asientos: this.asientosSeleccionados.map((a) => a.numero).join(','),
+        asientosIds: this.asientosSeleccionados.map((a) => a.id).join(','),
         total: this.total.toFixed(2),
         cantidad: this.cantidadSeleccionada,
       },

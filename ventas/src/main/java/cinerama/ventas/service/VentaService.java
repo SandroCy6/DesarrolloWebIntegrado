@@ -50,7 +50,7 @@ public class VentaService {
     }
 
     public Venta registrarVenta(VentaRequestDTO request) {
-        // Validar máximo de entradas
+        // 1. Validar máximo de entradas
         int totalEntradas = request.getDetalles().stream()
                 .filter(d -> d.getTipoItem().equalsIgnoreCase("ENTRADA"))
                 .mapToInt(DetalleRequestDTO::getCantidad)
@@ -60,19 +60,20 @@ public class VentaService {
             throw new IllegalArgumentException("Máximo 10 entradas por compra.");
         }
 
-        // Crear la Venta
+        // 2. Crear la Venta
         Venta venta = new Venta();
         venta.setClienteDni(request.getClienteDni());
         venta.setClienteCorreo(request.getClienteCorreo());
         venta.setClienteCelular(request.getClienteCelular());
         venta.setClienteNombre(request.getClienteNombre());
-        venta.setFecha(LocalDateTime.now()); // Fecha automática
-        venta.setMetodoPago(request.getMetodoPago()); // Guardamos el metodo de pago
-        venta.setEstadoPago("PENDIENTE"); // Estado inicial
+        venta.setFecha(LocalDateTime.now());
+        venta.setMetodoPago(request.getMetodoPago());
+        venta.setEstadoPago("PENDIENTE");
         venta.setDetalles(new ArrayList<>());
 
-        BigDecimal precioBaseHorario = BigDecimal.ZERO; // NUEVA VARIABLE
+        BigDecimal precioBaseHorario = BigDecimal.ZERO;
 
+        // 3. Obtener información del Horario
         if (request.getHorarioId() != null) {
             try {
                 cinerama.ventas.dto.HorarioResponseDTO h = catalogoClient.obtenerHorario(request.getHorarioId()).orElse(null);
@@ -80,7 +81,6 @@ public class VentaService {
                     venta.setTituloPelicula(h.getTituloPelicula());
                     venta.setSala("Sala " + h.getNumeroSala() + " — " + h.getNombreCine());
 
-                    // 🛡️ GUARDAMOS EL PRECIO DEL HORARIO
                     if (h.getPrecio() != null) {
                         precioBaseHorario = BigDecimal.valueOf(h.getPrecio());
                     }
@@ -92,43 +92,23 @@ public class VentaService {
 
         BigDecimal totalVenta = BigDecimal.ZERO;
 
-        // Procesar cada detalle y calcular el total
+        // 4. Procesar Detalles (Aquí ya NO validamos los asientos, solo calculamos precios)
         for (DetalleRequestDTO detReq : request.getDetalles()) {
             DetalleVenta detalle = new DetalleVenta();
             detalle.setTipoItem(detReq.getTipoItem().toUpperCase());
-            detalle.setItemId(detReq.getItemId());
+            detalle.setItemId(detReq.getItemId()); // Esto guarda el 10 (Horario), lo cual está bien para tu historial
             detalle.setCantidad(detReq.getCantidad());
 
             BigDecimal precioSeguro = detReq.getPrecioUnitario();
 
             if (detalle.getTipoItem().equals("ENTRADA")) {
-                try {
-                    // Llamamos a Catálogo para obtener la información real del asiento
-                    AsientoDTO asiento = catalogoClient.obtenerAsiento(detReq.getItemId())
-                            .orElseThrow(() -> new IllegalArgumentException("El asiento con ID " + detReq.getItemId() + " no existe."));
-
-                    // Verificar disponibilidad
-                    if ("OCUPADO".equalsIgnoreCase(asiento.getEstado())) {
-                        throw new IllegalArgumentException("El asiento " + asiento.getNumero() + " ya se encuentra ocupado. Por favor, seleccione otro.");
-                    }
-
-                    // 🛡️ AHORA USAMOS EL PRECIO DEL HORARIO, YA NO EL DEL ASIENTO
-                    if (precioBaseHorario.compareTo(BigDecimal.ZERO) == 0) {
-                        throw new IllegalStateException("Error: El horario seleccionado no tiene un precio válido configurado.");
-                    }
-                    precioSeguro = precioBaseHorario;
-
-                } catch (IllegalArgumentException e) {
-                    throw e;
-                } catch (Exception e) {
-                    System.err.println("🔴 ERROR REAL DE FEIGN: " + e.getMessage());
-                    throw new IllegalStateException("Error de comunicación con el Catálogo. No se pudo validar la disponibilidad de los asientos.");
+                if (precioBaseHorario.compareTo(BigDecimal.ZERO) == 0) {
+                    throw new IllegalStateException("Error: El horario seleccionado no tiene un precio válido configurado.");
                 }
+                precioSeguro = precioBaseHorario; // Usamos el precio del horario
             }
 
             detalle.setPrecioUnitario(precioSeguro);
-
-            // Subtotal = cantidad * precio seguro
             BigDecimal subtotal = precioSeguro.multiply(new BigDecimal(detReq.getCantidad()));
             detalle.setSubtotal(subtotal);
             detalle.setVenta(venta);
@@ -137,26 +117,41 @@ public class VentaService {
             totalVenta = totalVenta.add(subtotal);
         }
 
+        // 5. NUEVA VALIDACIÓN: Verificar que los ASIENTOS REALES estén disponibles antes de cobrar
+        if (request.getAsientosIds() != null && !request.getAsientosIds().isEmpty()) {
+            for (Long asientoId : request.getAsientosIds()) {
+                try {
+                    AsientoDTO asiento = catalogoClient.obtenerAsiento(asientoId)
+                            .orElseThrow(() -> new IllegalArgumentException("El asiento con ID " + asientoId + " no existe."));
+
+                    if ("OCUPADO".equalsIgnoreCase(asiento.getEstado())) {
+                        throw new IllegalArgumentException("El asiento " + asiento.getNumero() + " ya se encuentra ocupado. Por favor, seleccione otro.");
+                    }
+                } catch (IllegalArgumentException e) {
+                    throw e; // Relanzamos si es ocupado o no existe
+                } catch (Exception e) {
+                    System.err.println("🔴 ERROR REAL DE FEIGN (Validación): " + e.getMessage());
+                    throw new IllegalStateException("Error de comunicación con el Catálogo. No se pudo validar la disponibilidad de los asientos.");
+                }
+            }
+        }
+
         venta.setTotal(totalVenta);
         venta.setDescuentoAplicado(BigDecimal.ZERO);
         venta.setCodigoPromo(request.getCodigoPromo());
-        // Si el cliente envió un código promocional en la venta
+
+        // 6. Aplicar Promociones
         if (request.getCodigoPromo() != null && !request.getCodigoPromo().isEmpty()) {
             try {
                 cinerama.ventas.dto.ValidarPromoRequestDTO promoReq = new cinerama.ventas.dto.ValidarPromoRequestDTO(request.getCodigoPromo());
                 cinerama.ventas.dto.PromocionResponseDTO promoResponse = promocionClient.validarPromocion(promoReq);
 
                 if (promoResponse != null && promoResponse.getEsValida()) {
-                    BigDecimal porcentajeDescuento = promoResponse.getDescuento(); // Ej. 10.00 %
-
-                    // Calculamos el dinero a descontar: (Total * Porcentaje) / 100
+                    BigDecimal porcentajeDescuento = promoResponse.getDescuento();
                     BigDecimal dineroADescontar = totalVenta.multiply(porcentajeDescuento)
                             .divide(new BigDecimal("100"));
 
-                    // Restamos el descuento al total original
                     totalVenta = totalVenta.subtract(dineroADescontar);
-
-                    // Actualizamos el objeto venta con los nuevos montos
                     venta.setTotal(totalVenta);
                     venta.setDescuentoAplicado(dineroADescontar);
                 } else {
@@ -166,10 +161,11 @@ public class VentaService {
                 System.err.println("⚠️ No se pudo conectar con el servicio de promociones: " + e.getMessage());
             }
         }
+
         String codigo = UUID.randomUUID().toString();
         venta.setCodigoQr(codigo);
 
-        // Integración de MercadoPago
+        // 7. Cobrar en MercadoPago
         boolean pagoExitoso = pagoService.procesarPago(
                 totalVenta,
                 request.getMetodoPago(),
@@ -178,27 +174,21 @@ public class VentaService {
         );
 
         if (!pagoExitoso) {
-            // Rollback
             throw new IllegalArgumentException("El pago fue RECHAZADO por MercadoPago");
         }
 
         venta.setEstadoPago("APROBADO");
-
-        // Guardar en BD
         Venta saved = ventaRepository.save(venta);
 
-        // Marcar asientos como OCUPADO
+        // 8. Ocupar los asientos definitivamente después de pagar
         if (request.getAsientosIds() != null && !request.getAsientosIds().isEmpty()) {
             String asientosTexto = request.getAsientosIds().stream()
                     .map(id -> {
                         try {
                             catalogoClient.ocuparAsiento(id, "\"OCUPADO\"");
-
-                            String numero = catalogoClient.obtenerAsiento(id)
+                            return catalogoClient.obtenerAsiento(id)
                                     .map(AsientoDTO::getNumero)
                                     .orElse("A" + id);
-
-                            return numero;
                         } catch (Exception e) {
                             System.err.println("⚠️ Falló la comunicación con Catálogo para ocupar el asiento ID " + id + ": " + e.getMessage());
                             return "A" + id;
@@ -209,7 +199,7 @@ public class VentaService {
             ventaRepository.save(saved);
         }
 
-        // Notificar AL FINAL
+        // 9. Notificar al final
         notificacionClient.notificar(saved);
         return saved;
     }

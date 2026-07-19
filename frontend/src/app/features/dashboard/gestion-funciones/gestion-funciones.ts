@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CatalogoService } from '../../../core/services/catalogo';
 import { Pelicula } from '../../../core/models/pelicula';
@@ -30,7 +30,7 @@ export class GestionFuncionesComponent implements OnInit {
     precio: 0
   };
 
-  constructor(private catalogoService: CatalogoService) {}
+  constructor(private catalogoService: CatalogoService, private cdr: ChangeDetectorRef) {}
 
   ngOnInit(): void {
     this.cargarDatosAdicionales();
@@ -54,6 +54,7 @@ export class GestionFuncionesComponent implements OnInit {
     this.catalogoService.obtenerTodosHorarios().subscribe({
       next: (data) => {
         this.funciones = data;
+        this.cdr.detectChanges();
       },
       error: (err) => console.error('Error al cargar las funciones', err)
     });
@@ -85,9 +86,17 @@ export class GestionFuncionesComponent implements OnInit {
 
   // 2 y 3. CREATE & UPDATE: Guardar Función
   guardarFuncion(): void {
-    // Si tienes un ID, significa que estás editando
+
+    const payload = {
+      fecha: this.funcionActual.fecha,
+      horaInicio: this.funcionActual.horaInicio,
+      precio: this.funcionActual.precio,
+      pelicula: { id: this.funcionActual.peliculaId },
+      sala: { id: this.funcionActual.salaId }
+    };
+    // 2. Enviamos el payload moldeado en vez de this.funcionActual
     if (this.modoEdicion) {
-      this.catalogoService.actualizarHorario(this.funcionActual.id, this.funcionActual).subscribe({
+      this.catalogoService.actualizarHorario(this.funcionActual.id, payload).subscribe({
         next: () => {
           alert('Función actualizada exitosamente');
           this.cargarFunciones();
@@ -96,8 +105,7 @@ export class GestionFuncionesComponent implements OnInit {
         error: (err) => alert('Error al actualizar la función.')
       });
     } else {
-      // Si no hay ID, es una función nueva
-      this.catalogoService.crearHorario(this.funcionActual).subscribe({
+      this.catalogoService.crearHorario(payload).subscribe({
         next: () => {
           alert('Función programada exitosamente');
           this.cargarFunciones();

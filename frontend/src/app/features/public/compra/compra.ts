@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute, RouterModule } from '@angular/router';
@@ -24,6 +24,7 @@ export class CompraComponent implements OnInit, AfterViewInit {
   hora: string = '';
   sala: string = '';
   asientosSeleccionados: string[] = [];
+  asientosIdsNumericos: number[] = []; // Guardará [15, 16]
   total: number = 0;
   cantidad: number = 0;
   precioPorBoleto: number = 0;
@@ -57,6 +58,7 @@ export class CompraComponent implements OnInit, AfterViewInit {
     private route: ActivatedRoute,
     private router: Router, // <-- Inyectado Router para redirecciones
     private ventasService: Ventas,
+    private cdr: ChangeDetectorRef
   ) {}
   toggleAsiento(asiento: string): void {
     const index = this.ventaRequest.asientos.indexOf(asiento);
@@ -78,6 +80,10 @@ export class CompraComponent implements OnInit, AfterViewInit {
       this.cantidad = +params['cantidad'] || 0;
       this.asientosSeleccionados = params['asientos'] ? params['asientos'].split(',') : [];
       this.precioPorBoleto = this.cantidad > 0 ? this.total / this.cantidad : 0;
+
+      if (params['asientosIds']) {
+        this.asientosIdsNumericos = params['asientosIds'].split(',').map(Number);
+      }
 
       // Sincroniza con ventaRequest para que el HTML funcione
       this.ventaRequest.cantidad = this.cantidad;
@@ -107,6 +113,9 @@ export class CompraComponent implements OnInit, AfterViewInit {
   }
 
   async procesarCompra() {
+    if (this.procesando) {
+      return; 
+    }
     if (!this.ventaRequest.dni || !this.ventaRequest.correo) {
       this.mensajeError = 'Por favor completa todos los campos requeridos.';
       return;
@@ -139,10 +148,11 @@ export class CompraComponent implements OnInit, AfterViewInit {
         horarioId: this.horarioId,
         metodoPago: 'master', // Puede hacerlo dinamico despues
         tokenTarjeta: this.ventaRequest.tokenTarjeta,
-        asientosIds: this.asientosSeleccionados.map((_, index) => index + 1), // se mapea los IDs numericos si se requiere
+
+        asientosIds: this.asientosIdsNumericos, // se mapea los IDs numericos si se requiere
         detalles: this.asientosSeleccionados.map((asiento) => ({
           tipoItem: 'ENTRADA' as const,
-          itemId: 0, //
+          itemId: this.horarioId, //
           cantidad: 1,
           precioUnitario: this.precioPorBoleto,
         })),
@@ -163,11 +173,13 @@ export class CompraComponent implements OnInit, AfterViewInit {
           this.codigoTransaccion = response.id
             ? `TXN-${response.id}`
             : 'TXN-' + Math.floor(Math.random() * 1000000);
+            this.cdr.detectChanges()
         },
         error: (err) => {
           this.procesando = false;
           this.mensajeError = err.error?.message || 'Error de conexión con la pasarela de pago. Intenta de nuevo.';
           console.error(err);
+          this.cdr.detectChanges()
         },
       });
 

@@ -19,7 +19,6 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/ventas")
-@CrossOrigin(origins = "http://localhost:4200")
 public class VentaController {
     private final VentaService ventaService;
 
@@ -58,13 +57,7 @@ public class VentaController {
     // Listar todas las ventas (Solo ADMIN con Paginación)
     @GetMapping
     public ResponseEntity<?> listarTodasLasVentas(
-            @PageableDefault(size = 10, sort = "fecha", direction = Sort.Direction.DESC) Pageable pageable,
-            @RequestHeader(value = "X-User-Role", required = false) String role) {
-
-        // Control extra de seguridad por cabecera si el Api Gateway inyecta el Rol decodificado del JWT
-        if (role == null || !role.equalsIgnoreCase("ADMIN")) {
-            return ResponseEntity.status(403).body("Acceso denegado: Se requieren permisos de Administrador");
-        }
+            @PageableDefault(size = 100, sort = "fecha", direction = Sort.Direction.DESC) Pageable pageable){
 
         Page<Venta> ventasPaginadas = ventaService.obtenerTodasLasVentas(pageable);
         return ResponseEntity.ok(ventasPaginadas);

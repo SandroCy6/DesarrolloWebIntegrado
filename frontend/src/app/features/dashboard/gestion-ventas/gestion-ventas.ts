@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Ventas } from '../../../core/services/ventas';
 
@@ -16,7 +16,7 @@ export class GestionVentasComponent implements OnInit {
   nuevoEstado: string = '';
   modalAbierto: boolean = false;
 
-  constructor(private ventasService: Ventas) {}
+  constructor(private ventasService: Ventas, private cdr: ChangeDetectorRef) {}
 
   ngOnInit(): void {
     this.cargarVentas();
@@ -26,10 +26,13 @@ export class GestionVentasComponent implements OnInit {
   cargarVentas(): void {
     this.ventasService.getVentas().subscribe({
       next: (data) => {
-        this.ventas = data;
+        const respuesta = data as any; 
+        this.ventas = respuesta.content ? respuesta.content : respuesta;
+        this.cdr.detectChanges();
       },
       error: (err) => {
         console.error('Error al cargar la lista de ventas', err);
+        this.cdr.detectChanges();
       }
     });
   }

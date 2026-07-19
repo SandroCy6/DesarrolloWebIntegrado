@@ -54,8 +54,15 @@
               {{ mensajeError }}
             </div>
 
-            <button type="submit" class="btn btn-primary w-100 py-3" style="font-size: 1.2rem;">
-              Pagar S/ {{ calcularTotal() }}
+            <button type="submit" class="btn btn-primary w-100 py-3" style="font-size: 1.2rem;" [disabled]="procesando">
+              
+              <span *ngIf="!procesando">Pagar S/ {{ calcularTotal() }}</span>
+              
+              <span *ngIf="procesando">
+                <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                Procesando tu pago, no cierres la ventana...
+              </span>
+              
             </button>
           </form>
         </div>

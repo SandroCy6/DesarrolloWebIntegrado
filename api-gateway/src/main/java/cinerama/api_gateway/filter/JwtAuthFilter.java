@@ -37,6 +37,11 @@ public class JwtAuthFilter extends AbstractGatewayFilterFactory<JwtAuthFilter.Co
             if ((path.startsWith("/catalogo") || path.startsWith("/api/cines")) && "GET".equalsIgnoreCase(method)) {
                 return chain.filter(exchange);
             }
+
+            // 🔥 NUEVO BYPASS: Permitir crear ventas (POST) sin estar logueado (Invitados)
+            if (path.startsWith("/api/ventas") && "POST".equalsIgnoreCase(method)) {
+                return chain.filter(exchange);
+            }
             
             String authHeader = exchange.getRequest()
                     .getHeaders()

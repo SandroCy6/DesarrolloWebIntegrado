@@ -50,4 +50,9 @@ public class HorarioController {
         return ResponseEntity.noContent().build();
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<HorarioDTO> actualizarHorario(@PathVariable Long id, @RequestBody Horario horarioActualizado) {
+        return ResponseEntity.ok(horarioService.actualizar(id, horarioActualizado));
+    }
+
 }
