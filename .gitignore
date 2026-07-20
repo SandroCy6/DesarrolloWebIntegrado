@@ -29,3 +29,5 @@ crash.log
 # CLI config (puede tener tokens)
 .terraformrc
 terraform.rc
+*.tfstate
+*.tfstate.*
