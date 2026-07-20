@@ -31,3 +31,9 @@ crash.log
 terraform.rc
 *.tfstate
 *.tfstate.*
+tfplan
+
+# Terraform plans
+*.tfplan
+tfplan
+*.plan
