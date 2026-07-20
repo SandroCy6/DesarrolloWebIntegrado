@@ -1,4 +1,31 @@
 .idea/
 .vscode/}
 .env
+terraform/.terraform/
+
+# Terraform cache (LO MÁS IMPORTANTE)
+.terraform/
+
+# Archivos de estado (sensibles + cambian todo el tiempo)
+*.tfstate
+*.tfstate.*
+
+# Lock file (opcional ignorar o no)
+.terraform.lock.hcl
+
+# Variables sensibles
 *.tfvars
+*.tfvars.json
+
+# Overrides (casi nunca se usan en equipo)
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# Logs
+crash.log
+
+# CLI config (puede tener tokens)
+.terraformrc
+terraform.rc
