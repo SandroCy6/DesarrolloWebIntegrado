@@ -1,226 +1,121 @@
-# 🎬 Cinerama — Guía de Inicio del Proyecto
+# Cinerama - Guía de Despliegue y Arquitectura
 
-> **Sistema de microservicios** para gestión de cines, cartelera, ventas y promociones.  
-> Stack: Java 17 · Spring Boot 3 · Spring Cloud · PostgreSQL · JWT
-
-***
-
-## 📋 Tabla de Contenidos
-
-- [🎬 Cinerama — Guía de Inicio del Proyecto](#-cinerama--guía-de-inicio-del-proyecto)
-  - [📋 Tabla de Contenidos](#-tabla-de-contenidos)
-  - [1. Arquitectura General](#1-arquitectura-general)
-  - [2. Prerrequisitos](#2-prerrequisitos)
-  - [3. Clonar el Repositorio](#3-clonar-el-repositorio)
-  - [4. Configurar Variables de Entorno (`.env`)](#4-configurar-variables-de-entorno-env)
-    - [4.1 — MS `auth` → `auth/.env`](#41--ms-auth--authenv)
-    - [4.2 — MS `api-gateway` → `api-gateway/.env`](#42--ms-api-gateway--api-gatewayenv)
-  - [5. Configurar Bases de Datos (PostgreSQL)](#5-configurar-bases-de-datos-postgresql)
-    - [Verificar conexión](#verificar-conexión)
-  - [6. Orden de Inicio de los Microservicios](#6-orden-de-inicio-de-los-microservicios)
-    - [Cómo iniciar cada MS](#cómo-iniciar-cada-ms)
-  - [7. Verificar que Todo Está Corriendo](#7-verificar-que-todo-está-corriendo)
-    - [7.1 — Eureka Dashboard](#71--eureka-dashboard)
-    - [7.2 — Verificar el API Gateway](#72--verificar-el-api-gateway)
-  - [8. API Gateway — URLs Base](#8-api-gateway--urls-base)
-
-***
-## 1. Arquitectura General
-![Arquitectura](imagenes/imagen1.jpeg)
-
-## 2. Prerrequisitos
-
-Asegúrate de tener instalado lo siguiente antes de continuar:
-
-| Herramienta | Versión mínima | Verificar con |
-|---|---|---|
-| **Java (JDK)** | 17 | `java -version` |
-| **Maven** | 3.8+ | `mvn -version` |
-| **PostgreSQL** | 14+ | `psql --version` |
-| **Git** | cualquier | `git --version` |
-| **Postman** | cualquier | — |
-
-> ⚠️ **IntelliJ IDEA / VS Code** recomendados para abrir el proyecto multi-módulo.
-
-***
-
-## 3. Clonar el Repositorio
-
-```bash
-git clone https://github.com/SandroCy6/DesarrolloWebIntegrado.git
-cd DesarrolloWebIntegrado
-```
-
-Estructura del proyecto clonado:
-
-```
-DesarrolloWebIntegrado/
-├── api-gateway/
-├── auth/
-├── catalogo/
-├── cliente/
-├── config-server/
-├── discovery-server/
-├── promociones/
-└── ventas/
-```
-
-***
-## 4. Configurar Variables de Entorno (`.env`)
-
-Solo dos microservicios leen credenciales desde un archivo `.env`.  
-Debes crear este archivo manualmente en la **raíz de cada módulo**.
+Sistema integral de microservicios para la gestión de cines, cartelera, ventas y promociones.
+Desarrollado con **Java 17**, **Spring Boot 3**, **Spring Cloud** y **PostgreSQL**.
 
 ---
 
-### 4.1 — MS `auth` → `auth/.env`
+## Tabla de Contenidos
+- [Cinerama - Guía de Despliegue y Arquitectura](#cinerama---guía-de-despliegue-y-arquitectura)
+  - [Tabla de Contenidos](#tabla-de-contenidos)
+  - [1. Descripción del Proyecto](#1-descripción-del-proyecto)
+  - [2. Arquitectura del Sistema](#2-arquitectura-del-sistema)
+  - [3. Requisitos Previos](#3-requisitos-previos)
+  - [4. Configuración de Variables de Entorno](#4-configuración-de-variables-de-entorno)
+  - [5. Despliegue con Docker Compose](#5-despliegue-con-docker-compose)
+    - [Arquitectura de Contenedores en Local](#arquitectura-de-contenedores-en-local)
+  - [6. Servicios y Puertos](#6-servicios-y-puertos)
+  - [7. Consideraciones Adicionales](#7-consideraciones-adicionales)
+
+---
+
+## 1. Descripción del Proyecto
+
+Cinerama es una plataforma distribuida que permite administrar la operativa completa de una cadena de cines. El sistema abarca el ciclo integral del negocio, desde la gestión del catálogo de películas y funciones, el registro de clientes y la emisión de boletos, hasta la aplicación de promociones y el envío de notificaciones.
+
+## 2. Arquitectura del Sistema
+
+El proyecto sigue un patrón de diseño basado en microservicios, apoyándose en el ecosistema de Spring Cloud para la resolución, enrutamiento y configuración distribuida:
+
+* **API Gateway:** Punto de entrada único (Single Point of Entry) para todas las peticiones HTTP del cliente.
+* **Discovery Server (Eureka):** Registro y descubrimiento dinámico de microservicios.
+* **Config Server:** Centralización de las propiedades de configuración para todos los entornos.
+* **Auth Service:** Gestión de identidades y seguridad mediante emisión/validación de tokens JWT.
+* **Microservicios de Dominio:** Catálogo, Cliente, Ventas, Promociones y Notificaciones.
+* **Base de Datos:** Motor PostgreSQL desplegado y administrado nativamente en contenedores.
+
+## 3. Requisitos Previos
+
+Para ejecutar el entorno local, se ha abstraído toda la complejidad de instalación de software base. Únicamente necesitas contar con:
+
+* **Docker** y **Docker Compose** instalados en tu sistema.
+* **Git** (para clonar el repositorio).
+
+No se requiere configurar localmente Java, Maven ni PostgreSQL; todo el flujo de construcción y ejecución se encuentra encapsulado en el entorno Docker.
+
+## 4. Configuración de Variables de Entorno
+
+Antes de inicializar la infraestructura, es obligatorio definir las credenciales y variables de entorno del sistema (base de datos, secretos, puertos, etc.).
+
+1. Ubícate en la raíz del repositorio.
+2. Localiza el archivo plantilla `.env.example`.
+3. Crea un nuevo archivo llamado `.env` basándote en la plantilla.
+4. Completa los valores con tu configuración local.
+
+Ejemplo de estructura mínima esperada en el archivo `.env`:
 
 ```properties
-# Base de datos
-DB_URL=jdbc:postgresql://localhost:5432/cinerama_auth
-DB_USERNAME=postgres
-DB_PASSWORD=tu_password_aqui
+# Base de Datos PostgreSQL
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=tu_contrasena_segura
 
-# JWT — usa una cadena larga y aleatoria (mínimo 32 caracteres)
+# Seguridad JWT (Debe ser idéntica para Gateway y Auth)
 JWT_SECRET=clave_secreta_super_larga_y_segura_aqui_minimo_32chars
 JWT_EXPIRATION=86400000
 ```
 
-> 🔑 **JWT_SECRET:** Puedes generar una clave segura en:  
-> [https://generate-secret.vercel.app/32](https://generate-secret.vercel.app/32)
+> **Nota:** La creación de los esquemas y las bases de datos de cada microservicio es automatizada. Ya no es necesario abrir clientes SQL o ejecutar sentencias de tipo `CREATE DATABASE` de forma manual.
 
----
+## 5. Despliegue con Docker Compose
 
-### 4.2 — MS `api-gateway` → `api-gateway/.env`
+El proyecto incorpora un archivo `docker-compose.yml` que orquesta la construcción de las imágenes y la interconexión de redes entre todos los microservicios y la capa de persistencia.
 
-```properties
-# Debe ser EXACTAMENTE la misma clave JWT que pusiste en auth/.env
-JWT_SECRET=clave_secreta_super_larga_y_segura_aqui_minimo_32chars
-```
+### Arquitectura de Contenedores en Local
 
-> ⚠️ **Importante:** `auth` firma el token con esta clave y `api-gateway` lo valida con la misma.  
-> Si difieren, **todos los endpoints protegidos devolverán `401`** aunque el login funcione.
+![Arquitectura Docker Compose](imagenes/docker-compose-architecture.png)
 
----
-
-
-## 5. Configurar Bases de Datos (PostgreSQL)
-
-Crea una base de datos en PostgreSQL por cada microservicio.  
-Abre `psql` o pgAdmin y ejecuta:
-
-```sql
--- Conéctate como superusuario (postgres)
-CREATE DATABASE cinerama_auth;
-CREATE DATABASE cinerama_catalogo;
-CREATE DATABASE cinerama_cliente;
-CREATE DATABASE cinerama_ventas;
-CREATE DATABASE cinerama_promociones;
-```
-
-> ✅ Las tablas se crean automáticamente al iniciar cada MS gracias a:  
-> `spring.jpa.hibernate.ddl-auto=update`  
-> No necesitas ejecutar scripts SQL adicionales.
-
-### Verificar conexión
+Para desplegar la aplicación completa, ejecuta el siguiente comando en la terminal desde la raíz del proyecto:
 
 ```bash
-psql -U postgres -d cinerama_auth -c "\dt"
+docker-compose up -d --build
 ```
 
-Si muestra `Did not find any relations` es normal — las tablas aparecen al iniciar el MS por primera vez.
+Este proceso descargará las imágenes base, empaquetará los módulos correspondientes y levantará los servicios en segundo plano (`-d`). 
 
-***
+**Comandos útiles:**
+* **Visualizar los logs generales en tiempo real:**
+  ```bash
+  docker-compose logs -f
+  ```
+* **Visualizar logs de un servicio específico (ej. api-gateway):**
+  ```bash
+  docker-compose logs -f api-gateway
+  ```
+* **Detener todos los servicios:**
+  ```bash
+  docker-compose down
+  ```
 
+## 6. Servicios y Puertos
 
-## 6. Orden de Inicio de los Microservicios
+Una vez finalizado el proceso de inicio, podrás interactuar con la plataforma y sus herramientas internas a través de los siguientes puertos locales predeterminados:
 
-> ⚠️ **IMPORTANTE:** El orden es obligatorio. Si inicias los MS de negocio antes que Eureka, no se registrarán.
+| Servicio | Puerto (Host) | Descripción |
+| :--- | :--- | :--- |
+| **API Gateway** | `8080` | Endpoint principal para consumo de APIs |
+| **Discovery (Eureka)** | `8761` | Dashboard de registro y salud de servicios |
+| **Config Server** | `8888` | Proveedor central de configuración |
+| **Auth** | `8081` | Microservicio de Autenticación |
+| **Catálogo** | `8082` | Gestión de películas y programación |
+| **Cliente** | `8083` | Administración de usuarios |
+| **Ventas** | `8084` | Procesamiento de pagos y boletos |
+| **Promociones** | `8085` | Descuentos y campañas |
+| **Notificaciones** | `8086` | Servicio de alertas y mensajería |
+| **PostgreSQL** | `5432` | Persistencia relacional |
 
-```
-1️⃣  config-server      (opcional pero recomendado primero)
-2️⃣  discovery-server   (Eureka — OBLIGATORIO antes que todo)
-3️⃣  auth               (JWT — requerido por el gateway)
-4️⃣  catalogo
-5️⃣  cliente
-6️⃣  ventas
-7️⃣  promociones
-8️⃣  api-gateway        (SIEMPRE ÚLTIMO — necesita que todos estén en Eureka)
-```
+*(Los puertos expuestos pueden variar de acuerdo a la configuración final de tu `docker-compose.yml` y las variables inyectadas).*
 
-### Cómo iniciar cada MS
+## 7. Consideraciones Adicionales
 
-**Opción A — Maven en terminal** (un terminal por MS):
-
-```bash
-# Ejemplo para auth
-cd auth
-mvn spring-boot:run
-
-# Ejemplo para catalogo (nueva terminal)
-cd ../catalogo
-mvn spring-boot:run
-```
-
-**Opción B — IDE (IntelliJ IDEA recomendado):**
-
-1. Abre el proyecto raíz en IntelliJ
-2. Ve a `Run > Edit Configurations`
-3. Agrega una configuración `Spring Boot` por cada módulo
-4. Inícia en el orden indicado arriba
-
-
-***
-
-
-## 7. Verificar que Todo Está Corriendo
-
-### 7.1 — Eureka Dashboard
-
-Abre en el navegador:
-
-```
-http://localhost:8761
-```
-
-Deberías ver todos los microservicios registrados en la lista **"Instances currently registered with Eureka"**:
-
-```
-AUTH            UP (1)
-CATALOGO        UP (1)
-CLIENTE         UP (1)
-VENTAS          UP (1)
-PROMOCIONES     UP (1)
-API-GATEWAY     UP (1)
-```
-
-> ⚠️ Si un MS no aparece, revisa sus logs — probablemente hay un error de conexión a la BD o `.env` faltante.
-
-
-### 7.2 — Verificar el API Gateway
-
-```bash
-curl http://localhost:8080/actuator/health
-# Esperado: {"status":"UP"}
-```
-
-O en Postman: `GET http://localhost:8080/actuator/health`
-
-***
-
-## 8. API Gateway — URLs Base
-
-Todas las peticiones al sistema van por el puerto **8080** del API Gateway.  
-**Nunca llames directamente a los puertos de los MS individuales** en producción.
-
-| Microservicio | Prefijo en Gateway | Puerto directo |
-|---|---|---|
-| auth | `http://localhost:8080/auth/**` | :8091 |
-| auth (usuarios) | `http://localhost:8080/usuarios/**` | :8091 |
-| catalogo | `http://localhost:8080/catalogo/**` | :8082 |
-| catalogo (cines) | `http://localhost:8080/api/cines/**` | :8082 |
-| cliente | `http://localhost:8080/api/clientes/**` | :8081 |
-| ventas | `http://localhost:8080/api/ventas/**` | :8084 |
-| promociones | `http://localhost:8080/promociones/**` | :8083 |
-| promociones (productos) | `http://localhost:8080/productos/**` | :8083 |
-
+* **Orden de Arranque Automático:** La dependencia entre servicios está controlada de manera nativa mediante las sentencias `depends_on` y directivas de `healthcheck` en Docker Compose. Esto asegura que los microservicios de dominio no se inicialicen hasta que la base de datos y Eureka estén funcionales.
+* **Persistencia de Datos:** Toda la información almacenada en PostgreSQL se encuentra respaldada por un volumen persistente de Docker (`volumes`). Destruir el contenedor con `docker-compose down` no eliminará los registros de la base de datos (a menos que se especifique el flag `-v`).
