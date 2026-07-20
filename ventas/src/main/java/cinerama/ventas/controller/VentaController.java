@@ -20,6 +20,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/ventas")
 public class VentaController {
+
     private final VentaService ventaService;
 
     public VentaController(VentaService ventaService) {
@@ -30,41 +31,78 @@ public class VentaController {
     public ResponseEntity<?> registrarVenta(@Valid @RequestBody VentaRequestDTO request) {
         try {
             Venta nuevaVenta = ventaService.registrarVenta(request);
-            return ResponseEntity.ok(nuevaVenta);
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("ok", true);
+            response.put("venta", nuevaVenta);
+
+            if ("APROBADO_SIMULADO".equalsIgnoreCase(nuevaVenta.getEstadoPago())) {
+                response.put("pagoSimulado", true);
+                response.put("mensaje",
+                        "Pago procesado en modo simulación para fines académicos. No se realizó ningún cobro real.");
+            } else {
+                response.put("pagoSimulado", false);
+                response.put("mensaje", "Pago aprobado correctamente.");
+            }
+
+            return ResponseEntity.ok(response);
+
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            Map<String, Object> error = new HashMap<>();
+            error.put("ok", false);
+            error.put("pagoSimulado", false);
+            error.put("mensaje", e.getMessage());
+
+            return ResponseEntity.badRequest().body(error);
         }
     }
 
-    // Consultar detalle de una venta específica
     @GetMapping("/{id}")
     public ResponseEntity<?> consultarVenta(@PathVariable Long id) {
         try {
             Venta venta = ventaService.obtenerVentaPorId(id);
-            return ResponseEntity.ok(venta);
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("ok", true);
+            response.put("venta", venta);
+
+            return ResponseEntity.ok(response);
+
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            Map<String, Object> error = new HashMap<>();
+            error.put("ok", false);
+            error.put("mensaje", e.getMessage());
+
+            return ResponseEntity.badRequest().body(error);
         }
     }
 
-    // Historial de compras de un cliente
     @GetMapping("/cliente/{dni}")
     public ResponseEntity<?> consultarHistorialCliente(@PathVariable String dni) {
         List<Venta> historial = ventaService.obtenerHistorialPorDni(dni);
-        return ResponseEntity.ok(historial);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("ok", true);
+        response.put("historial", historial);
+
+        return ResponseEntity.ok(response);
     }
 
-    // Listar todas las ventas (Solo ADMIN con Paginación)
     @GetMapping
     public ResponseEntity<?> listarTodasLasVentas(
-            @PageableDefault(size = 100, sort = "fecha", direction = Sort.Direction.DESC) Pageable pageable){
+            @PageableDefault(size = 100, sort = "fecha", direction = Sort.Direction.DESC) Pageable pageable) {
 
         Page<Venta> ventasPaginadas = ventaService.obtenerTodasLasVentas(pageable);
-        return ResponseEntity.ok(ventasPaginadas);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("ok", true);
+        response.put("ventas", ventasPaginadas);
+
+        return ResponseEntity.ok(response);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Map<String, String>> manejarErroresValidacion(MethodArgumentNotValidException ex) {
+    public ResponseEntity<Map<String, Object>> manejarErroresValidacion(MethodArgumentNotValidException ex) {
         Map<String, String> errores = new HashMap<>();
 
         ex.getBindingResult().getAllErrors().forEach((error) -> {
@@ -73,15 +111,33 @@ public class VentaController {
             errores.put(nombreCampo, mensaje);
         });
 
-        return ResponseEntity.badRequest().body(errores);
+        Map<String, Object> response = new HashMap<>();
+        response.put("ok", false);
+        response.put("mensaje", "Errores de validación en la solicitud.");
+        response.put("errores", errores);
+
+        return ResponseEntity.badRequest().body(response);
     }
 
     @ExceptionHandler(org.springframework.http.converter.HttpMessageNotReadableException.class)
-    public ResponseEntity<Map<String, String>> manejarErrorDeFormatoJSON(org.springframework.http.converter.HttpMessageNotReadableException ex) {
-        Map<String, String> error = new HashMap<>();
+    public ResponseEntity<Map<String, Object>> manejarErrorDeFormatoJSON(
+            org.springframework.http.converter.HttpMessageNotReadableException ex) {
 
-        error.put("error", "Formato de dato incorrecto. Verifica que las cantidades sean números enteros (sin decimales) y que los tipos de datos sean correctos.");
+        Map<String, Object> response = new HashMap<>();
+        response.put("ok", false);
+        response.put("mensaje",
+                "Formato de dato incorrecto. Verifica que las cantidades sean números enteros (sin decimales) y que los tipos de datos sean correctos.");
 
-        return ResponseEntity.badRequest().body(error);
+        return ResponseEntity.badRequest().body(response);
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<Map<String, Object>> manejarErrorGeneral(Exception ex) {
+        Map<String, Object> response = new HashMap<>();
+        response.put("ok", false);
+        response.put("mensaje", "Ocurrió un error interno en el servidor.");
+        response.put("detalle", ex.getMessage());
+
+        return ResponseEntity.internalServerError().body(response);
     }
 }

@@ -13,7 +13,7 @@ export class CatalogoService {
 
   constructor(private http: HttpClient) {}
 
-  obtenerTodoPeliculas(): Observable<Pelicula[]>{
+  obtenerTodoPeliculas(): Observable<Pelicula[]> {
     return this.http.get<Pelicula[]>(this.apiUrl);
   }
 
@@ -34,7 +34,9 @@ export class CatalogoService {
   }
 
   obtenerHorariosPorPeliculaYFecha(peliculaId: number, fecha: string): Observable<Horario[]> {
-    return this.http.get<Horario[]>(`${environment.apiUrl}/catalogo/horarios/pelicula/${peliculaId}/fecha/${fecha}`);
+    return this.http.get<Horario[]>(
+      `${environment.apiUrl}/catalogo/horarios/pelicula/${peliculaId}/fecha/${fecha}`,
+    );
   }
 
   obtenerAsientosPorSala(salaId: number): Observable<Asiento[]> {
@@ -43,7 +45,9 @@ export class CatalogoService {
 
   obtenerAsientosPorHorario(horarioId: number): Observable<Asiento[]> {
     // Apuntamos al nuevo endpoint transaccional
-    return this.http.get<Asiento[]>(`${environment.apiUrl}/api/cines/horarios/${horarioId}/asientos`);
+    return this.http.get<Asiento[]>(
+      `${environment.apiUrl}/api/cines/horarios/${horarioId}/asientos`,
+    );
   }
 
   // --- MÉTODOS ADMINISTRATIVOS (CRUD) ---
@@ -94,5 +98,22 @@ export class CatalogoService {
   obtenerTodasSalas(): Observable<any[]> {
     return this.http.get<any[]>(`${environment.apiUrl}/catalogo/salas`);
   }
-  
+
+  crearSala(sala: any): Observable<any> {
+    return this.http.post<any>(`${environment.apiUrl}/catalogo/salas`, sala);
+  }
+
+  eliminarSala(id: number): Observable<void> {
+    return this.http.delete<void>(`${environment.apiUrl}/catalogo/salas/${id}`);
+  }
+
+  obtenerSalaPorId(id: number): Observable<any> {
+    return this.http.get<any>(`${environment.apiUrl}/catalogo/salas/${id}`);
+  }
+
+  // --- MÉTODOS PARA GESTIÓN DE CINES ---
+
+  obtenerTodosCines(): Observable<any[]> {
+    return this.http.get<any[]>(`${environment.apiUrl}/api/cines`);
+  }
 }

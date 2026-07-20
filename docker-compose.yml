@@ -1,0 +1,86 @@
+version: "3.9"
+
+services:
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: dwi-postgres
+    environment:
+      POSTGRES_USER: adminpg
+      POSTGRES_PASSWORD: Admin123!
+      POSTGRES_DB: microservices_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init-schemas.sql:/docker-entrypoint-initdb.d/init-schemas.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U adminpg -d microservices_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  discovery-server:
+    build: { context: ./discovery-server, dockerfile: Dockerfile }
+    container_name: dwi-discovery
+    ports: ["8761:8761"]
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8761/actuator/health"]
+      interval: 15s
+      timeout: 10s
+      retries: 8
+
+  config-server:
+    build: { context: ./config-server, dockerfile: Dockerfile }
+    container_name: dwi-config
+    ports: ["8888:8888"]
+    depends_on:
+      discovery-server: { condition: service_healthy }
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server:8761/eureka
+
+  api-gateway:
+    build: { context: ./api-gateway, dockerfile: Dockerfile }
+    container_name: dwi-gateway
+    ports: ["8080:8080"]
+    depends_on:
+      discovery-server: { condition: service_healthy }
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server:8761/eureka
+
+  auth:
+    build: { context: ./auth, dockerfile: Dockerfile }
+    ports: ["8081:8081"]
+    depends_on:
+      postgres: { condition: service_healthy }
+      discovery-server: { condition: service_healthy }
+    environment:
+      - SPRING_PROFILES_ACTIVE=local
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/microservices_db?currentSchema=schema_auth
+      - SPRING_DATASOURCE_USERNAME=adminpg
+      - SPRING_DATASOURCE_PASSWORD=Admin123!
+      - SPRING_JPA_PROPERTIES_HIBERNATE_DEFAULT_SCHEMA=schema_auth
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server:8761/eureka
+      - SERVER_PORT=8081
+
+  catalogo:
+    build: { context: ./catalogo, dockerfile: Dockerfile }
+    ports: ["8082:8082"]
+    depends_on:
+      postgres: { condition: service_healthy }
+      discovery-server: { condition: service_healthy }
+    environment:
+      - SPRING_PROFILES_ACTIVE=local
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/microservices_db?currentSchema=schema_catalogo
+      - SPRING_DATASOURCE_USERNAME=adminpg
+      - SPRING_DATASOURCE_PASSWORD=Admin123!
+      - SPRING_JPA_PROPERTIES_HIBERNATE_DEFAULT_SCHEMA=schema_catalogo
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server:8761/eureka
+      - SERVER_PORT=8082
+
+  # --- repite el mismo patrón para: cliente(8083), ventas(8084), promociones(8085), notificaciones(8086)
+
+volumes:
+  postgres_data:

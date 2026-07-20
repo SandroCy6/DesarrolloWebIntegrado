@@ -1,7 +1,7 @@
-import { Component, OnInit,ChangeDetectorRef } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, OnInit } from '@angular/core';
 import { AuthService } from '../../../core/services/auth';
 import { Ventas } from '../../../core/services/ventas';
+import { ClienteService } from '../../../core/services/cliente';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../environments/environment';
 
@@ -15,20 +15,18 @@ export class HomeDashboardComponent implements OnInit {
   username = '';
   cargando = true;
 
-  // KPIs
   totalVentas = 0;
   totalIngresos = 0;
   totalPeliculas = 0;
   totalClientes = 0;
 
-  // Últimas ventas
   ultimasVentas: any[] = [];
 
   constructor(
     private auth: AuthService,
     private ventasService: Ventas,
+    private clienteService: ClienteService,
     private http: HttpClient,
-    private cdr: ChangeDetectorRef,
   ) {
     this.username = auth.getUsername();
   }
@@ -38,43 +36,54 @@ export class HomeDashboardComponent implements OnInit {
   }
 
   cargarDatos(): void {
-    // 1. Cargar Ventas
+    this.cargando = true;
+    console.log('Dashboard: iniciando carga');
+
     this.ventasService.getVentas().subscribe({
-      next: (ventas: any) => {
-        // Manejamos si viene con paginación (data.content) o un arreglo directo
-        const listaVentas = ventas.content ? ventas.content : ventas;
-        
+      next: (response: any) => {
+        console.log('Ventas response:', response);
+
+        const listaVentas = response?.ventas?.content ?? [];
+        console.log('Lista ventas:', listaVentas);
+
         this.totalVentas = listaVentas.length;
-        this.totalIngresos = listaVentas.reduce((sum: any, v: any) => sum + (v.total || 0), 0);
-        this.ultimasVentas = listaVentas.slice(-5).reverse();
-        this.cargando = false; 
-        this.cdr.detectChanges();
+        this.totalIngresos = listaVentas.reduce(
+          (sum: number, v: any) => sum + Number(v.total || 0),
+          0,
+        );
+        this.ultimasVentas = [...listaVentas].slice(-5).reverse();
+        this.cargando = false;
+
+        console.log('Dashboard: carga ventas completada, cargando=', this.cargando);
       },
-      error: () => {
-        this.cargando = false; 
-        this.cdr.detectChanges();
+      error: (err) => {
+        console.error('Error al cargar ventas', err);
+        this.totalVentas = 0;
+        this.totalIngresos = 0;
+        this.ultimasVentas = [];
+        this.cargando = false;
       },
     });
 
-    // 2. Cargar Películas (Ruta Corregida a /catalogo/peliculas)
-    this.http.get<any[]>(`${environment.apiUrl}/catalogo/peliculas`).subscribe({
+    this.http.get<any>(`${environment.apiUrl}/catalogo/peliculas`).subscribe({
       next: (p) => {
-        this.totalPeliculas = p.length;
-        this.cdr.detectChanges();
+        console.log('Películas response:', p);
+        this.totalPeliculas = Array.isArray(p) ? p.length : (p?.content?.length ?? 0);
       },
-      error: () => {
-        this.totalPeliculas = 0; // Evita que se quede colgado si falla
+      error: (err) => {
+        console.error('Error al cargar películas', err);
+        this.totalPeliculas = 0;
       },
     });
 
-    // 3. Cargar Clientes/Usuarios (Ruta Corregida a /usuarios)
-    this.http.get<any[]>(`${environment.apiUrl}/usuarios`).subscribe({
-      next: (c) => {
-        this.totalClientes = c.length;
-        this.cdr.detectChanges();
+    this.clienteService.listarClientes().subscribe({
+      next: (clientes) => {
+        console.log('Clientes response:', clientes);
+        this.totalClientes = Array.isArray(clientes) ? clientes.length : 0;
       },
-      error: () => {
-        this.totalClientes = 0; // Evita que se quede colgado si falla
+      error: (err) => {
+        console.error('Error al cargar clientes', err);
+        this.totalClientes = 0;
       },
     });
   }

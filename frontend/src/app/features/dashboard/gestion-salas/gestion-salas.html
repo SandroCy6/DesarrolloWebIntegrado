@@ -1,0 +1,114 @@
+<div class="container-fluid py-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="text-white" style="font-family: var(--cr-font-display)">Gestión de Salas</h2>
+    <button class="btn btn-danger" (click)="abrirModalCrear()">
+      <i class="bi bi-plus-lg me-2"></i>Nueva Sala
+    </button>
+  </div>
+
+  @if (mensajeExito) {
+    <div class="alert alert-success alert-dismissible" role="alert">
+      <i class="bi bi-check-circle me-2"></i>{{ mensajeExito }}
+    </div>
+  }
+  @if (mensajeError) {
+    <div class="alert alert-danger alert-dismissible" role="alert">
+      <i class="bi bi-exclamation-triangle me-2"></i>{{ mensajeError }}
+    </div>
+  }
+
+  <div class="card bg-dark border-secondary">
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-dark table-hover align-middle">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Número</th>
+              <th>Capacidad</th>
+              <th>Cine</th>
+              <th class="text-end">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (sala of salas; track sala.id) {
+              <tr>
+                <td>{{ sala.id }}</td>
+                <td class="fw-bold">Sala {{ sala.numero }}</td>
+                <td>{{ sala.capacidad }} asientos</td>
+                <td>{{ sala.nombreCine }}</td>
+                <td class="text-end">
+                  <button class="btn btn-sm btn-outline-danger" (click)="eliminarSala(sala.id)">
+                    <i class="bi bi-trash"></i>
+                  </button>
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="5" class="text-center text-muted py-4">
+                  <i class="bi bi-inbox me-2"></i>No hay salas registradas.
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL CREAR SALA -->
+  @if (modalAbierto) {
+    <div class="modal-backdrop-custom" (click)="cerrarModal()"></div>
+    <div class="modal-custom">
+      <div class="card bg-dark border-secondary">
+        <div class="card-header border-secondary d-flex justify-content-between align-items-center">
+          <h5 class="mb-0 text-white"><i class="bi bi-grid-1x2 me-2"></i>Nueva Sala</h5>
+          <button class="btn btn-sm btn-outline-light" (click)="cerrarModal()">
+            <i class="bi bi-x-lg"></i>
+          </button>
+        </div>
+        <div class="card-body">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label text-light">Número de Sala</label>
+              <input
+                type="number"
+                class="form-control bg-black text-white border-secondary"
+                [(ngModel)]="salaActual.numero"
+                placeholder="Ej: 1"
+              />
+            </div>
+            <div class="col-md-6">
+              <label class="form-label text-light">Capacidad</label>
+              <input
+                type="number"
+                class="form-control bg-black text-white border-secondary"
+                [(ngModel)]="salaActual.capacidad"
+                placeholder="Ej: 80"
+              />
+            </div>
+            <div class="col-12">
+              <label class="form-label text-light">Cine</label>
+              <select
+                class="form-select bg-black text-white border-secondary"
+                [(ngModel)]="salaActual.cineId"
+              >
+                <option [ngValue]="null" disabled>Seleccione un cine</option>
+                @for (cine of cines; track cine.id) {
+                  <option [ngValue]="cine.id">{{ cine.nombre }}</option>
+                }
+              </select>
+            </div>
+          </div>
+
+          <div class="mt-4 text-end border-top border-secondary pt-3">
+            <button class="btn btn-outline-secondary me-2" (click)="cerrarModal()">Cancelar</button>
+            <button class="btn btn-danger px-4" (click)="guardarSala()">
+              <i class="bi bi-save me-2"></i>Guardar Sala
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+</div>

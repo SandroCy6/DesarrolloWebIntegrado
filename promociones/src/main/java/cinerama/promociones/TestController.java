@@ -8,7 +8,7 @@ public class TestController {
     public String testDB() {
         try {
             Connection conn = DriverManager.getConnection(
-                    "jdbc:postgresql://localhost:5432/tu_basedatos",
+                    "jdbc:postgresql://postgres:5432/tu_basedatos",
                     "postgres",
                     "1234"
             );

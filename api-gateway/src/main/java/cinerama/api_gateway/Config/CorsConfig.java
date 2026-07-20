@@ -15,7 +15,9 @@ public class CorsConfig {
         CorsConfiguration corsConfig = new CorsConfiguration();
 
         // 1. Permitir tu frontend de Angular
-        corsConfig.setAllowedOrigins(Arrays.asList("http://localhost:4200"));
+        corsConfig.setAllowedOrigins(Arrays.asList(
+                "http://localhost:4200",
+                "https://cinerama-project.netlify.app"));
 
         // 2. Permitir todos los métodos (GET, POST, PUT, DELETE, OPTIONS, etc)
         corsConfig.setMaxAge(8000L);

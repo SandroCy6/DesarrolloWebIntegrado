@@ -25,7 +25,7 @@ RUN chown appuser:appgroup app.jar
 
 USER appuser
 
-EXPOSE 8083
+EXPOSE 8085
 
 ENV JAVA_OPTS="-Xms256m -Xmx512m"
 

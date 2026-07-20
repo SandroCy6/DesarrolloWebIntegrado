@@ -1,5 +1,4 @@
 # Dockerfile — Spring Boot 4.0.5 · Java 17 · Maven multi-stage
-# Colócalo en la raíz de cada microservicio (ej: catalogo/Dockerfile)
 
 # ── ETAPA 1: BUILD ────────────────────────────────────────
 FROM maven:3.9-eclipse-temurin-17 AS build
@@ -25,7 +24,7 @@ RUN chown appuser:appgroup app.jar
 
 USER appuser
 
-EXPOSE 8083
+EXPOSE 8081
 
 ENV JAVA_OPTS="-Xms256m -Xmx512m"
 

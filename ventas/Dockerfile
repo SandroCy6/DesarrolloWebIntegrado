@@ -25,7 +25,10 @@ RUN chown appuser:appgroup app.jar
 
 USER appuser
 
-EXPOSE 8083
+# Cambia el puerto según el MS:
+# auth=8081, catalogo=8082, cliente=8083, ventas=8084
+# promociones=8085, notificaciones=8086
+EXPOSE 8084
 
 ENV JAVA_OPTS="-Xms256m -Xmx512m"
 

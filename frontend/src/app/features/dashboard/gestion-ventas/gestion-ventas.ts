@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, ChangeDetectorRef} from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Ventas } from '../../../core/services/ventas';
 
@@ -16,38 +16,34 @@ export class GestionVentasComponent implements OnInit {
   nuevoEstado: string = '';
   modalAbierto: boolean = false;
 
-  constructor(private ventasService: Ventas, private cdr: ChangeDetectorRef) {}
+  constructor(private ventasService: Ventas) {}
 
   ngOnInit(): void {
     this.cargarVentas();
   }
 
-  // Listar todas las ventas
   cargarVentas(): void {
     this.ventasService.getVentas().subscribe({
-      next: (data) => {
-        const respuesta = data as any; 
-        this.ventas = respuesta.content ? respuesta.content : respuesta;
-        this.cdr.detectChanges();
+      next: (response: any) => {
+        this.ventas = response?.ventas?.content ?? [];
       },
       error: (err) => {
         console.error('Error al cargar la lista de ventas', err);
-        this.cdr.detectChanges();
-      }
+        this.ventas = [];
+      },
     });
   }
 
-  // Ver Detalle de una venta
   abrirModalDetalle(id: number | string): void {
     this.ventasService.getVentaById(id).subscribe({
-      next: (data) => {
-        this.ventaSeleccionada = data;
-        this.nuevoEstado = data.estadoPago; 
-        this.modalAbierto = true; // Mostramos el modal
+      next: (response: any) => {
+        this.ventaSeleccionada = response?.venta ?? null;
+        this.nuevoEstado = this.ventaSeleccionada?.estadoPago ?? '';
+        this.modalAbierto = true;
       },
       error: (err) => {
         console.error('Error al cargar el detalle de la venta', err);
-      }
+      },
     });
   }
 
@@ -55,24 +51,24 @@ export class GestionVentasComponent implements OnInit {
     this.modalAbierto = false;
     setTimeout(() => {
       this.ventaSeleccionada = null;
-    }, 300); // Esperar a que termine la animación
+    }, 300);
   }
 
-  // Actualizar el estado (CRUD)
   actualizarEstado(): void {
     if (!this.ventaSeleccionada) return;
 
-    this.ventasService.actualizarEstadoVenta(this.ventaSeleccionada.id, this.nuevoEstado).subscribe({
-      next: (res) => {
-        alert('Estado actualizado correctamente');
-        this.cargarVentas(); // Refrescar la tabla de ventas
-        this.cerrarModal();
-      },
-      error: (err) => {
-        console.error('Error al actualizar estado', err);
-        alert('Hubo un error al actualizar el estado. Revisa la consola.');
-      }
-    });
+    this.ventasService
+      .actualizarEstadoVenta(this.ventaSeleccionada.id, this.nuevoEstado)
+      .subscribe({
+        next: () => {
+          alert('Estado actualizado correctamente');
+          this.cargarVentas();
+          this.cerrarModal();
+        },
+        error: (err) => {
+          console.error('Error al actualizar estado', err);
+          alert('Hubo un error al actualizar el estado. Revisa la consola.');
+        },
+      });
   }
-
 }

@@ -7,7 +7,8 @@ import { GestionClientesComponent } from './gestion-clientes/gestion-clientes';
 import { GestionPromocionesComponent } from './gestion-promociones/gestion-promociones';
 import { GestionVentasComponent } from './gestion-ventas/gestion-ventas';
 import { GestionFuncionesComponent } from './gestion-funciones/gestion-funciones';
-
+import { GestionSalasComponent } from './gestion-salas/gestion-salas';
+import { GestionCinesComponent } from './gestion-cines/gestion-cines';
 const routes: Routes = [
   {
     path: '',
@@ -25,13 +26,17 @@ const routes: Routes = [
 
       { path: 'gestion-ventas', component: GestionVentasComponent },
 
-      { path: 'gestion-funciones', component: GestionFuncionesComponent }
-    ]
-  }
+      { path: 'gestion-funciones', component: GestionFuncionesComponent },
+
+      { path: 'gestion-salas', component: GestionSalasComponent },
+
+      { path: 'gestion-cines', component: GestionCinesComponent },
+    ],
+  },
 ];
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
 export class DashboardRoutingModule {}

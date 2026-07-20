@@ -10,10 +10,10 @@ import { VentaRequest } from '../models/venta';
 export class Ventas {
   private apiUrl = `${environment.apiUrl}/api/ventas`;
 
-  constructor(private http: HttpClient) {} // ← ESTO FALTABA
+  constructor(private http: HttpClient) {}
 
-  getVentas(): Observable<any[]> {
-    return this.http.get<any[]>(this.apiUrl);
+  getVentas(): Observable<any> {
+    return this.http.get<any>(this.apiUrl);
   }
 
   getVentaById(id: number | string): Observable<any> {

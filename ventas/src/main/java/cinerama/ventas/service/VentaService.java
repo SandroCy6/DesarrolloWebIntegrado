@@ -44,7 +44,7 @@ public class VentaService {
             NotificacionClient notificacionClient,
             CatalogoClient catalogoClient,
             PagoService pagoService,
-             PromocionClient promocionClient,
+            PromocionClient promocionClient,
             ClienteClient clienteClient) {
         this.ventaRepository = ventaRepository;
         this.notificacionClient = notificacionClient;
@@ -81,7 +81,8 @@ public class VentaService {
         // 3. Obtener información del Horario
         if (request.getHorarioId() != null) {
             try {
-                cinerama.ventas.dto.HorarioResponseDTO h = catalogoClient.obtenerHorario(request.getHorarioId()).orElse(null);
+                cinerama.ventas.dto.HorarioResponseDTO h = catalogoClient.obtenerHorario(request.getHorarioId())
+                        .orElse(null);
                 if (h != null) {
                     venta.setTituloPelicula(h.getTituloPelicula());
                     venta.setSala("Sala " + h.getNumeroSala() + " — " + h.getNombreCine());
@@ -97,7 +98,8 @@ public class VentaService {
 
         BigDecimal totalVenta = BigDecimal.ZERO;
 
-        // 4. Procesar Detalles (Aquí ya NO validamos los asientos, solo calculamos precios)
+        // 4. Procesar Detalles (Aquí ya NO validamos los asientos, solo calculamos
+        // precios)
         for (DetalleRequestDTO detReq : request.getDetalles()) {
             DetalleVenta detalle = new DetalleVenta();
             detalle.setTipoItem(detReq.getTipoItem().toUpperCase());
@@ -108,7 +110,8 @@ public class VentaService {
 
             if (detalle.getTipoItem().equals("ENTRADA")) {
                 if (precioBaseHorario.compareTo(BigDecimal.ZERO) == 0) {
-                    throw new IllegalStateException("Error: El horario seleccionado no tiene un precio válido configurado.");
+                    throw new IllegalStateException(
+                            "Error: El horario seleccionado no tiene un precio válido configurado.");
                 }
                 precioSeguro = precioBaseHorario; // Usamos el precio del horario
             }
@@ -122,21 +125,25 @@ public class VentaService {
             totalVenta = totalVenta.add(subtotal);
         }
 
-        // 5. NUEVA VALIDACIÓN: Verificar que los ASIENTOS REALES estén disponibles antes de cobrar
+        // 5. NUEVA VALIDACIÓN: Verificar que los ASIENTOS REALES estén disponibles
+        // antes de cobrar
         if (request.getAsientosIds() != null && !request.getAsientosIds().isEmpty()) {
             for (Long asientoId : request.getAsientosIds()) {
                 try {
                     AsientoDTO asiento = catalogoClient.obtenerAsiento(asientoId)
-                            .orElseThrow(() -> new IllegalArgumentException("El asiento con ID " + asientoId + " no existe."));
+                            .orElseThrow(() -> new IllegalArgumentException(
+                                    "El asiento con ID " + asientoId + " no existe."));
 
                     if ("OCUPADO".equalsIgnoreCase(asiento.getEstado())) {
-                        throw new IllegalArgumentException("El asiento " + asiento.getNumero() + " ya se encuentra ocupado. Por favor, seleccione otro.");
+                        throw new IllegalArgumentException("El asiento " + asiento.getNumero()
+                                + " ya se encuentra ocupado. Por favor, seleccione otro.");
                     }
                 } catch (IllegalArgumentException e) {
                     throw e; // Relanzamos si es ocupado o no existe
                 } catch (Exception e) {
                     System.err.println("🔴 ERROR REAL DE FEIGN (Validación): " + e.getMessage());
-                    throw new IllegalStateException("Error de comunicación con el Catálogo. No se pudo validar la disponibilidad de los asientos.");
+                    throw new IllegalStateException(
+                            "Error de comunicación con el Catálogo. No se pudo validar la disponibilidad de los asientos.");
                 }
             }
         }
@@ -148,7 +155,8 @@ public class VentaService {
         // 6. Aplicar Promociones
         if (request.getCodigoPromo() != null && !request.getCodigoPromo().isEmpty()) {
             try {
-                cinerama.ventas.dto.ValidarPromoRequestDTO promoReq = new cinerama.ventas.dto.ValidarPromoRequestDTO(request.getCodigoPromo());
+                cinerama.ventas.dto.ValidarPromoRequestDTO promoReq = new cinerama.ventas.dto.ValidarPromoRequestDTO(
+                        request.getCodigoPromo());
                 cinerama.ventas.dto.PromocionResponseDTO promoResponse = promocionClient.validarPromocion(promoReq);
 
                 if (promoResponse != null && promoResponse.getEsValida()) {
@@ -175,14 +183,17 @@ public class VentaService {
                 totalVenta,
                 request.getMetodoPago(),
                 request.getTokenTarjeta(),
-                request.getClienteCorreo()
-        );
+                request.getClienteCorreo());
 
         if (!pagoExitoso) {
-            throw new IllegalArgumentException("El pago fue RECHAZADO por MercadoPago");
+            throw new IllegalArgumentException("El pago fue rechazado por Mercado Pago");
         }
 
-        venta.setEstadoPago("APROBADO");
+        if (pagoService.isPagoSimulado()) {
+            venta.setEstadoPago("APROBADO_SIMULADO");
+        } else {
+            venta.setEstadoPago("APROBADO");
+        }
         Venta saved = ventaRepository.save(venta);
 
         // 8. Ocupar los asientos definitivamente después de pagar
@@ -195,7 +206,8 @@ public class VentaService {
                                     .map(AsientoDTO::getNumero)
                                     .orElse("A" + id);
                         } catch (Exception e) {
-                            System.err.println("⚠️ Falló la comunicación con Catálogo para ocupar el asiento ID " + id + ": " + e.getMessage());
+                            System.err.println("⚠️ Falló la comunicación con Catálogo para ocupar el asiento ID " + id
+                                    + ": " + e.getMessage());
                             return "A" + id;
                         }
                     })
@@ -211,7 +223,7 @@ public class VentaService {
             clienteReq.setCorreo(request.getClienteCorreo());
 
             // Verificamos que no sea nulo antes de setearlo
-            if(request.getClienteCelular() != null) {
+            if (request.getClienteCelular() != null) {
                 clienteReq.setTelefono(request.getClienteCelular());
             }
 

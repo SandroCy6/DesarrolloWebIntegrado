@@ -1,0 +1,111 @@
+<div class="container-fluid py-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="text-white" style="font-family: var(--cr-font-display)">Gestión de Cines</h2>
+    <button class="btn btn-danger" (click)="abrirModalCrear()">
+      <i class="bi bi-plus-lg me-2"></i>Nuevo Cine
+    </button>
+  </div>
+
+  @if (mensajeExito) {
+    <div class="alert alert-success alert-dismissible" role="alert">
+      <i class="bi bi-check-circle me-2"></i>{{ mensajeExito }}
+    </div>
+  }
+  @if (mensajeError) {
+    <div class="alert alert-danger alert-dismissible" role="alert">
+      <i class="bi bi-exclamation-triangle me-2"></i>{{ mensajeError }}
+    </div>
+  }
+
+  <div class="card bg-dark border-secondary">
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-dark table-hover align-middle">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nombre</th>
+              <th>Dirección</th>
+              <th>Ciudad</th>
+              <th class="text-end">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (cine of cines; track cine.id) {
+              <tr>
+                <td>{{ cine.id }}</td>
+                <td class="fw-bold">{{ cine.nombre }}</td>
+                <td>{{ cine.direccion }}</td>
+                <td>{{ cine.ciudad }}</td>
+                <td class="text-end">
+                  <button class="btn btn-sm btn-outline-danger" (click)="eliminarCine(cine.id)">
+                    <i class="bi bi-trash"></i>
+                  </button>
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="5" class="text-center text-muted py-4">
+                  <i class="bi bi-inbox me-2"></i>No hay cines registrados.
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL CREAR CINE -->
+  @if (modalAbierto) {
+    <div class="modal-backdrop-custom" (click)="cerrarModal()"></div>
+    <div class="modal-custom">
+      <div class="card bg-dark border-secondary">
+        <div class="card-header border-secondary d-flex justify-content-between align-items-center">
+          <h5 class="mb-0 text-white"><i class="bi bi-building me-2"></i>Nuevo Cine</h5>
+          <button class="btn btn-sm btn-outline-light" (click)="cerrarModal()">
+            <i class="bi bi-x-lg"></i>
+          </button>
+        </div>
+        <div class="card-body">
+          <div class="row g-3">
+            <div class="col-12">
+              <label class="form-label text-light">Nombre</label>
+              <input
+                type="text"
+                class="form-control bg-black text-white border-secondary"
+                [(ngModel)]="cineActual.nombre"
+                placeholder="Ej: Cinerama Plaza Ica"
+              />
+            </div>
+            <div class="col-12">
+              <label class="form-label text-light">Dirección</label>
+              <input
+                type="text"
+                class="form-control bg-black text-white border-secondary"
+                [(ngModel)]="cineActual.direccion"
+                placeholder="Ej: Av. Cutervo 123"
+              />
+            </div>
+            <div class="col-12">
+              <label class="form-label text-light">Ciudad</label>
+              <input
+                type="text"
+                class="form-control bg-black text-white border-secondary"
+                [(ngModel)]="cineActual.ciudad"
+                placeholder="Ej: Ica"
+              />
+            </div>
+          </div>
+
+          <div class="mt-4 text-end border-top border-secondary pt-3">
+            <button class="btn btn-outline-secondary me-2" (click)="cerrarModal()">Cancelar</button>
+            <button class="btn btn-danger px-4" (click)="guardarCine()">
+              <i class="bi bi-save me-2"></i>Guardar Cine
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+</div>

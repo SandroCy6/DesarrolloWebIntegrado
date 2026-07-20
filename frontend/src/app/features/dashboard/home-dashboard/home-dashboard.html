@@ -69,6 +69,7 @@
       <div *ngIf="ultimasVentas.length === 0" class="text-muted text-center py-3">
         Sin ventas registradas aún.
       </div>
+      <
       <table *ngIf="ultimasVentas.length > 0" class="table table-dark table-hover mb-0">
         <thead>
           <tr class="text-muted small text-uppercase">
@@ -81,20 +82,21 @@
         <tbody>
           <tr *ngFor="let v of ultimasVentas">
             <td class="text-muted font-monospace">{{ v.id }}</td>
-            <td class="text-white">{{ v.clienteDni || v.dni || '—' }}</td>
+            <td class="text-white">{{ v.clienteDni || '—' }}</td>
             <td>
               <span
                 class="badge"
                 [ngClass]="{
-                  'bg-success': v.estado === 'CONFIRMADA',
-                  'bg-warning text-dark': v.estado === 'PENDIENTE',
-                  'bg-danger': v.estado === 'CANCELADA'
+                  'bg-success': v.estadoPago === 'APROBADO',
+                  'bg-info text-dark': v.estadoPago === 'APROBADO_SIMULADO',
+                  'bg-warning text-dark': v.estadoPago === 'PENDIENTE',
+                  'bg-danger': v.estadoPago === 'RECHAZADO',
                 }"
               >
-                {{ v.estado || 'PENDIENTE' }}
+                {{ v.estadoPago || 'PENDIENTE' }}
               </span>
             </td>
-            <td class="text-end text-warning fw-bold">S/ {{ v.total?.toFixed(2) || '0.00' }}</td>
+            <td class="text-end text-warning fw-bold">S/ {{ v.total || 0 | number: '1.2-2' }}</td>
           </tr>
         </tbody>
       </table>
